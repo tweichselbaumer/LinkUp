@@ -30,9 +30,9 @@
 
 struct LinkUpPacket
 {
-	uint8_t lenght;
-	uint8_t *data;
-	uint16_t crc;
+	uint8_t nLenght;
+	uint8_t *pData;
+	uint16_t nCrc;
 };
 
 struct LinkUpPacketList
