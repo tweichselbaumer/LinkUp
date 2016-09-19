@@ -1,4 +1,9 @@
-// CRC16.h
+/**
+* Author: Thomas Weichselbaumer
+* Version: 0.1.0
+* File Name: CRC16.h
+* Description: Header file for the LinkUp lib.
+**/
 
 #ifndef _CRC16_h
 #define _CRC16_h

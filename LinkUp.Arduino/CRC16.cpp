@@ -1,3 +1,10 @@
+/**
+* Author: Thomas Weichselbaumer
+* Version: 0.1.0
+* File Name: CRC16.cpp
+* Description: Source file for the LinkUp lib.
+**/
+
 #include "CRC16.h"
 
 uint16_t CRC16Class::calc(uint8_t *pData, uint32_t nCount)

@@ -19,7 +19,8 @@ void loop()
 	uint32_t time;
 	time = micros();
 
-	if ((time - nLastTicks) > (uint32_t)1000 * 1000 * 2) {
+	if ((time - nLastTicks) > (uint32_t)1000 * 1000 * 2)
+	{
 		nLastTicks = time;
 		Serial.print("\nRECEIVED PACKET: ");
 		Serial.print(LinkUp.nTotalReceivedPackets, DEC);
@@ -28,21 +29,25 @@ void loop()
 		Serial.print("\n");
 	}
 
-	if (Serial.available()) {
+	if (Serial.available())
+	{
 		nBytesRead = Serial.readBytes((char*)pBuffer, BUFFER_SIZE);
-		if (nBytesRead > 0) {
+		if (nBytesRead > 0)
+		{
 			LinkUp.progress(pBuffer, nBytesRead);
 		}
 	}
-	if (LinkUp.hasNext()) {
+	if (LinkUp.hasNext()) 
+	{
 		LinkUpPacket packet = LinkUp.next();
 		Serial.print("*****\nRECEIVED PACKET");
 		Serial.print("\nLENGHT: ");
-		Serial.print(packet.header.lenght, DEC);
+		Serial.print(packet.lenght, DEC);
 		Serial.print("\nCRC16: 0x");
 		Serial.print(packet.crc, HEX);
 		Serial.print("\nDATA: ");
-		for (uint8_t i = 0; i < packet.header.lenght;i++) {
+		for (uint8_t i = 0; i < packet.lenght;i++)
+		{
 			Serial.print("0x");
 			Serial.print(packet.data[i], HEX);
 			Serial.print(" ");

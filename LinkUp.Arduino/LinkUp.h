@@ -1,5 +1,9 @@
-// LinkUp.h
-//-std=c++0x
+/**
+ * Author: Thomas Weichselbaumer
+ * Version: 0.1.0
+ * File Name: LinkUp.h
+ * Description: Header file for the LinkUp lib.
+ **/ 
 
 #ifndef _LINKUP_h
 #define _LINKUP_h
@@ -24,14 +28,9 @@
 #define LINKUP_XOR 0x20
 #endif
 
-struct LinkUpHeader
-{
-	uint8_t lenght;
-};
-
 struct LinkUpPacket
 {
-	LinkUpHeader header;
+	uint8_t lenght;
 	uint8_t *data;
 	uint16_t crc;
 };
@@ -53,11 +52,10 @@ enum LinkUpState
 	SendPreamble = 7,
 	SendLenght = 8,
 	SendData = 9,
-	SendSkip = 10,
-	SendCrc1 = 11,
-	SendCrc2 = 12,
-	SendEnd = 13,
-	SendIdle = 14
+	SendCrc1 = 10,
+	SendCrc2 = 11,
+	SendEnd = 12,
+	SendIdle = 13
 };
 
 class LinkUpClass
