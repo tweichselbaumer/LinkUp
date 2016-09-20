@@ -158,7 +158,7 @@ uint8_t LinkUpClass::getRaw(uint8_t* pData, uint8_t nMax)
 			}
 			break;
 		case LinkUpState::SendCrc1:
-			nNextByte = (pProgressingOut->packet.nCrc & 0xff00) >> 8;
+			nNextByte = (pProgressingOut->packet.nCrc & 0x00ff);
 			if ((nNextByte == LINKUP_PREAMBLE || nNextByte == LINKUP_EOP || nNextByte == LINKUP_SKIP) && !skipOut)
 			{
 				skipOut = true;
@@ -180,7 +180,7 @@ uint8_t LinkUpClass::getRaw(uint8_t* pData, uint8_t nMax)
 			nBytesSend++;
 			break;
 		case LinkUpState::SendCrc2:
-			nNextByte = pProgressingOut->packet.nCrc & 0x00ff;
+			nNextByte = (pProgressingOut->packet.nCrc & 0xff00)>>8;
 			if ((nNextByte == LINKUP_PREAMBLE || nNextByte == LINKUP_EOP || nNextByte == LINKUP_SKIP) && !skipOut)
 			{
 				skipOut = true;
@@ -304,7 +304,7 @@ void LinkUpClass::progress(uint8_t *pData, uint8_t nCount)
 
 					skipIn = false;
 
-					pProgressingIn->packet.nCrc = ((uint16_t)nNextByte) << 8;
+					pProgressingIn->packet.nCrc = ((uint16_t)nNextByte);
 					stateIn = LinkUpState::ReceiveCheckCRC;
 				}
 			}
@@ -325,7 +325,7 @@ void LinkUpClass::progress(uint8_t *pData, uint8_t nCount)
 
 					skipIn = false;
 
-					pProgressingIn->packet.nCrc = pProgressingIn->packet.nCrc | nNextByte;
+					pProgressingIn->packet.nCrc = pProgressingIn->packet.nCrc | (nNextByte << 8);
 
 					if (pProgressingIn->packet.nCrc == CRC16.calc(pProgressingIn->packet.pData, pProgressingIn->packet.nLenght))
 					{
