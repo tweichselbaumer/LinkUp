@@ -72,7 +72,7 @@ namespace LinkUp.Portable
                 {
                     indexOfPreamble += _Buffer.Skip(indexOfPreamble + 1).Take(indexOfEndOfPacket - indexOfPreamble).ToList().IndexOf(Constant.Preamble) + 1;
                 }
-                List<byte> packetRaw = _Buffer.Skip(indexOfPreamble).Take(indexOfEndOfPacket - indexOfPreamble+1).ToList();
+                List<byte> packetRaw = _Buffer.Skip(indexOfPreamble).Take(indexOfEndOfPacket - indexOfPreamble + 1).ToList();
 
                 LinkUpPacket packet = LinkUpPacket.ParseFromRaw(packetRaw);
                 if (packet.IsValid)
