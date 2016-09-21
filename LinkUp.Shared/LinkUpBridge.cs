@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace LinkUp.Portable
 {
-    public class LinkUpBridge: IDisposable
+    public class LinkUpBridge : IDisposable
     {
         private List<LinkUpConnector> _Connectors = new List<LinkUpConnector>();
 

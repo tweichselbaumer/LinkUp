@@ -64,7 +64,7 @@ void LinkUpClass::send(LinkUpPacket packet)
 		LinkUpPacketList* pPacketList = (LinkUpPacketList*)calloc(1, sizeof(LinkUpPacketList));
 		pPacketList->packet = packet;
 
-		pPacketList->packet.nCrc = CRC16.calc(pPacketList->packet.pData, pPacketList->packet.nLenght);	
+		pPacketList->packet.nCrc = CRC16.calc(pPacketList->packet.pData, pPacketList->packet.nLenght);
 
 		if (pHeadOut != NULL && pTailOut != NULL)
 		{
@@ -180,7 +180,7 @@ uint8_t LinkUpClass::getRaw(uint8_t* pData, uint8_t nMax)
 			nBytesSend++;
 			break;
 		case LinkUpState::SendCrc2:
-			nNextByte = (pProgressingOut->packet.nCrc & 0xff00)>>8;
+			nNextByte = (pProgressingOut->packet.nCrc & 0xff00) >> 8;
 			if ((nNextByte == LINKUP_PREAMBLE || nNextByte == LINKUP_EOP || nNextByte == LINKUP_SKIP) && !skipOut)
 			{
 				skipOut = true;
