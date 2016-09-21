@@ -1,0 +1,70 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LinkUp.Arduino", "LinkUp.Arduino", "{4E0ECFF1-9728-4DDB-B175-8C7DBC15A54F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LinkUp.Portable", "LinkUp.Portable", "{A43D0631-B767-4470-BD24-15FB011B7311}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LinkUp.Net45", "LinkUp.Net45", "{8074029D-0CD3-4B47-BA4F-5D3F7C202D6B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{24E3D30C-E95A-4D76-98AF-39CCC560F73D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Arduino", "Arduino", "{B84C185A-59B2-4075-8832-2DC8B98AB42B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net45", "Net45", "{4EF0631F-9AA4-4202-81ED-E873A309AFEC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LinkUp.Arduino", "LinkUp.Arduino\LinkUp.Arduino.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Net45", "LinkUp.Net45\LinkUp.Net45.csproj", "{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Portable", "LinkUp.Portable\LinkUp.Portable.csproj", "{289814D8-DCA6-42DA-BE76-F2F7A2C355A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LinkUp.Shared", "LinkUp.Shared", "{04196512-6052-49D2-B86B-B590F5110109}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "LinkUp.Shared", "LinkUp.Shared\LinkUp.Shared.shproj", "{F907C3A5-B8EF-4DFF-8B18-1CDBC9A7F6CE}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		LinkUp.Shared\LinkUp.Shared.projitems*{289814d8-dca6-42da-be76-f2f7a2c355a5}*SharedItemsImports = 4
+		LinkUp.Shared\LinkUp.Shared.projitems*{45736f30-b280-4dba-be6e-0f1b76ea6e5e}*SharedItemsImports = 4
+		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+		LinkUp.Shared\LinkUp.Shared.projitems*{f907c3a5-b8ef-4dff-8b18-1cdbc9a7f6ce}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E}.Debug|x86.Build.0 = Debug|Any CPU
+		{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E}.Release|x86.ActiveCfg = Release|Any CPU
+		{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E}.Release|x86.Build.0 = Release|Any CPU
+		{289814D8-DCA6-42DA-BE76-F2F7A2C355A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{289814D8-DCA6-42DA-BE76-F2F7A2C355A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{289814D8-DCA6-42DA-BE76-F2F7A2C355A5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{289814D8-DCA6-42DA-BE76-F2F7A2C355A5}.Debug|x86.Build.0 = Debug|Any CPU
+		{289814D8-DCA6-42DA-BE76-F2F7A2C355A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{289814D8-DCA6-42DA-BE76-F2F7A2C355A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{289814D8-DCA6-42DA-BE76-F2F7A2C355A5}.Release|x86.ActiveCfg = Release|Any CPU
+		{289814D8-DCA6-42DA-BE76-F2F7A2C355A5}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B84C185A-59B2-4075-8832-2DC8B98AB42B} = {24E3D30C-E95A-4D76-98AF-39CCC560F73D}
+		{4EF0631F-9AA4-4202-81ED-E873A309AFEC} = {24E3D30C-E95A-4D76-98AF-39CCC560F73D}
+		{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7} = {4E0ECFF1-9728-4DDB-B175-8C7DBC15A54F}
+		{45736F30-B280-4DBA-BE6E-0F1B76EA6E5E} = {8074029D-0CD3-4B47-BA4F-5D3F7C202D6B}
+		{289814D8-DCA6-42DA-BE76-F2F7A2C355A5} = {A43D0631-B767-4470-BD24-15FB011B7311}
+		{F907C3A5-B8EF-4DFF-8B18-1CDBC9A7F6CE} = {04196512-6052-49D2-B86B-B590F5110109}
+	EndGlobalSection
+EndGlobal

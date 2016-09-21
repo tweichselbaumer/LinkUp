@@ -1,17 +1,18 @@
-﻿using System;
+﻿using LinkUp.Portable;
+using System;
 using System.Collections.Generic;
 
-namespace LinkUp.Testing.dotnet
+namespace Testing.dotnet
 {
     internal class Program
     {
         private static void Main(string[] args)
         {
             List<byte> data = new List<byte>() { 0x99, 0xa, 0x1, 0xAA, 0x1, 0xAA, 0xAA, 0x1, 0xAA, 0x5, 0x55, 0x8A, 0x55, 0xB9, 0x55, 0x75, 0x1, 0x2, 0x6F, 0xFF, 0x99, 0x99, 0xa, 0x1, 0xAA, 0x1, 0xAA, 0xAA, 0x1, 0xAA, 0x5, 0x55, 0x8A, 0x55, 0xB9, 0x55, 0x75, 0x1, 0x2, 0x6F, 0xFF, 0x99 };
-            Portable.LinkUp link = new Portable.LinkUp();
-            List<Portable.LinkUpPacket> packs = link.Reveive(data.ToArray(), data.Count);
-            byte[] datanew = link.Send(packs[0]);
-            packs = link.Reveive(datanew, datanew.Length);
+            LinkUpConverter link = new LinkUpConverter();
+            List<LinkUpPacket> packs = link.ConvertFromReceived(data.ToArray());
+            byte[] datanew = link.ConvertToSend(packs[0]);
+            packs = link.ConvertFromReceived(datanew);
             Console.Read();
         }
     }

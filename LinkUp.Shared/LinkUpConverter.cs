@@ -4,11 +4,10 @@ using System.Linq;
 
 namespace LinkUp.Portable
 {
-    public class LinkUp
+    public class LinkUpConverter
     {
         private List<byte> _Buffer;
         private int _TotalFailedPackets;
-
         private int _TotalReceivedPackets;
 
         public int TotalFailedPackets
@@ -37,9 +36,9 @@ namespace LinkUp.Portable
             }
         }
 
-        public List<LinkUpPacket> Reveive(byte[] data, int length)
+        public List<LinkUpPacket> ConvertFromReceived(byte[] data)
         {
-            if (length <= 0)
+            if (data.Length <= 0)
             {
                 throw new ArgumentException("Length must be greater zero.");
             }
@@ -49,13 +48,13 @@ namespace LinkUp.Portable
                 {
                     _Buffer = new List<byte>();
                 }
-                _Buffer.AddRange(data.ToList().Take(length));
+                _Buffer.AddRange(data.ToList());
             }
 
             return ParseBuffer();
         }
 
-        public byte[] Send(LinkUpPacket packet)
+        public byte[] ConvertToSend(LinkUpPacket packet)
         {
             return packet.ToRaw().ToArray();
         }
