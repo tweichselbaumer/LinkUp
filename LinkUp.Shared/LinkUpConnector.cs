@@ -1,22 +1,15 @@
-﻿namespace LinkUp.Portable
-{
-    public delegate void ReveicedDataEventHandler(byte[] data);
+﻿using System;
 
+namespace LinkUp.Portable
+{
     public delegate void ReveicedPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
 
-    public abstract class LinkUpConnector
+    public abstract class LinkUpConnector : IDisposable
     {
         private LinkUpConverter _Converter = new LinkUpConverter();
         private string _Name;
 
-        public LinkUpConnector()
-        {
-            ReveivedData += LinkUpConnector_ReveivedData;
-        }
-
         public event ReveicedPacketEventHandler ReveivedPacket;
-
-        protected event ReveicedDataEventHandler ReveivedData;
 
         public string Name
         {
@@ -31,21 +24,21 @@
             }
         }
 
+        public abstract void Dispose();
+
         internal void SendPacket(LinkUpPacket packet)
         {
             SendData(_Converter.ConvertToSend(packet));
         }
 
-        protected abstract void Dispose();
-
-        protected abstract void SendData(byte[] data);
-
-        private void LinkUpConnector_ReveivedData(byte[] data)
+        protected void OnDataReceived(byte[] data)
         {
             foreach (LinkUpPacket packet in _Converter.ConvertFromReceived(data))
             {
                 ReveivedPacket?.Invoke(this, packet);
             }
         }
+
+        protected abstract void SendData(byte[] data);
     }
 }

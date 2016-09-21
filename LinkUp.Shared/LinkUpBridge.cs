@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LinkUp.Portable
 {
-    public class LinkUpBridge
+    public class LinkUpBridge: IDisposable
     {
         private List<LinkUpConnector> _Connectors = new List<LinkUpConnector>();
 
@@ -13,6 +14,17 @@ namespace LinkUp.Portable
         {
             _Connectors.Add(connector);
             connector.ReveivedPacket += Connector_ReveivedPacket;
+        }
+
+        public void Dispose()
+        {
+            if (_Connectors != null)
+            {
+                foreach (LinkUpConnector connector in _Connectors)
+                {
+                    connector.Dispose();
+                }
+            }
         }
 
         public void Send(LinkUpPacket packet)

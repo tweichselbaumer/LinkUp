@@ -1,25 +1,64 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO.Ports;
 using System.Threading.Tasks;
 
 namespace LinkUp.Portable
 {
     public class LinkUpSerialPortConnector : LinkUpConnector
-    { 
-        public LinkUpSerialPortConnector(string port, int baut)
-        {
+    {
+        private SerialPort _SerialPort;
+        private Task _Task;
 
-        }
-        protected override void Dispose()
+        public LinkUpSerialPortConnector(string portName, int baudRate)
         {
-            throw new NotImplementedException();
+            _Task = Task.Factory.StartNew(() =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        if (_SerialPort == null || !_SerialPort.IsOpen)
+                        {
+                            _SerialPort = new SerialPort(portName, baudRate);
+                            _SerialPort.Open();
+                            _SerialPort.DataReceived += _SerialPort_DataReceived;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        _SerialPort = null;
+                    }
+                }
+            });
+        }
+
+        public override void Dispose()
+        {
+            _Task.Dispose();
+            if (_SerialPort != null)
+            {
+                _SerialPort.Dispose();
+            }
         }
 
         protected override void SendData(byte[] data)
         {
-            throw new NotImplementedException();
+            if (_SerialPort != null && _SerialPort.IsOpen)
+                _SerialPort.Write(data, 0, data.Length);
+        }
+
+        private void _SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            if (_SerialPort != null && _SerialPort.IsOpen)
+            {
+                while (_SerialPort.BytesToRead > 0)
+                {
+                    int bytesToRead = _SerialPort.BytesToRead;
+                    byte[] buffer = new byte[bytesToRead];
+                    _SerialPort.Read(buffer, 0, bytesToRead);
+                    OnDataReceived(null);
+                }
+            }
         }
     }
 }

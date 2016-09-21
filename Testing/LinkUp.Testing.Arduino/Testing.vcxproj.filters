@@ -21,5 +21,8 @@
     <ClInclude Include="__vm\.Testing.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="__vm\.LinkUp.Testing.Arduino.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
