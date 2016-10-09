@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LinkUpConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinkUpConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinkUpPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LinkUpSerialPortConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinkUpTcpConnector.cs" />
   </ItemGroup>
 </Project>

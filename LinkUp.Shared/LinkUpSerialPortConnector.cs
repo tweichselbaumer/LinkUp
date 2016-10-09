@@ -1,16 +1,22 @@
 ﻿using System;
-using System.IO.Ports;
 using System.Threading.Tasks;
 
-namespace LinkUp.Portable
+#if NET45
+using System.IO.Ports;
+#endif
+
+namespace LinkUp
 {
     public class LinkUpSerialPortConnector : LinkUpConnector
     {
+#if NET45
         private SerialPort _SerialPort;
         private Task _Task;
+#endif
 
         public LinkUpSerialPortConnector(string portName, int baudRate)
         {
+#if NET45
             _Task = Task.Factory.StartNew(() =>
             {
                 while (true)
@@ -30,23 +36,29 @@ namespace LinkUp.Portable
                     }
                 }
             });
+#endif
         }
 
         public override void Dispose()
         {
+#if NET45
             _Task.Dispose();
             if (_SerialPort != null)
             {
                 _SerialPort.Dispose();
             }
+#endif
         }
 
         protected override void SendData(byte[] data)
         {
+#if NET45
             if (_SerialPort != null && _SerialPort.IsOpen)
                 _SerialPort.Write(data, 0, data.Length);
+#endif
         }
 
+#if NET45
         private void _SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             if (_SerialPort != null && _SerialPort.IsOpen)
@@ -60,5 +72,6 @@ namespace LinkUp.Portable
                 }
             }
         }
+#endif
     }
 }

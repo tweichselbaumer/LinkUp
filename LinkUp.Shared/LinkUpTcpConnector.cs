@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#if NET64
 using System.Net.Sockets;
-using System.Text;
+#endif
 
 namespace LinkUp
 {
-    
     public class LinkUpTcpConnector
     {
     }

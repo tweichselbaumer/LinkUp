@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LinkUp.Portable
+namespace LinkUp
 {
     public delegate void ReveicedPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
 
