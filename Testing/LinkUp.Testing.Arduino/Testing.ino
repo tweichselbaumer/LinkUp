@@ -1,22 +1,44 @@
 #include "LinkUp.h"
 
-#define BUFFER_SIZE 32
+#define BUFFER_SIZE 1024
 
 uint8_t pBuffer[BUFFER_SIZE];
 uint8_t nBytesRead;
 uint32_t nLastTicks;
+uint32_t i;
+
 bool flip = false;
 
 void setup()
 {
-	Serial.begin(115200);
+	Serial.begin(1);
 	Serial.setTimeout(1);
 	Serial.println("START");
 	Serial.flush();
+	Serial1.begin(3000000); 
+	Serial1.setTimeout(1);
 }
 
 void loop()
-{
+{ 
+	uint32_t time = micros();
+	if (time-nLastTicks > 1 * 1000 * 1000) 
+	{
+		Serial1.print("\n Performance [KB/s]: ");
+		Serial1.print((1000*1000*i*((double)BUFFER_SIZE) / (1024 * (time - nLastTicks))));
+		Serial1.print("\n Count: ");
+		Serial1.print(i);
+		Serial1.flush();
+		nLastTicks = time;
+		i = 0;
+	}
+
+
+	Serial.write(pBuffer, BUFFER_SIZE);
+
+	
+	i++;
+	/*
 	uint32_t time;
 	time = micros();
 
@@ -37,6 +59,7 @@ void loop()
 		uint8_t size = LinkUp.getRaw(pData, 100);
 
 		Serial.print("\nSEND PACKET BEFORE: ");
+		Serial1.print("\nSEND PACKET BEFORE: ");
 
 		for (int i = 0; i < 5; i++) 
 		{
@@ -101,4 +124,5 @@ void loop()
 		free(packet.pData);
 	}
 	Serial.flush();
+	*/
 }

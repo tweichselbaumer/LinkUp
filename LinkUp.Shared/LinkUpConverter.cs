@@ -29,7 +29,6 @@ namespace LinkUp.Portable
             {
                 return _TotalReceivedPackets;
             }
-
             set
             {
                 _TotalReceivedPackets = value;
