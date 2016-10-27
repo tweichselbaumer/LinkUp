@@ -1,6 +1,6 @@
 /**
  * Author: Thomas Weichselbaumer
- * Version: 0.1.0
+ * Version: 1.0.0
  * File Name: LinkUp.h
  * Description: Header file for the LinkUp lib.
  **/

@@ -1,6 +1,6 @@
 /**
 * Author: Thomas Weichselbaumer
-* Version: 0.1.0
+* Version: 1.0.0
 * File Name: LinkUp.cpp
 * Description: Source file for the LinkUp lib.
 **/
