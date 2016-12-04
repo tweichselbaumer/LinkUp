@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 #if NET45
 using System.IO.Ports;
@@ -34,6 +35,7 @@ namespace LinkUp
                     {
                         _SerialPort = null;
                     }
+                    Thread.Sleep(100);
                 }
             });
 #endif
@@ -68,7 +70,7 @@ namespace LinkUp
                     int bytesToRead = _SerialPort.BytesToRead;
                     byte[] buffer = new byte[bytesToRead];
                     _SerialPort.Read(buffer, 0, bytesToRead);
-                    OnDataReceived(null);
+                    OnDataReceived(buffer);
                 }
             }
         }

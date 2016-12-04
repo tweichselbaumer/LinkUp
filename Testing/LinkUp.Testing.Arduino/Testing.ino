@@ -1,9 +1,11 @@
 #include "LinkUp.h"
 
+
 #define BUFFER_SIZE 255
 
 #define DebugStream Serial
 #define DataStream Serial1
+
 
 uint8_t pBuffer[BUFFER_SIZE];
 uint32_t nLastTicks = 0;
@@ -23,10 +25,10 @@ void loop()
 	uint32_t nBytesToSend;
 	uint32_t nTime = micros();
 
-	if (nTime - nLastTicks > 1000 * 1000 * 5) 
+	if (nTime - nLastTicks > 1000 * 1000 * 1) 
 	{
 		nLastTicks = nTime;
-		DebugStream.print("\nRunning\n");
+		DebugStream.println("Running");
 	}
 
 	if (DataStream.available())
@@ -42,20 +44,21 @@ void loop()
 	{
 		LinkUpPacket packet = LinkUp.next();
 		LinkUp.send(packet);
-
-		DebugStream.print("*****\nRECEIVED PACKET");
-		DebugStream.print("\nLENGHT: ");
-		DebugStream.print(packet.nLenght, DEC);
-		DebugStream.print("\nCRC16: 0x");
-		DebugStream.print(packet.nCrc, HEX);
-		DebugStream.print("\nDATA: ");
+		DebugStream.println("*****");
+		DebugStream.println("RECEIVED PACKET");
+		DebugStream.print("LENGHT: ");
+		DebugStream.println(packet.nLenght, DEC);
+		DebugStream.print("CRC16: 0x");
+		DebugStream.println(packet.nCrc, HEX);
+		DebugStream.print("DATA: ");
 		for (uint8_t i = 0; i < packet.nLenght;i++)
 		{
 			DebugStream.print("0x");
 			DebugStream.print(packet.pData[i], HEX);
 			DebugStream.print(" ");
 		}
-		DebugStream.print("\n*****\n\n");
+		DebugStream.println("");
+		DebugStream.println("*****");
 	}
 
 	nBytesToSend = LinkUp.getRaw(pBuffer, BUFFER_SIZE);

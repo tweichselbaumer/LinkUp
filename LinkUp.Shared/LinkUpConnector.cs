@@ -26,7 +26,7 @@ namespace LinkUp
 
         public abstract void Dispose();
 
-        internal void SendPacket(LinkUpPacket packet)
+        public void SendPacket(LinkUpPacket packet)
         {
             SendData(_Converter.ConvertToSend(packet));
         }

@@ -8,7 +8,6 @@ namespace LinkUp
     {
         private byte[] _Data;
         private bool _IsValid;
-        private byte _Length;
 
         public ushort Crc
         {
@@ -35,12 +34,7 @@ namespace LinkUp
         {
             get
             {
-                return _Length;
-            }
-
-            set
-            {
-                _Length = value;
+                return _Data == null ? (byte) 0 : Convert.ToByte(_Data.Length);
             }
         }
 
@@ -59,9 +53,9 @@ namespace LinkUp
             try
             {
                 data = RemoveEscaping(data);
-                result.Length = data[1];
-                result.Data = data.Skip(2).Take(result.Length).ToArray();
-                ushort crc = BitConverter.ToUInt16(data.ToArray(), 2 + result.Length);
+                byte length = data[1];
+                result.Data = data.Skip(2).Take(length).ToArray();
+                ushort crc = BitConverter.ToUInt16(data.ToArray(), 2 + length);
                 if (crc != result.Crc || data[0] != Constant.Preamble || data[data.Count - 1] != Constant.EndOfPacket)
                 {
                     result._IsValid = false;

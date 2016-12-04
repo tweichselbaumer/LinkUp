@@ -92,6 +92,7 @@ uint8_t LinkUpClass::getRaw(uint8_t* pData, uint8_t nMax)
 				if (pProgressingOut->packet.pData)
 					free(pProgressingOut->packet.pData);
 				free(pProgressingOut);
+				pProgressingOut = NULL;
 			}
 			if (pHeadOut != NULL)
 			{
