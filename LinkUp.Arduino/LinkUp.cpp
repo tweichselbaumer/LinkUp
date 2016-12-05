@@ -25,7 +25,7 @@ bool LinkUpClass::hasNext()
 	return pHeadIn != NULL;
 }
 
-bool LinkUpClass::checkForError(uint8_t nByte)
+bool LinkUpClass::checkForError(uint16_t nByte)
 {
 	if (nByte == LINKUP_EOP || nByte == LINKUP_PREAMBLE)
 	{
@@ -41,7 +41,7 @@ bool LinkUpClass::checkForError(uint8_t nByte)
 
 		if (nByte == LINKUP_PREAMBLE)
 		{
-			stateIn = ReceiveLength;
+			stateIn = ReceiveLength1;
 		}
 
 		if (nByte == LINKUP_EOP)
@@ -78,9 +78,9 @@ void LinkUpClass::send(LinkUpPacket packet)
 	}
 }
 
-uint8_t LinkUpClass::getRaw(uint8_t* pData, uint8_t nMax)
+uint16_t LinkUpClass::getRaw(uint8_t* pData, uint16_t nMax)
 {
-	uint8_t nBytesSend = 0;
+	uint16_t nBytesSend = 0;
 	uint8_t nNextByte = 0;
 	do
 	{
@@ -105,10 +105,32 @@ uint8_t LinkUpClass::getRaw(uint8_t* pData, uint8_t nMax)
 		case LinkUpState::SendPreamble:
 			pData[nBytesSend] = LINKUP_PREAMBLE;
 			nBytesSend++;
-			stateOut = LinkUpState::SendLenght;
+			stateOut = LinkUpState::SendLenght1;
 			break;
-		case LinkUpState::SendLenght:
-			nNextByte = nBytesToSend;
+		case LinkUpState::SendLenght1:
+			nNextByte = (nBytesToSend & 0x00ff);
+			if ((nNextByte == LINKUP_PREAMBLE || nNextByte == LINKUP_EOP || nNextByte == LINKUP_SKIP) && !skipOut)
+			{
+				skipOut = true;
+				pData[nBytesSend] = LINKUP_SKIP;
+			}
+			else
+			{
+				if (skipOut)
+				{
+					pData[nBytesSend] = nNextByte ^ LINKUP_XOR;
+				}
+				else
+				{
+					pData[nBytesSend] = nNextByte;
+				}
+				skipOut = false;
+				stateOut = LinkUpState::SendLenght2;
+			}
+			nBytesSend++;
+			break;
+		case LinkUpState::SendLenght2:
+			nNextByte = (nBytesToSend & 0xff00) >> 8;
 			if ((nNextByte == LINKUP_PREAMBLE || nNextByte == LINKUP_EOP || nNextByte == LINKUP_SKIP) && !skipOut)
 			{
 				skipOut = true;
@@ -215,9 +237,9 @@ uint8_t LinkUpClass::getRaw(uint8_t* pData, uint8_t nMax)
 	return nBytesSend;
 }
 
-void LinkUpClass::progress(uint8_t *pData, uint8_t nCount)
+void LinkUpClass::progress(uint8_t *pData, uint16_t nCount)
 {
-	uint8_t i = 0;
+	uint16_t i = 0;
 	uint8_t nNextByte;
 
 	while (i < nCount)
@@ -228,11 +250,11 @@ void LinkUpClass::progress(uint8_t *pData, uint8_t nCount)
 			if (pData[i] == LINKUP_PREAMBLE)
 			{
 				skipIn = false;
-				stateIn = ReceiveLength;
+				stateIn = ReceiveLength1;
 				pProgressingIn = (LinkUpPacketList*)calloc(1, sizeof(LinkUpPacketList));
 			}
 			break;
-		case LinkUpState::ReceiveLength:
+		case LinkUpState::ReceiveLength1:
 			if (!checkForError(pData[i]))
 			{
 				if (pData[i] == LINKUP_SKIP)
@@ -242,15 +264,41 @@ void LinkUpClass::progress(uint8_t *pData, uint8_t nCount)
 				else
 				{
 					if (skipIn)
-						nBytesToRead = pData[i] ^ LINKUP_XOR;
+						nNextByte = pData[i] ^ LINKUP_XOR;
 					else
-						nBytesToRead = pData[i];
+						nNextByte = pData[i];
+
+					stateIn = LinkUpState::ReceiveLength2;
 
 					skipIn = false;
-					if (nBytesToRead > 0)
+
+					pProgressingIn->packet.nLenght = nNextByte;
+				}
+			}
+			break;
+		case LinkUpState::ReceiveLength2:
+			if (!checkForError(pData[i]))
+			{
+				if (pData[i] == LINKUP_SKIP)
+				{
+					skipIn = true;
+				}
+				else
+				{
+					if (skipIn)
+						nNextByte = pData[i] ^ LINKUP_XOR;
+					else
+						nNextByte = pData[i];
+
+					skipIn = false;
+
+					pProgressingIn->packet.nLenght |= (nNextByte << 8);
+					
+					nBytesToRead = pProgressingIn->packet.nLenght;
+
+					if (pProgressingIn->packet.nLenght > 0)
 					{
-						pProgressingIn->packet.pData = (uint8_t*)calloc(nBytesToRead, sizeof(uint8_t));
-						pProgressingIn->packet.nLenght = nBytesToRead;
+						pProgressingIn->packet.pData = (uint8_t*)calloc(pProgressingIn->packet.nLenght, sizeof(uint8_t));
 						stateIn = LinkUpState::ReceiveData;
 					}
 					else
@@ -258,7 +306,7 @@ void LinkUpClass::progress(uint8_t *pData, uint8_t nCount)
 						if (pProgressingIn)
 							free(pProgressingIn);
 						nTotalFailedPackets++;
-						stateIn = LinkUpState::SendPreamble;
+						stateIn = LinkUpState::ReceivePreamble;
 					}
 				}
 			}

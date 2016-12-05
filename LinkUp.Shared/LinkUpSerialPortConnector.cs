@@ -56,7 +56,14 @@ namespace LinkUp
         {
 #if NET45
             if (_SerialPort != null && _SerialPort.IsOpen)
-                _SerialPort.Write(data, 0, data.Length);
+            {
+                const int BUFFER_SIZE = 255;
+                for (int i = 0; i < data.Length; i += BUFFER_SIZE)
+                {
+                    _SerialPort.Write(data, i, data.Length - i > BUFFER_SIZE ? BUFFER_SIZE : data.Length - i);
+                    Thread.Sleep(10);
+                }
+            }
 #endif
         }
 

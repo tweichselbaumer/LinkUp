@@ -30,11 +30,11 @@ namespace LinkUp
             }
         }
 
-        public byte Length
+        public ushort Length
         {
             get
             {
-                return _Data == null ? (byte) 0 : Convert.ToByte(_Data.Length);
+                return _Data == null ? (ushort)0 : Convert.ToUInt16(_Data.Length);
             }
         }
 
@@ -53,9 +53,9 @@ namespace LinkUp
             try
             {
                 data = RemoveEscaping(data);
-                byte length = data[1];
-                result.Data = data.Skip(2).Take(length).ToArray();
-                ushort crc = BitConverter.ToUInt16(data.ToArray(), 2 + length);
+                ushort length = BitConverter.ToUInt16(data.ToArray(), 1);
+                result.Data = data.Skip(3).Take(length).ToArray();
+                ushort crc = BitConverter.ToUInt16(data.ToArray(), 3 + length);
                 if (crc != result.Crc || data[0] != Constant.Preamble || data[data.Count - 1] != Constant.EndOfPacket)
                 {
                     result._IsValid = false;
@@ -78,7 +78,7 @@ namespace LinkUp
             List<byte> result = new List<byte>();
 
             result.Add(Constant.Preamble);
-            result.AddRange(AddEscaping(new List<byte>() { Length }));
+            result.AddRange(AddEscaping(BitConverter.GetBytes(Length).ToList()));
             result.AddRange(AddEscaping(Data.ToList()));
             result.AddRange(AddEscaping(BitConverter.GetBytes(Crc).ToList()));
             result.Add(Constant.EndOfPacket);

@@ -50,12 +50,12 @@ namespace LinkUp.Testing.Net45.TestBrowser
                             {
                                 string port = "";
 
-                                Dispatcher.Invoke((Action)delegate ()
+                                Dispatcher.Invoke(delegate ()
                                 {
                                     port = comboBox_Debug.SelectedValue.ToString();
                                 });
 
-                                _DebugPort = new SerialPort(port);
+                                _DebugPort = new SerialPort(port, 3000000);
                                 _DebugPort.Open();
                                 _DebugPort.DataReceived += _DebugPort_DataReceived;
                             }
@@ -73,7 +73,7 @@ namespace LinkUp.Testing.Net45.TestBrowser
 
         private void _DebugPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Dispatcher.Invoke((Action)delegate ()
+            Dispatcher.Invoke(delegate ()
             {
                 textBox_Debug.AppendText(_DebugPort.ReadExisting());
                 textBox_Debug.ScrollToEnd();
@@ -88,7 +88,7 @@ namespace LinkUp.Testing.Net45.TestBrowser
 
         private void _DataPort_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
-            Dispatcher.Invoke((Action)delegate ()
+            Dispatcher.Invoke(delegate ()
             {
                 textBox_DataOut.Text = Encoding.UTF8.GetString(packet.Data);
             });

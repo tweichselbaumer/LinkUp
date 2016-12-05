@@ -8,27 +8,6 @@
     <VCCodeModel>
       <VCCodeMacros />
     </VCCodeModel>
-    <BreakPoints>
-      <BreakPoint Index="1" Name="LinkUpSerialPortConnector.cs, line 66 character 13" Id="4c0b6967-59eb-4709-b010-a18fd1eac8cf" Enabled="1" Message="" MessageTextType="2" PreProcessedMessage="" Condition="" ConditionType="1" CurrentHits="0" File="c:\users\thoma\source\repos\linkup\linkup.shared\linkupserialportconnector.cs" FileLine="66" FileColumn="13" FunctionName="LinkUp.LinkUpSerialPortConnector._SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)" FunctionLineOffset="3" FunctionColumnOffset="1" HitCountTarget="1" HitCountType="1" Language="C#" LocationType="3" Tag="&lt;vmbp Id='4c0b6967-59eb-4709-b010-a18fd1eac8cf'/&gt;" Type="1" ToString="System.__ComObject" BreakWhenHit="1">
-        <Source>59	                _SerialPort.Write(data, 0, data.Length);
-60	#endif
-61	        }
-62	
-63	#if NET45
-64	        private void _SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-65	        {
---&gt;66	            if (_SerialPort != null &amp;&amp; _SerialPort.IsOpen)
-67	            {
-68	                while (_SerialPort.BytesToRead &gt; 0)
-69	                {
-70	                    int bytesToRead = _SerialPort.BytesToRead;
-71	                    byte[] buffer = new byte[bytesToRead];
-72	                    _SerialPort.Read(buffer, 0, bytesToRead);
-73	                    OnDataReceived(buffer);
-74	                }
-75	            }
-</Source>
-      </BreakPoint>
-    </BreakPoints>
+    <BreakPoints />
   </Program>
 </VisualMicro>

@@ -1,7 +1,7 @@
 #include "LinkUp.h"
 
 
-#define BUFFER_SIZE 255
+#define BUFFER_SIZE 1024
 
 #define DebugStream Serial
 #define DataStream Serial1
@@ -34,6 +34,8 @@ void loop()
 	if (DataStream.available())
 	{
 		nBytesRead = DataStream.readBytes((char*)pBuffer, BUFFER_SIZE);
+		DebugStream.println("ToRead:");
+		DebugStream.println(nBytesRead);
 		if (nBytesRead > 0)
 		{
 			LinkUp.progress(pBuffer, nBytesRead);
@@ -51,7 +53,7 @@ void loop()
 		DebugStream.print("CRC16: 0x");
 		DebugStream.println(packet.nCrc, HEX);
 		DebugStream.print("DATA: ");
-		for (uint8_t i = 0; i < packet.nLenght;i++)
+		for (uint16_t i = 0; i < packet.nLenght;i++)
 		{
 			DebugStream.print("0x");
 			DebugStream.print(packet.pData[i], HEX);

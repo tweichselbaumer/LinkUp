@@ -30,7 +30,7 @@
 
 struct LinkUpPacket
 {
-	uint8_t nLenght;
+	uint16_t nLenght;
 	uint8_t *pData;
 	uint16_t nCrc;
 };
@@ -44,18 +44,20 @@ struct LinkUpPacketList
 enum LinkUpState
 {
 	ReceivePreamble = 1,
-	ReceiveLength = 2,
-	ReceiveData = 3,
-	ReceiveCRC = 4,
-	ReceiveCheckCRC = 5,
-	ReceiveEnd = 6,
-	SendPreamble = 7,
-	SendLenght = 8,
-	SendData = 9,
-	SendCrc1 = 10,
-	SendCrc2 = 11,
-	SendEnd = 12,
-	SendIdle = 13
+	ReceiveLength1 = 2,
+	ReceiveLength2 = 3,
+	ReceiveData = 4,
+	ReceiveCRC = 5,
+	ReceiveCheckCRC = 6,
+	ReceiveEnd = 7,
+	SendPreamble = 8,
+	SendLenght1 = 9,
+	SendLenght2 = 10,
+	SendData = 11,
+	SendCrc1 = 12,
+	SendCrc2 = 13,
+	SendEnd = 14,
+	SendIdle = 15
 };
 
 class LinkUpClass
@@ -65,19 +67,19 @@ private:
 	LinkUpState stateOut = LinkUpState::SendIdle;
 	bool skipIn = false;
 	bool skipOut = false;
-	uint8_t nBytesToRead;
-	uint8_t nBytesToSend;
+	uint16_t nBytesToRead;
+	uint16_t nBytesToSend;
 	LinkUpPacketList* pHeadIn;
 	LinkUpPacketList* pTailIn;
 	LinkUpPacketList* pHeadOut;
 	LinkUpPacketList* pTailOut;
 	LinkUpPacketList* pProgressingIn;
 	LinkUpPacketList* pProgressingOut;
-	bool checkForError(uint8_t nByte);
+	bool checkForError(uint16_t nByte);
 public:
-	void progress(uint8_t* pData, uint8_t nCount);
+	void progress(uint8_t* pData, uint16_t nCount);
 	void send(LinkUpPacket packet);
-	uint8_t getRaw(uint8_t* pData, uint8_t nMax);
+	uint16_t getRaw(uint8_t* pData, uint16_t nMax);
 	bool hasNext();
 	LinkUpPacket next();
 	uint32_t nTotalFailedPackets;
