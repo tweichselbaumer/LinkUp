@@ -9,7 +9,7 @@ The current version of the library is released on [nuget](https://www.nuget.org/
 ### Arduino/C/C++
 If you use Visual Studio for developing your Arduino/C/C++ Project, you can install the nessesary files by adding a nuget packets with the nuget packages manager.
 
-Alternative, download the package [nuget](https://www.nuget.org/packages/LinkUp) unzip the file and extract the files from *content\native*.
+Alternative, download the package from [nuget](https://www.nuget.org/packages/LinkUp), unzip the file and extract the files from *content\native*.
 
 ### C#/.net/Xamarin/Portable
 The C# version of the libary can be installed by the nuget package manager.
