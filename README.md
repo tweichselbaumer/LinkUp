@@ -1,4 +1,4 @@
-#![LinkUp](https://raw.githubusercontent.com/tweichselbaumer/LinkUp/master/Graphics/Raw/LinkUp-logo-icon.png)LinkUp
+#![LinkUp](https://raw.githubusercontent.com/tweichselbaumer/LinkUp/master/Graphics/Raw/LinkUp-logo.png)
 
 ## About
 LinkUp is a cross platform lightweight communication library. The framework is able to transmit data between different microcontrollers, mobile devices and computers.
