@@ -15,10 +15,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)CRC16.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)LinkUp.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LinkUpRaw.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)CRC16.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)LinkUp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpRaw.h" />
   </ItemGroup>
 </Project>

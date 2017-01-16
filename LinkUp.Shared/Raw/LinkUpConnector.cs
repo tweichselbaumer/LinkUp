@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LinkUp
+namespace LinkUp.Raw
 {
     public delegate void ReveicedPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
 

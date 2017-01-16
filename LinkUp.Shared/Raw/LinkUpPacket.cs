@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LinkUp
+namespace LinkUp.Raw
 {
     public class LinkUpPacket
     {

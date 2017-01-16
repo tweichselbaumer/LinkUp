@@ -6,14 +6,20 @@
     <SharedGUID>f907c3a5-b8ef-4dff-8b18-1cdbc9a7f6ce</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>LinkUp.Shared</Import_RootNamespace>
+    <Import_RootNamespace>LinkUp</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)LinkUpBridge.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LinkUpConnector.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LinkUpConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LinkUpPacket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LinkUpSerialPortConnector.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LinkUpTcpConnector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLabelType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLogic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpNameRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpNameResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpSubNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConnector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpSerialPortConnector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpTcpConnector.cs" />
   </ItemGroup>
 </Project>

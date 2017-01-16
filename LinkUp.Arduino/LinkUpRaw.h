@@ -5,27 +5,27 @@
  * Description: Header file for the LinkUp lib.
  **/
 
-#ifndef _LINKUP_h
-#define _LINKUP_h
+#ifndef _LINKUP_RAW_h
+#define _LINKUP_RAW_h
 
 #include <Arduino.h>
 
 #include "CRC16.h"
 
-#ifndef LINKUP_PREAMBLE
-#define LINKUP_PREAMBLE 0xAA
+#ifndef LINKUP_RAW_PREAMBLE
+#define LINKUP_RAW_PREAMBLE 0xAA
 #endif
 
-#ifndef LINKUP_EOP
-#define LINKUP_EOP 0x99
+#ifndef LINKUP_RAW_EOP
+#define LINKUP_RAW_EOP 0x99
 #endif
 
-#ifndef LINKUP_SKIP
-#define LINKUP_SKIP 0x55
+#ifndef LINKUP_RAW_SKIP
+#define LINKUP_RAW_SKIP 0x55
 #endif
 
-#ifndef LINKUP_XOR
-#define LINKUP_XOR 0x20
+#ifndef LINKUP_RAW_XOR
+#define LINKUP_RAW_XOR 0x20
 #endif
 
 struct LinkUpPacket
@@ -60,7 +60,7 @@ enum LinkUpState
 	SendIdle = 15
 };
 
-class LinkUpClass
+class LinkUpRawClass
 {
 private:
 	LinkUpState stateIn = LinkUpState::ReceivePreamble;
@@ -85,7 +85,5 @@ public:
 	uint32_t nTotalFailedPackets;
 	uint32_t nTotalReceivedPackets;
 };
-
-extern LinkUpClass LinkUp;
 
 #endif

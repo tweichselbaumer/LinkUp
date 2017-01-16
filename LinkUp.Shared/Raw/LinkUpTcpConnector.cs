@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 #endif
 
-namespace LinkUp
+namespace LinkUp.Raw
 {
     public class LinkUpTcpConnector
     {

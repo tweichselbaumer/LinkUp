@@ -6,7 +6,7 @@ using System.Threading;
 using System.IO.Ports;
 #endif
 
-namespace LinkUp
+namespace LinkUp.Raw
 {
     public class LinkUpSerialPortConnector : LinkUpConnector
     {
@@ -57,12 +57,7 @@ namespace LinkUp
 #if NET45
             if (_SerialPort != null && _SerialPort.IsOpen)
             {
-                const int BUFFER_SIZE = 255;
-                for (int i = 0; i < data.Length; i += BUFFER_SIZE)
-                {
-                    _SerialPort.Write(data, i, data.Length - i > BUFFER_SIZE ? BUFFER_SIZE : data.Length - i);
-                    Thread.Sleep(10);
-                }
+                _SerialPort.Write(data, 0, data.Length);
             }
 #endif
         }

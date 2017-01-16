@@ -1,4 +1,4 @@
-#include "LinkUp.h"
+#include "LinkUpRaw.h"
 
 
 #define BUFFER_SIZE 1024
@@ -9,13 +9,14 @@
 
 uint8_t pBuffer[BUFFER_SIZE];
 uint32_t nLastTicks = 0;
+LinkUpRawClass LinkUpRaw;
 
 
 void setup()
 {
 	DebugStream.begin(1);
 	DebugStream.setTimeout(1);
-	DataStream.begin(3000000);
+	DataStream.begin(250000);
 	DataStream.setTimeout(1);
 }
 
@@ -38,14 +39,14 @@ void loop()
 		DebugStream.println(nBytesRead);
 		if (nBytesRead > 0)
 		{
-			LinkUp.progress(pBuffer, nBytesRead);
+			LinkUpRaw.progress(pBuffer, nBytesRead);
 		}
 	}
 
-	if (LinkUp.hasNext())
+	if (LinkUpRaw.hasNext())
 	{
-		LinkUpPacket packet = LinkUp.next();
-		LinkUp.send(packet);
+		LinkUpPacket packet = LinkUpRaw.next();
+		LinkUpRaw.send(packet);
 		DebugStream.println("*****");
 		DebugStream.println("RECEIVED PACKET");
 		DebugStream.print("LENGHT: ");
@@ -63,7 +64,7 @@ void loop()
 		DebugStream.println("*****");
 	}
 
-	nBytesToSend = LinkUp.getRaw(pBuffer, BUFFER_SIZE);
+	nBytesToSend = LinkUpRaw.getRaw(pBuffer, BUFFER_SIZE);
 
 	if (nBytesToSend > 0) {
 		DataStream.write(pBuffer, nBytesToSend);
