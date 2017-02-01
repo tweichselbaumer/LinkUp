@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpSubNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpMemoryConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpSerialPortConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpTcpConnector.cs" />
