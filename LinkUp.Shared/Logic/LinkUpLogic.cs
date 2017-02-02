@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace LinkUp.Logic
 {
-    abstract public class LinkUpLogic
+    abstract internal class LinkUpLogic
     {
         internal static LinkUpLogic ParseFromPacket(LinkUpPacket packet)
         {
@@ -19,6 +19,12 @@ namespace LinkUp.Logic
                     break;
                 case LinkUpType.NameResponse:
                     logic = new LinkUpNameResponse();
+                    break;
+                case LinkUpType.PropertyGetRequest:
+                    logic = new LinkUpPropertyGetRequest();
+                    break;
+                case LinkUpType.PropertyGetResponse:
+                    logic = new LinkUpPropertyGetResponse();
                     break;
             }
 

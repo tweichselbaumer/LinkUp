@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LinkUp.Logic
 {
-    public class LinkUpNameResponse : LinkUpLogic
+    internal class LinkUpNameResponse : LinkUpLogic
     {
         private ushort _Identifier;
         private LinkUpLabelType _LabelType;
@@ -53,13 +53,12 @@ namespace LinkUp.Logic
         {
             LabelType = (LinkUpLabelType)data[1];
             Identifier = BitConverter.ToUInt16(data, 2);
-            string name = Encoding.UTF8.GetString(data.ToList().Skip(2).ToArray());
-            Name = name.Substring(0, name.IndexOf('\0'));
+            Name = Encoding.UTF8.GetString(data, 4, data.Length - 4);
         }
 
         protected override byte[] ToRaw()
         {
-            return new byte[] { (byte)LinkUpType.NameRequest, (byte)LabelType }.Concat(BitConverter.GetBytes(Identifier)).Concat(Encoding.UTF8.GetBytes(Name)).ToArray();
+            return new byte[] { (byte)LinkUpType.NameResponse, (byte)LabelType }.Concat(BitConverter.GetBytes(Identifier)).Concat(Encoding.UTF8.GetBytes(Name)).ToArray();
         }
     }
 }

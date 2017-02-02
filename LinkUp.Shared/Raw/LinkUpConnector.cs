@@ -8,6 +8,7 @@ namespace LinkUp.Raw
     {
         private LinkUpConverter _Converter = new LinkUpConverter();
         private string _Name;
+        private bool _IsDisposed;
 
         public event ReveicedPacketEventHandler ReveivedPacket;
 
@@ -21,6 +22,18 @@ namespace LinkUp.Raw
             set
             {
                 _Name = value;
+            }
+        }
+
+        public bool IsDisposed
+        {
+            get
+            {
+                return _IsDisposed;
+            }
+            protected set
+            {
+                _IsDisposed = value;
             }
         }
 

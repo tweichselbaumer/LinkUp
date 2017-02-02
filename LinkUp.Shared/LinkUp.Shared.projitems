@@ -9,8 +9,12 @@
     <Import_RootNamespace>LinkUp</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLabelType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLogic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPrimitiveLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertyGetResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertyGetRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpNameRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpNameResponse.cs" />

@@ -8,5 +8,7 @@ namespace LinkUp.Logic
     {
         NameRequest = 1,
         NameResponse = 2,
+        PropertyGetRequest = 3,
+        PropertyGetResponse = 4,
     }
 }

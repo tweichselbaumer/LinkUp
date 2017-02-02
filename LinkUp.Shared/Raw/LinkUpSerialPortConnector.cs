@@ -50,6 +50,7 @@ namespace LinkUp.Raw
                 _SerialPort.Dispose();
             }
 #endif
+            IsDisposed = true;
         }
 
         protected override void SendData(byte[] data)

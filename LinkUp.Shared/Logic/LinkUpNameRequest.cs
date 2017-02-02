@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LinkUp.Logic
 {
-    public class LinkUpNameRequest : LinkUpLogic
+    internal class LinkUpNameRequest : LinkUpLogic
     {
         private string _Name;
         private LinkUpLabelType _LabelType;
@@ -38,8 +38,7 @@ namespace LinkUp.Logic
         protected override void ParseFromRaw(byte[] data)
         {
             LabelType = (LinkUpLabelType)data[1];
-            string name = Encoding.UTF8.GetString(data.ToList().Skip(2).ToArray());
-            Name = name.Substring(0, name.IndexOf('\0'));
+            Name = Encoding.UTF8.GetString(data, 2, data.Length - 2);
         }
 
         protected override byte[] ToRaw()

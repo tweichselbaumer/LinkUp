@@ -23,11 +23,12 @@ namespace LinkUp.Raw
                 while (_IsRunning)
                 {
                     byte[] data;
-                    _InStream.TryTake(out data, TIMEOUT);
+                    _InStream.TryTake(out data, 0);
                     if (data != null)
                     {
                         OnDataReceived(data);
                     }
+                    Task.Delay(TIMEOUT);
                 }
             });
         }
@@ -39,6 +40,7 @@ namespace LinkUp.Raw
                 _IsRunning = false;
                 _Task.Wait();
             }
+            IsDisposed = true;
         }
 
         protected override void SendData(byte[] data)

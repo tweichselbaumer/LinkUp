@@ -1,14 +1,43 @@
 ﻿using LinkUp.Raw;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LinkUp.Logic
 {
     public class LinkUpNode : IDisposable
     {
+        private const int NAME_REQUEST_TIMEOUT = 1000;
+        private ushort _Identifier;
+        private bool _IsInitialized;
+        private bool _IsRunning = true;
+        private List<LinkUpLabel> _Labels = new List<LinkUpLabel>();
+        private DateTime _LastUpdate;
         private LinkUpConnector _MasterConnector;
         private string _Name;
         private List<LinkUpSubNode> _SubNodes = new List<LinkUpSubNode>();
+        private Task _Task;
+
+        public LinkUpNode()
+        {
+            _Task = Task.Factory.StartNew(() =>
+            {
+                while (_IsRunning)
+                {
+                    UpdateNames();
+                    Task.Delay(100);
+                }
+            });
+        }
+
+        public List<LinkUpLabel> Labels
+        {
+            get
+            {
+                return _Labels.ToList();
+            }
+        }
 
         public LinkUpConnector MasterConnector
         {
@@ -19,8 +48,17 @@ namespace LinkUp.Logic
 
             set
             {
+                if (_MasterConnector != null)
+                {
+                    _MasterConnector.ReveivedPacket -= MasterConnector_ReveivedPacket;
+                }
                 value.ReveivedPacket += MasterConnector_ReveivedPacket;
                 _MasterConnector = value;
+                _IsInitialized = false;
+                foreach (LinkUpLabel label in Labels)
+                {
+                    label.IsInitialized = false;
+                }
             }
         }
 
@@ -33,30 +71,145 @@ namespace LinkUp.Logic
 
             set
             {
+                if (!value.Cast<char>().All(c => char.IsLetterOrDigit(c)))
+                {
+                    throw new Exception("Only letters and digits are allowed for the LinkUpNode name!");
+                }
                 _Name = value;
+                _IsInitialized = false;
             }
+        }
+
+        public T AddLabel<T>(string name) where T : LinkUpLabel, new()
+        {
+            T label = new T();
+            if (!name.Cast<char>().All(c => char.IsLetterOrDigit(c)))
+            {
+                throw new Exception("Only letters and digits are allowed for the LinkUpNode name!");
+            }
+            label.Name = string.Format("{0}/{1}", Name, name);
+            if (Labels.Any(c => c.Name == label.Name))
+            {
+                throw new Exception("Label with specified name already exists!");
+            }
+            _Labels.Add(label);
+            return label;
+        }
+
+        internal LinkUpLabel AddSubLabel(string name, LinkUpLabelType type)
+        {
+            LinkUpLabel label = LinkUpLabel.CreateNew(type);
+            label.Name = string.Format("{0}/{1}", Name, name);
+            if (Labels.Any(c => c.Name == label.Name))
+            {
+                throw new Exception("Label with specified name already exists!");
+            }
+            _Labels.Add(label);
+            return label;
         }
 
         public void AddSubNode(LinkUpConnector connector)
         {
-            _SubNodes.Add(new LinkUpSubNode(connector));
+            _SubNodes.Add(new LinkUpSubNode(connector, this));
         }
 
         public void Dispose()
         {
-            if (_SubNodes != null)
+            if (_Task != null && _Task.Status == TaskStatus.Running)
             {
-                foreach (LinkUpSubNode subnode in _SubNodes)
+                _IsRunning = false;
+                _Task.Wait();
+            }
+            lock (_SubNodes)
+            {
+                if (_SubNodes != null)
                 {
-                    subnode?.Dispose();
+                    foreach (LinkUpSubNode subnode in _SubNodes)
+                    {
+                        subnode?.Dispose();
+                    }
                 }
             }
-
-            MasterConnector?.Dispose();
+            lock (_MasterConnector)
+            {
+                MasterConnector?.Dispose();
+            }
         }
 
-        private void MasterConnector_ReveivedPacket(LinkUpConnector sender, LinkUpPacket packet)
+        private void MasterConnector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
+            Console.WriteLine("SLAVE: " + _Name + " - " + DateTime.Now);
+            try
+            {
+                LinkUpLogic logic = LinkUpLogic.ParseFromPacket(packet);
+                if (logic is LinkUpNameRequest)
+                {
+                    //TODO:ERROR??
+                }
+                if (logic is LinkUpNameResponse)
+                {
+                    LinkUpNameResponse nameResponse = logic as LinkUpNameResponse;
+                    LinkUpLabel label = _Labels.FirstOrDefault(c => c.Name == nameResponse.Name);
+                    if (label != null && nameResponse.LabelType != LinkUpLabelType.Node)
+                    {
+                        label.Identifier = nameResponse.Identifier;
+                        label.IsInitialized = true;
+                    }
+                    else if (nameResponse.Name == _Name && nameResponse.LabelType == LinkUpLabelType.Node)
+                    {
+                        _Identifier = (logic as LinkUpNameResponse).Identifier;
+                        _IsInitialized = true;
+                    }
+                }
+                if (logic is LinkUpPropertyGetRequest)
+                {
+                    LinkUpPropertyGetRequest propertyGetRequest = (LinkUpPropertyGetRequest)logic;
+                    LinkUpPropertyGetResponse propertyGetResponse = new LinkUpPropertyGetResponse();
+                    LinkUpLabel label = _Labels.FirstOrDefault(c => c.Identifier == propertyGetRequest.Identifier);
+                    if (label != null && label is LinkUpPrimitiveBaseLabel)
+                    {
+                        propertyGetResponse.Identifier = label.Identifier;
+                        propertyGetResponse.Data = (label as LinkUpPrimitiveBaseLabel).Data;
+                        connector.SendPacket(propertyGetResponse.ToPacket());
+                    }
+                    else
+                    {
+                        //TODO: ERROR?
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void UpdateNames()
+        {
+            if (_MasterConnector != null)
+            {
+                lock (_MasterConnector)
+                {
+                    if (!_MasterConnector.IsDisposed)
+                    {
+                        if (!_IsInitialized && _LastUpdate.AddMilliseconds(NAME_REQUEST_TIMEOUT) < DateTime.Now && _Name != null)
+                        {
+                            LinkUpNameRequest nameRequest = new LinkUpNameRequest();
+                            nameRequest.Name = _Name;
+                            nameRequest.LabelType = LinkUpLabelType.Node;
+                            _MasterConnector.SendPacket(nameRequest.ToPacket());
+                            _LastUpdate = DateTime.Now;
+                        }
+                        foreach (LinkUpLabel label in _Labels.Where(c => !c.IsInitialized && c.LastUpdate.AddMilliseconds(NAME_REQUEST_TIMEOUT) < DateTime.Now))
+                        {
+                            LinkUpNameRequest nameRequest = new LinkUpNameRequest();
+                            nameRequest.Name = label.Name;
+                            nameRequest.LabelType = label.LabelType;
+                            _MasterConnector.SendPacket(nameRequest.ToPacket());
+                            label.LastUpdate = DateTime.Now;
+                        }
+                    }
+                }
+            }
         }
     }
 }
