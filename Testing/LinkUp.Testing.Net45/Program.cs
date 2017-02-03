@@ -3,6 +3,7 @@ using LinkUp.Raw;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 
 namespace Testing.dotnet
 {
@@ -73,8 +74,7 @@ namespace Testing.dotnet
 
             LinkUpPrimitiveLabel<int> value1 = slave.AddLabel<LinkUpPrimitiveLabel<int>>("value1");
             value1.Value = 10;
-
-            Console.Read();
+            Thread.Sleep(5000);
             LinkUpPrimitiveLabel<int> value1Ref = (LinkUpPrimitiveLabel<int>)master.Labels.FirstOrDefault(c => c.Name == "master/slave/value1");
             Console.WriteLine("VALUE1: " + value1Ref.Value);
             Console.Read();

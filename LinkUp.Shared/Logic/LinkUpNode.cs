@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinkUp.Logic
@@ -18,15 +19,18 @@ namespace LinkUp.Logic
         private string _Name;
         private List<LinkUpSubNode> _SubNodes = new List<LinkUpSubNode>();
         private Task _Task;
+        private AutoResetEvent _Event;
 
         public LinkUpNode()
         {
-            _Task = Task.Factory.StartNew(() =>
+            _Event = new AutoResetEvent(false);
+            _Task = Task.Run(() =>
             {
                 while (_IsRunning)
                 {
+                    _Event.Reset();
                     UpdateNames();
-                    Task.Delay(100);
+                    _Event.WaitOne();
                 }
             });
         }
@@ -52,13 +56,16 @@ namespace LinkUp.Logic
                 {
                     _MasterConnector.ReveivedPacket -= MasterConnector_ReveivedPacket;
                 }
+
                 value.ReveivedPacket += MasterConnector_ReveivedPacket;
+
                 _MasterConnector = value;
                 _IsInitialized = false;
                 foreach (LinkUpLabel label in Labels)
                 {
                     label.IsInitialized = false;
                 }
+                _Event.Set();
             }
         }
 
@@ -77,6 +84,7 @@ namespace LinkUp.Logic
                 }
                 _Name = value;
                 _IsInitialized = false;
+                _Event.Set();
             }
         }
 
@@ -93,6 +101,7 @@ namespace LinkUp.Logic
                 throw new Exception("Label with specified name already exists!");
             }
             _Labels.Add(label);
+            _Event.Set();
             return label;
         }
 
@@ -105,6 +114,7 @@ namespace LinkUp.Logic
                 throw new Exception("Label with specified name already exists!");
             }
             _Labels.Add(label);
+            _Event.Set();
             return label;
         }
 
@@ -118,6 +128,7 @@ namespace LinkUp.Logic
             if (_Task != null && _Task.Status == TaskStatus.Running)
             {
                 _IsRunning = false;
+                _Event.Set();
                 _Task.Wait();
             }
             lock (_SubNodes)

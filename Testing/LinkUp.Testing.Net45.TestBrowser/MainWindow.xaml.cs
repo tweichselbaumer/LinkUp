@@ -41,7 +41,7 @@ namespace LinkUp.Testing.Net45.TestBrowser
             }
             if (_Task == null)
             {
-                _Task = Task.Factory.StartNew(() =>
+                _Task = Task.Run(() =>
                 {
                     while (true)
                     {

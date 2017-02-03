@@ -225,30 +225,30 @@ where T : new()
             lock (_Consumer)
             {
                 _Consumer.Add(_Wait);
+            }
+            if (!_RequestIsRunning)
+            {
+                _RequestIsRunning = true;
 
-                if (!_RequestIsRunning)
+                T value = new T();
+                Task task = Task.Run(() =>
                 {
-                    _RequestIsRunning = true;
-
-                    T value = new T();
-                    Task task = Task.Factory.StartNew(() =>
+                    do
                     {
-                        do
-                        {
 #if NET45
                             Console.WriteLine("GET: " + DateTime.Now);
 #endif
                             Owner.GetLabel(this);
-                        } while (!_Wait.TryTake(out value, GET_REQUEST_TIMEOUT));
-                    });
-                    task.Wait();
-                    return value;
-                }
-                else
-                {
-                    return _Wait.Take();
-                }
+                    } while (!_Wait.TryTake(out value, GET_REQUEST_TIMEOUT));
+                });
+                task.Wait();
+                return value;
             }
+            else
+            {
+                return _Wait.Take();
+            }
+
         }
 
         private void SetValue(T value)

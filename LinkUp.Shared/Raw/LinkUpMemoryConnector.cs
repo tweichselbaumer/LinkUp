@@ -18,17 +18,16 @@ namespace LinkUp.Raw
         {
             _InStream = inStream;
             _OutStream = outStream;
-            _Task = Task.Factory.StartNew(() =>
+            _Task = Task.Run(() =>
             {
                 while (_IsRunning)
                 {
                     byte[] data;
-                    _InStream.TryTake(out data, 0);
+                    _InStream.TryTake(out data, TIMEOUT);
                     if (data != null)
                     {
                         OnDataReceived(data);
                     }
-                    Task.Delay(TIMEOUT);
                 }
             });
         }
