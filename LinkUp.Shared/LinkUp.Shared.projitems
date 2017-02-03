@@ -13,6 +13,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLabelType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLogic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPrimitiveLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertySetResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertySetRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertyGetResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertyGetRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpType.cs" />

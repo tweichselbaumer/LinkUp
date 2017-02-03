@@ -4,7 +4,6 @@ namespace LinkUp.Logic
 {
     public abstract class LinkUpLabel : IDisposable
     {
-        protected const int GET_REQUEST_TIMEOUT = 1000;
         private ushort _Identifier = 0;
         private bool _IsInitialized = false;
         private DateTime _LastUpdate;

@@ -26,6 +26,12 @@ namespace LinkUp.Logic
                 case LinkUpType.PropertyGetResponse:
                     logic = new LinkUpPropertyGetResponse();
                     break;
+                case LinkUpType.PropertySetRequest:
+                    logic = new LinkUpPropertySetRequest();
+                    break;
+                case LinkUpType.PropertySetResponse:
+                    logic = new LinkUpPropertySetResponse();
+                    break;
             }
 
             logic?.ParseFromRaw(packet.Data);

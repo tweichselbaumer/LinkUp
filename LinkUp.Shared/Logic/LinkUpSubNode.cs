@@ -51,12 +51,14 @@ where T : IConvertible, new()
 where T : new()
 #endif
         {
-            throw new NotImplementedException();
+            LinkUpPropertySetRequest propertySetRequest = new LinkUpPropertySetRequest();
+            propertySetRequest.Identifier = linkUpPrimitiveLabel.Identifier;
+            propertySetRequest.Data = data;
+            _Connector?.SendPacket(propertySetRequest.ToPacket());
         }
 
         private void _Connector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
-            Console.WriteLine("MASTER: " + _Name + " - " + DateTime.Now);
             try
             {
                 LinkUpLogic logic = LinkUpLogic.ParseFromPacket(packet);
@@ -105,7 +107,19 @@ where T : new()
                     {
                         if (label is LinkUpPrimitiveBaseLabel)
                         {
-                            (label as LinkUpPrimitiveBaseLabel).Data = propertyGetResponse.Data;
+                            (label as LinkUpPrimitiveBaseLabel).GetDone(propertyGetResponse.Data);
+                        }
+                    }
+                }
+                if (logic is LinkUpPropertySetResponse)
+                {
+                    LinkUpPropertySetResponse propertySetResponse = (LinkUpPropertySetResponse)logic;
+                    LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.Identifier == propertySetResponse.Identifier);
+                    if (label != null)
+                    {
+                        if (label is LinkUpPrimitiveBaseLabel)
+                        {
+                            (label as LinkUpPrimitiveBaseLabel).SetDone();
                         }
                     }
                 }

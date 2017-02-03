@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LinkUp.Logic
+﻿namespace LinkUp.Logic
 {
     public enum LinkUpType : byte
     {
@@ -10,5 +6,7 @@ namespace LinkUp.Logic
         NameResponse = 2,
         PropertyGetRequest = 3,
         PropertyGetResponse = 4,
+        PropertySetRequest = 5,
+        PropertySetResponse = 6,
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinkUp.Logic
@@ -9,6 +10,10 @@ namespace LinkUp.Logic
     public abstract class LinkUpPrimitiveBaseLabel : LinkUpLabel
     {
         internal abstract byte[] Data { get; set; }
+
+        internal abstract void GetDone(byte[] data);
+
+        internal abstract void SetDone();
     }
 
     public class LinkUpPrimitiveLabel<T> : LinkUpPrimitiveBaseLabel
@@ -18,8 +23,12 @@ where T : IConvertible, new()
 where T : new()
 #endif
     {
+        private const int GET_REQUEST_TIMEOUT = 1000;
+        private const int SET_REQUEST_TIMEOUT = 1000;
+        private AutoResetEvent _AutoResetEvent = new AutoResetEvent(false);
         private List<BlockingCollection<T>> _Consumer = new List<BlockingCollection<T>>();
-        private bool _RequestIsRunning;
+        private volatile bool _GetRequestIsRunning;
+        private volatile bool _SetRequestIsRunning;
         private T _Value;
 
         public T Value
@@ -45,17 +54,7 @@ where T : new()
         {
             set
             {
-                List<BlockingCollection<T>> consumer;
-                lock (_Consumer)
-                {
-                    consumer = _Consumer.Select(c => c).ToList();
-                    _Consumer.Clear();
-                    _RequestIsRunning = false;
-                }
-                foreach (BlockingCollection<T> wait in consumer)
-                {
-                    wait.Add((T)ConvertFromBytes(value));
-                }
+                Value = (T)ConvertFromBytes(value);
             }
 
             get
@@ -121,6 +120,26 @@ where T : new()
             //TODO:Close all
         }
 
+        internal override void GetDone(byte[] data)
+        {
+            List<BlockingCollection<T>> consumer;
+            lock (_Consumer)
+            {
+                consumer = _Consumer.Select(c => c).ToList();
+                _Consumer.Clear();
+                _GetRequestIsRunning = false;
+            }
+            foreach (BlockingCollection<T> wait in consumer)
+            {
+                wait.Add((T)ConvertFromBytes(data));
+            }
+        }
+
+        internal override void SetDone()
+        {
+            _AutoResetEvent.Set();
+        }
+
         private object ConvertFromBytes(byte[] value)
         {
             if (_Value is bool)
@@ -172,50 +191,50 @@ where T : new()
 
         private byte[] ConvertToBytes(object value)
         {
-            //if (_Value is bool)
-            //{
-            //    return BitConverter.ToBoolean(value, 0);
-            //}
-            //if (_Value is sbyte)
-            //{
-            //    return (sbyte)value[0];
-            //}
-            //if (_Value is byte)
-            //{
-            //    return value[0];
-            //}
-            //if (_Value is short)
-            //{
-            //    return BitConverter.ToInt16(value, 0);
-            //}
-            //if (_Value is ushort)
-            //{
-            //    return BitConverter.ToUInt16(value, 0);
-            //}
+            if (_Value is bool)
+            {
+                return BitConverter.GetBytes((bool)value);
+            }
+            if (_Value is sbyte)
+            {
+                return BitConverter.GetBytes((sbyte)value);
+            }
+            if (_Value is byte)
+            {
+                return BitConverter.GetBytes((byte)value);
+            }
+            if (_Value is short)
+            {
+                return BitConverter.GetBytes((short)value);
+            }
+            if (_Value is ushort)
+            {
+                return BitConverter.GetBytes((ushort)value);
+            }
             if (_Value is int)
             {
                 return BitConverter.GetBytes((int)value);
             }
-            //if (_Value is uint)
-            //{
-            //    return BitConverter.ToUInt32(value, 0);
-            //}
-            //if (_Value is long)
-            //{
-            //    return BitConverter.ToInt64(value, 0);
-            //}
-            //if (_Value is ulong)
-            //{
-            //    return BitConverter.ToUInt64(value, 0);
-            //}
-            //if (_Value is float)
-            //{
-            //    return BitConverter.ToSingle(value, 0);
-            //}
-            //if (_Value is double)
-            //{
-            //    return BitConverter.ToDouble(value, 0);
-            //}
+            if (_Value is uint)
+            {
+                return BitConverter.GetBytes((uint)value);
+            }
+            if (_Value is long)
+            {
+                return BitConverter.GetBytes((long)value);
+            }
+            if (_Value is ulong)
+            {
+                return BitConverter.GetBytes((ulong)value);
+            }
+            if (_Value is float)
+            {
+                return BitConverter.GetBytes((float)value);
+            }
+            if (_Value is double)
+            {
+                return BitConverter.GetBytes((double)value);
+            }
             throw new Exception("Unknow type for LinkUpLabel.");
         }
 
@@ -226,35 +245,49 @@ where T : new()
             {
                 _Consumer.Add(_Wait);
             }
-            if (!_RequestIsRunning)
+            if (!_GetRequestIsRunning)
             {
-                _RequestIsRunning = true;
+                _GetRequestIsRunning = true;
 
                 T value = new T();
                 Task task = Task.Run(() =>
                 {
                     do
                     {
-#if NET45
-                            Console.WriteLine("GET: " + DateTime.Now);
-#endif
-                            Owner.GetLabel(this);
+                        Owner.GetLabel(this);
                     } while (!_Wait.TryTake(out value, GET_REQUEST_TIMEOUT));
                 });
                 task.Wait();
+                _GetRequestIsRunning = false;
                 return value;
             }
             else
             {
                 return _Wait.Take();
             }
-
         }
 
         private void SetValue(T value)
         {
-            //TODO:Repeat
-            Owner.SetLabel(this, ConvertToBytes(value));
+            if (!_SetRequestIsRunning)
+            {
+                _SetRequestIsRunning = true;
+
+                Task task = Task.Run(() =>
+                {
+                    _AutoResetEvent.Reset();
+                    do
+                    {
+                        Owner.SetLabel(this, ConvertToBytes(value));
+                    } while (!_AutoResetEvent.WaitOne(SET_REQUEST_TIMEOUT));
+                });
+                _SetRequestIsRunning = false;
+                task.Wait();
+            }
+            else
+            {
+                _AutoResetEvent.WaitOne();
+            }
         }
     }
 }

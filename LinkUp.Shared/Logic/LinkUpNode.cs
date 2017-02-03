@@ -149,7 +149,6 @@ namespace LinkUp.Logic
 
         private void MasterConnector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
-            Console.WriteLine("SLAVE: " + _Name + " - " + DateTime.Now);
             try
             {
                 LinkUpLogic logic = LinkUpLogic.ParseFromPacket(packet);
@@ -181,6 +180,22 @@ namespace LinkUp.Logic
                     {
                         propertyGetResponse.Identifier = label.Identifier;
                         propertyGetResponse.Data = (label as LinkUpPrimitiveBaseLabel).Data;
+                        connector.SendPacket(propertyGetResponse.ToPacket());
+                    }
+                    else
+                    {
+                        //TODO: ERROR?
+                    }
+                }
+                if (logic is LinkUpPropertySetRequest)
+                {
+                    LinkUpPropertySetRequest propertySetRequest = (LinkUpPropertySetRequest)logic;
+                    LinkUpPropertySetResponse propertyGetResponse = new LinkUpPropertySetResponse();
+                    LinkUpLabel label = _Labels.FirstOrDefault(c => c.Identifier == propertySetRequest.Identifier);
+                    if (label != null && label is LinkUpPrimitiveBaseLabel)
+                    {
+                        (label as LinkUpPrimitiveBaseLabel).Data = propertySetRequest.Data;
+                        propertyGetResponse.Identifier = label.Identifier;
                         connector.SendPacket(propertyGetResponse.ToPacket());
                     }
                     else

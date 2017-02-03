@@ -74,9 +74,17 @@ namespace Testing.dotnet
 
             LinkUpPrimitiveLabel<int> value1 = slave.AddLabel<LinkUpPrimitiveLabel<int>>("value1");
             value1.Value = 10;
+
             Thread.Sleep(5000);
+
             LinkUpPrimitiveLabel<int> value1Ref = (LinkUpPrimitiveLabel<int>)master.Labels.FirstOrDefault(c => c.Name == "master/slave/value1");
-            Console.WriteLine("VALUE1: " + value1Ref.Value);
+            Console.WriteLine("value1Ref: " + value1Ref.Value);
+
+            value1Ref.Value = 123;
+            Console.WriteLine("value1: " + value1.Value);
+            value1Ref.Value = 10;
+            Console.WriteLine("value1: " + value1.Value);
+
             Console.Read();
         }
     }
