@@ -1,16 +1,13 @@
 #include "LinkUpRaw.h"
 
-
 #define BUFFER_SIZE 1024
 
 #define DebugStream Serial
 #define DataStream Serial1
 
-
 uint8_t pBuffer[BUFFER_SIZE];
 uint32_t nLastTicks = 0;
 LinkUpRawClass LinkUpRaw;
-
 
 void setup()
 {
@@ -20,13 +17,17 @@ void setup()
 	DataStream.setTimeout(1);
 }
 
-void loop()
+void loop_testLogic()
+{
+}
+
+void loop_testRaw()
 {
 	uint32_t nBytesRead;
 	uint32_t nBytesToSend;
 	uint32_t nTime = micros();
 
-	if (nTime - nLastTicks > 1000 * 1000 * 1) 
+	if (nTime - nLastTicks > 1000 * 1000 * 1)
 	{
 		nLastTicks = nTime;
 		DebugStream.println("Running");
@@ -69,4 +70,9 @@ void loop()
 	if (nBytesToSend > 0) {
 		DataStream.write(pBuffer, nBytesToSend);
 	}
+}
+
+void loop() {
+	loop_testRaw();
+	//loop_testLogic();
 }
