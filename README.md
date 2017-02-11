@@ -11,7 +11,7 @@ If you use Visual Studio for developing your Arduino/C/C++ Project, you can inst
 
 Alternatively, download the package from [nuget](https://www.nuget.org/packages/LinkUp), unzip the file and extract the files from *content\native*. Add these files to your project.
 
-### C#/.net/Xamarin/Portable
+### C\#/.net/Xamarin/Portable
 The C# version of the library can be installed by the nuget package manager.
 If you create a portable library, make sure to use this LinkUp nuget package also at the nativ project to support the full functionality.
 
@@ -31,12 +31,10 @@ CRC16 | 2 | n + 3
 EOP | 1 | n + 5
 
 ## Get Started
-### C# - LinkUpRaw
-In this sample the basic usage of LinkUpRaw will be demonstrated.
+### C\# - LinkUpRaw (single process)
+In this sample the basic usage of LinkUpRaw will be demonstrated. In this case we use the LinkUpMemoryConnector which only provieds communication in the same programm. This code is mostly useful for testing purpose.
 
 #### Initialisation
-In this case we use the LinkUpMemoryConnector which only provieds communication in the same programm. This code is mostly useful for testing purpose.
-
 ```cs
 BlockingCollection<byte[]> col1 = new BlockingCollection<byte[]>();
 BlockingCollection<byte[]> col2 = new BlockingCollection<byte[]>();
@@ -53,4 +51,50 @@ slaveToMaster.SendPacket(new LinkUpPacket() { Data = data });
 #### Receive Packet
 ```cs
 masterToSlave.ReveivedPacket += MasterToSlave_ReveivedPacket;
+```
+
+### C\#/Arduino - LinkUpRaw (Serial Port)
+The next example will show a basic communication between a C\# programm and an Arduino microcontroller.
+
+#### Initialisation
+
+##### C\# Program
+```cs
+LinkUpSerialPortConnector dataPort = new LinkUpSerialPortConnector(portName, bautRate);
+```
+
+##### Arduino
+```cpp
+LinkUpRawClass LinkUpRaw;
+```
+
+#### Send Packet
+
+##### C\# Program
+```cs
+dataPort.SendPacket(new LinkUpPacket() { Data = data });
+```
+
+##### Arduino
+```cpp
+LinkUpPacket packet;
+LinkUpRaw.send(packet);
+nBytesToSend = LinkUpRaw.getRaw(pBuffer, BUFFER_SIZE);
+```
+
+#### Receive Packet
+
+##### C\# Program
+```cs
+dataPort.ReveivedPacket += DataPort_ReveivedPacket;
+```
+
+##### Arduino
+```cpp
+LinkUpRaw.progress(pBuffer, nBytesRead);
+
+if (LinkUpRaw.hasNext())
+{
+    LinkUpPacket packet = LinkUpRaw.next();
+}
 ```
