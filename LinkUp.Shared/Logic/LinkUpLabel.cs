@@ -4,11 +4,25 @@ namespace LinkUp.Logic
 {
     public abstract class LinkUpLabel : IDisposable
     {
-        private ushort _Identifier = 0;
+        private ushort _ChildIdentifier = 0;
         private bool _IsInitialized = false;
         private DateTime _LastUpdate;
         private string _Name;
         private LinkUpSubNode _Owner;
+        private ushort _ParentIdentifier = 0;
+
+        internal ushort ChildIdentifier
+        {
+            get
+            {
+                return _ChildIdentifier;
+            }
+
+            set
+            {
+                _ChildIdentifier = value;
+            }
+        }
 
         public string Name
         {
@@ -20,19 +34,6 @@ namespace LinkUp.Logic
             set
             {
                 _Name = value;
-            }
-        }
-
-        internal ushort Identifier
-        {
-            get
-            {
-                return _Identifier;
-            }
-
-            set
-            {
-                _Identifier = value;
             }
         }
 
@@ -80,7 +81,18 @@ namespace LinkUp.Logic
             }
         }
 
+        internal ushort ParentIdentifier
+        {
+            get
+            {
+                return _ParentIdentifier;
+            }
 
+            set
+            {
+                _ParentIdentifier = value;
+            }
+        }
 
         public abstract void Dispose();
 

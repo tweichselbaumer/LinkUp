@@ -162,7 +162,7 @@ namespace LinkUp.Logic
                     LinkUpLabel label = _Labels.FirstOrDefault(c => c.Name == nameResponse.Name);
                     if (label != null && nameResponse.LabelType != LinkUpLabelType.Node)
                     {
-                        label.Identifier = nameResponse.Identifier;
+                        label.ParentIdentifier = nameResponse.Identifier;
                         label.IsInitialized = true;
                     }
                     else if (nameResponse.Name == _Name && nameResponse.LabelType == LinkUpLabelType.Node)
@@ -175,10 +175,10 @@ namespace LinkUp.Logic
                 {
                     LinkUpPropertyGetRequest propertyGetRequest = (LinkUpPropertyGetRequest)logic;
                     LinkUpPropertyGetResponse propertyGetResponse = new LinkUpPropertyGetResponse();
-                    LinkUpLabel label = _Labels.FirstOrDefault(c => c.Identifier == propertyGetRequest.Identifier);
+                    LinkUpLabel label = _Labels.FirstOrDefault(c => c.ParentIdentifier == propertyGetRequest.Identifier);
                     if (label != null && label is LinkUpPrimitiveBaseLabel)
                     {
-                        propertyGetResponse.Identifier = label.Identifier;
+                        propertyGetResponse.Identifier = label.ParentIdentifier;
                         propertyGetResponse.Data = (label as LinkUpPrimitiveBaseLabel).Data;
                         connector.SendPacket(propertyGetResponse.ToPacket());
                     }
@@ -191,11 +191,11 @@ namespace LinkUp.Logic
                 {
                     LinkUpPropertySetRequest propertySetRequest = (LinkUpPropertySetRequest)logic;
                     LinkUpPropertySetResponse propertyGetResponse = new LinkUpPropertySetResponse();
-                    LinkUpLabel label = _Labels.FirstOrDefault(c => c.Identifier == propertySetRequest.Identifier);
+                    LinkUpLabel label = _Labels.FirstOrDefault(c => c.ParentIdentifier == propertySetRequest.Identifier);
                     if (label != null && label is LinkUpPrimitiveBaseLabel)
                     {
                         (label as LinkUpPrimitiveBaseLabel).Data = propertySetRequest.Data;
-                        propertyGetResponse.Identifier = label.Identifier;
+                        propertyGetResponse.Identifier = label.ParentIdentifier;
                         connector.SendPacket(propertyGetResponse.ToPacket());
                     }
                     else

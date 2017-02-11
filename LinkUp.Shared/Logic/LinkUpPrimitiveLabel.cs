@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,18 +36,36 @@ where T : new()
         {
             get
             {
+                T result;
+#if DEBUG
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+#endif
                 if (Owner == null)
-                    return _Value;
+                    result = _Value;
                 else
-                    return RequestValue();
+                    result = RequestValue();
+#if DEBUG
+                watch.Stop();
+                Debug.WriteLine(string.Format("Get value '{0}' took {1}ms.", Name, watch.ElapsedTicks * 1000 / Stopwatch.Frequency));
+#endif
+                return result;
             }
 
             set
             {
+#if DEBUG
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+#endif
                 if (Owner == null)
                     _Value = value;
                 else
                     SetValue(value);
+#if DEBUG
+                watch.Stop();
+                Debug.WriteLine(string.Format("Set value '{0}' took {1}ms.", Name, watch.ElapsedTicks * 1000 / Stopwatch.Frequency));
+#endif
             }
         }
 

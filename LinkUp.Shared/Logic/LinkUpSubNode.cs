@@ -40,7 +40,7 @@ where T : new()
 #endif
         {
             LinkUpPropertyGetRequest propertyGetRequest = new LinkUpPropertyGetRequest();
-            propertyGetRequest.Identifier = linkUpPrimitiveLabel.Identifier;
+            propertyGetRequest.Identifier = linkUpPrimitiveLabel.ChildIdentifier;
             _Connector?.SendPacket(propertyGetRequest.ToPacket());
         }
 
@@ -52,7 +52,7 @@ where T : new()
 #endif
         {
             LinkUpPropertySetRequest propertySetRequest = new LinkUpPropertySetRequest();
-            propertySetRequest.Identifier = linkUpPrimitiveLabel.Identifier;
+            propertySetRequest.Identifier = linkUpPrimitiveLabel.ChildIdentifier;
             propertySetRequest.Data = data;
             _Connector?.SendPacket(propertySetRequest.ToPacket());
         }
@@ -92,6 +92,7 @@ where T : new()
                             _Connector.SendPacket(nameResponse.ToPacket());
                             LinkUpLabel label = _Master.AddSubLabel(nameRequest.Name, nameRequest.LabelType);
                             label.Owner = this;
+                            label.ChildIdentifier = nameResponse.Identifier;
                         }
                     }
                 }
@@ -102,7 +103,7 @@ where T : new()
                 if (logic is LinkUpPropertyGetResponse)
                 {
                     LinkUpPropertyGetResponse propertyGetResponse = (LinkUpPropertyGetResponse)logic;
-                    LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.Identifier == propertyGetResponse.Identifier);
+                    LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == propertyGetResponse.Identifier);
                     if (label != null)
                     {
                         if (label is LinkUpPrimitiveBaseLabel)
@@ -114,7 +115,7 @@ where T : new()
                 if (logic is LinkUpPropertySetResponse)
                 {
                     LinkUpPropertySetResponse propertySetResponse = (LinkUpPropertySetResponse)logic;
-                    LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.Identifier == propertySetResponse.Identifier);
+                    LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == propertySetResponse.Identifier);
                     if (label != null)
                     {
                         if (label is LinkUpPrimitiveBaseLabel)
