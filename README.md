@@ -67,7 +67,7 @@ LinkUpSerialPortConnector dataPort = new LinkUpSerialPortConnector(portName, bau
 
 ##### Arduino
 ```cpp
-LinkUpRawClass linkUpRaw;
+LinkUpRaw connector;
 ```
 
 #### Send Packet
@@ -80,8 +80,8 @@ dataPort.SendPacket(new LinkUpPacket() { Data = data });
 ##### Arduino
 ```cpp
 LinkUpPacket packet;
-linkUpRaw.send(packet);
-nBytesToSend = linkUpRaw.getRaw(pBuffer, BUFFER_SIZE);
+connector.send(packet);
+nBytesToSend = connector.getRaw(pBuffer, BUFFER_SIZE);
 ```
 
 #### Receive Packet
@@ -93,10 +93,10 @@ dataPort.ReveivedPacket += DataPort_ReveivedPacket;
 
 ##### Arduino
 ```cpp
-linkUpRaw.progress(pBuffer, nBytesRead);
+connector.progress(pBuffer, nBytesRead);
 
-if (linkUpRaw.hasNext())
+if (connector.hasNext())
 {
-    LinkUpPacket packet = linkUpRaw.next();
+    LinkUpPacket packet = connector.next();
 }
 ```
