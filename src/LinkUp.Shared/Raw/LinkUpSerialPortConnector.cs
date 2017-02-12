@@ -18,7 +18,7 @@ namespace LinkUp.Raw
         public LinkUpSerialPortConnector(string portName, int baudRate)
         {
 #if NET45
-            _Task = Task.Factory.StartNew(() =>
+            _Task = Task.Run(() =>
             {
                 while (true)
                 {
@@ -56,9 +56,17 @@ namespace LinkUp.Raw
         protected override void SendData(byte[] data)
         {
 #if NET45
+            if (_SerialPort == null || !_SerialPort.IsOpen)
+            {
+                Thread.Sleep(200); 
+            }
             if (_SerialPort != null && _SerialPort.IsOpen)
             {
                 _SerialPort.Write(data, 0, data.Length);
+            }
+            else
+            {
+                throw new Exception("Not connected.");
             }
 #endif
         }

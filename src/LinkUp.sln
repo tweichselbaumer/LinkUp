@@ -41,11 +41,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Testing", "Testing\Other\Li
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Example1.Net45", "Testing\Example\Example1\LinkUp.Example1.Net45\LinkUp.Example1.Net45.csproj", "{BEDC8AB7-9FEB-42D1-9229-105A849BA6F3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example2", "Example2", "{796456EA-1B5A-4EA7-B177-4FAC5F0D286A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Example2.Net45", "Testing\Example\Example2\LinkUp.Example2.Net45\LinkUp.Example2.Net45.csproj", "{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Example2Arduino", "Testing\Example\Example2\Example2Arduino\Example2Arduino.vcxproj", "{4645A031-29AA-4222-84A5-793D26E2FBC1}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		LinkUp.Shared\LinkUp.Shared.projitems*{289814d8-dca6-42da-be76-f2f7a2c355a5}*SharedItemsImports = 4
 		LinkUp.Shared\LinkUp.Shared.projitems*{45736f30-b280-4dba-be6e-0f1b76ea6e5e}*SharedItemsImports = 4
 		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{4645a031-29aa-4222-84a5-793d26e2fbc1}*SharedItemsImports = 4
 		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 		LinkUp.Shared\LinkUp.Shared.projitems*{f907c3a5-b8ef-4dff-8b18-1cdbc9a7f6ce}*SharedItemsImports = 13
 	EndGlobalSection
@@ -110,6 +117,20 @@ Global
 		{BEDC8AB7-9FEB-42D1-9229-105A849BA6F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BEDC8AB7-9FEB-42D1-9229-105A849BA6F3}.Release|x86.ActiveCfg = Release|Any CPU
 		{BEDC8AB7-9FEB-42D1-9229-105A849BA6F3}.Release|x86.Build.0 = Release|Any CPU
+		{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A}.Debug|x86.Build.0 = Debug|Any CPU
+		{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A}.Release|x86.ActiveCfg = Release|Any CPU
+		{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A}.Release|x86.Build.0 = Release|Any CPU
+		{4645A031-29AA-4222-84A5-793D26E2FBC1}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{4645A031-29AA-4222-84A5-793D26E2FBC1}.Debug|x86.ActiveCfg = Debug|Win32
+		{4645A031-29AA-4222-84A5-793D26E2FBC1}.Debug|x86.Build.0 = Debug|Win32
+		{4645A031-29AA-4222-84A5-793D26E2FBC1}.Release|Any CPU.ActiveCfg = Release|Win32
+		{4645A031-29AA-4222-84A5-793D26E2FBC1}.Release|x86.ActiveCfg = Release|Win32
+		{4645A031-29AA-4222-84A5-793D26E2FBC1}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,5 +150,8 @@ Global
 		{5C3173B2-034F-46F1-95F5-253E8431084C} = {A1C6404D-7FAB-4FD7-B290-F4153A4CD19D}
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88} = {B84C185A-59B2-4075-8832-2DC8B98AB42B}
 		{BEDC8AB7-9FEB-42D1-9229-105A849BA6F3} = {5C3173B2-034F-46F1-95F5-253E8431084C}
+		{796456EA-1B5A-4EA7-B177-4FAC5F0D286A} = {A1C6404D-7FAB-4FD7-B290-F4153A4CD19D}
+		{DE5A7366-84E7-4FA5-9B61-DF8AAE013D5A} = {796456EA-1B5A-4EA7-B177-4FAC5F0D286A}
+		{4645A031-29AA-4222-84A5-793D26E2FBC1} = {796456EA-1B5A-4EA7-B177-4FAC5F0D286A}
 	EndGlobalSection
 EndGlobal
