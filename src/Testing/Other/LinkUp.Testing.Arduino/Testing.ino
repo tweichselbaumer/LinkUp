@@ -7,7 +7,7 @@
 
 uint8_t pBuffer[BUFFER_SIZE];
 uint32_t nLastTicks = 0;
-LinkUpRawClass LinkUpRaw;
+LinkUpRaw linkUpConnector;
 
 void setup()
 {
@@ -40,14 +40,14 @@ void loop_testRaw()
 		DebugStream.println(nBytesRead);
 		if (nBytesRead > 0)
 		{
-			LinkUpRaw.progress(pBuffer, nBytesRead);
+			linkUpConnector.progress(pBuffer, nBytesRead);
 		}
 	}
 
-	if (LinkUpRaw.hasNext())
+	if (linkUpConnector.hasNext())
 	{
-		LinkUpPacket packet = LinkUpRaw.next();
-		LinkUpRaw.send(packet);
+		LinkUpPacket packet = linkUpConnector.next();
+		linkUpConnector.send(packet);
 		DebugStream.println("*****");
 		DebugStream.println("RECEIVED PACKET");
 		DebugStream.print("LENGHT: ");
@@ -65,7 +65,7 @@ void loop_testRaw()
 		DebugStream.println("*****");
 	}
 
-	nBytesToSend = LinkUpRaw.getRaw(pBuffer, BUFFER_SIZE);
+	nBytesToSend = linkUpConnector.getRaw(pBuffer, BUFFER_SIZE);
 
 	if (nBytesToSend > 0) {
 		DataStream.write(pBuffer, nBytesToSend);

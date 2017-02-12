@@ -7,7 +7,7 @@
 
 #include "LinkUpRaw.h"
 
-LinkUpPacket LinkUpRawClass::next()
+LinkUpPacket LinkUpRaw::next()
 {
 	LinkUpPacketList *pPacketList;
 	LinkUpPacket packet;
@@ -20,12 +20,12 @@ LinkUpPacket LinkUpRawClass::next()
 	return packet;
 }
 
-bool LinkUpRawClass::hasNext()
+bool LinkUpRaw::hasNext()
 {
 	return pHeadIn != NULL;
 }
 
-bool LinkUpRawClass::checkForError(uint16_t nByte)
+bool LinkUpRaw::checkForError(uint16_t nByte)
 {
 	if (nByte == LINKUP_RAW_EOP || nByte == LINKUP_RAW_PREAMBLE)
 	{
@@ -57,7 +57,7 @@ bool LinkUpRawClass::checkForError(uint16_t nByte)
 	return false;
 }
 
-void LinkUpRawClass::send(LinkUpPacket packet)
+void LinkUpRaw::send(LinkUpPacket packet)
 {
 	if (packet.nLenght)
 	{
@@ -78,7 +78,7 @@ void LinkUpRawClass::send(LinkUpPacket packet)
 	}
 }
 
-uint16_t LinkUpRawClass::getRaw(uint8_t* pData, uint16_t nMax)
+uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint16_t nMax)
 {
 	uint16_t nBytesSend = 0;
 	uint8_t nNextByte = 0;
@@ -237,7 +237,7 @@ uint16_t LinkUpRawClass::getRaw(uint8_t* pData, uint16_t nMax)
 	return nBytesSend;
 }
 
-void LinkUpRawClass::progress(uint8_t *pData, uint16_t nCount)
+void LinkUpRaw::progress(uint8_t *pData, uint16_t nCount)
 {
 	uint16_t i = 0;
 	uint8_t nNextByte;

@@ -60,7 +60,7 @@ enum LinkUpState
 	SendIdle = 15
 };
 
-class LinkUpRawClass
+class LinkUpRaw
 {
 private:
 	LinkUpState stateIn = LinkUpState::ReceivePreamble;
