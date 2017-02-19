@@ -5,7 +5,7 @@
 #define DebugStream Serial
 #define DataStream Serial1
 
-#define DebugBaud 250000
+#define DebugBaud 115200
 #define DataBaud 250000
 
 #define PinLed 13

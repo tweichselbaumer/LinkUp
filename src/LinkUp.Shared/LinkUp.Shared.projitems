@@ -9,19 +9,19 @@
     <Import_RootNamespace>LinkUp</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLabel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLabelType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpLogic.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPrimitiveLabel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertySetResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertySetRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertyGetResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpPropertyGetRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpNameRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpNameResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logic\LinkUpSubNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpLabelType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpLogic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpPrimitiveLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpPropertySetResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpPropertySetRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpPropertyGetResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpPropertyGetRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpNameRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpNameResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpSubNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpMemoryConnector.cs" />

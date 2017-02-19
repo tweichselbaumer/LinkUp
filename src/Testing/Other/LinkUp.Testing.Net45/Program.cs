@@ -1,4 +1,4 @@
-﻿using LinkUp.Logic;
+﻿using LinkUp.Node;
 using LinkUp.Raw;
 using System;
 using System.Collections.Concurrent;

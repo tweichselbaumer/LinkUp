@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace LinkUp.Logic
+namespace LinkUp.Node
 {
     internal class LinkUpNameRequest : LinkUpLogic
     {

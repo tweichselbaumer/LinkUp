@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LinkUp.Logic
+namespace LinkUp.Node
 {
     public abstract class LinkUpPrimitiveBaseLabel : LinkUpLabel
     {

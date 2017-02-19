@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 
-namespace LinkUp.Logic
+namespace LinkUp.Node
 {
-    internal class LinkUpPropertySetRequest : LinkUpLogic
+    internal class LinkUpPropertyGetResponse : LinkUpLogic
     {
         private byte[] _Data;
         private ushort _Identifier;
@@ -43,7 +43,7 @@ namespace LinkUp.Logic
 
         protected override byte[] ToRaw()
         {
-            return new byte[] { (byte)LinkUpType.PropertySetRequest }.Concat(BitConverter.GetBytes(Identifier)).Concat(_Data).ToArray();
+            return new byte[] { (byte)LinkUpType.PropertyGetResponse }.Concat(BitConverter.GetBytes(Identifier)).Concat(_Data).ToArray();
         }
     }
 }

@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace LinkUp.Logic
+namespace LinkUp.Node
 {
     abstract internal class LinkUpLogic
     {

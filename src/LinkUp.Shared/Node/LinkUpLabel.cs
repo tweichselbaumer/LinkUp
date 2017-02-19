@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LinkUp.Logic
+namespace LinkUp.Node
 {
     public abstract class LinkUpLabel : IDisposable
     {

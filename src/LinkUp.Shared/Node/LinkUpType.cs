@@ -1,4 +1,4 @@
-﻿namespace LinkUp.Logic
+﻿namespace LinkUp.Node
 {
     public enum LinkUpType : byte
     {
