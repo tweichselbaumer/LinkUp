@@ -15,8 +15,8 @@ namespace LinkUp.Example2.Net45
         const string DATA_PORT = "COM6";
         const string DEBUG_PORT = "COM3";
 
-        const int DATA_BAUT = 250000;
-        const int DEBUG_BAUT = 250000;
+        const int DATA_BAUD = 250000;
+        const int DEBUG_BAUD = 250000;
 
         static Stopwatch watch;
 
@@ -30,12 +30,12 @@ namespace LinkUp.Example2.Net45
             watch = new Stopwatch();
             watch.Start();
 
-            SerialPort port = new SerialPort(DEBUG_PORT, DEBUG_BAUT);
+            SerialPort port = new SerialPort(DEBUG_PORT, DEBUG_BAUD);
             port.Open();
             port.ReadExisting();
             port.DataReceived += Port_DataReceived;
 
-            LinkUpSerialPortConnector connector = new LinkUpSerialPortConnector(DATA_PORT, DATA_BAUT);
+            LinkUpSerialPortConnector connector = new LinkUpSerialPortConnector(DATA_PORT, DATA_BAUD);
             connector.ReveivedPacket += Connector_ReveivedPacket;
 
             for (int i = 0; i < 5; i++)

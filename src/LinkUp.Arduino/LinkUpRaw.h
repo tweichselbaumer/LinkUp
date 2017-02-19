@@ -30,7 +30,7 @@
 
 struct LinkUpPacket
 {
-	uint16_t nLenght;
+	uint16_t nLength;
 	uint8_t *pData;
 	uint16_t nCrc;
 };
@@ -51,8 +51,8 @@ enum LinkUpState
 	ReceiveCheckCRC = 6,
 	ReceiveEnd = 7,
 	SendPreamble = 8,
-	SendLenght1 = 9,
-	SendLenght2 = 10,
+	SendLength1 = 9,
+	SendLength2 = 10,
 	SendData = 11,
 	SendCrc1 = 12,
 	SendCrc2 = 13,

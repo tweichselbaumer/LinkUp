@@ -50,12 +50,12 @@ void loop_testRaw()
 		linkUpConnector.send(packet);
 		DebugStream.println("*****");
 		DebugStream.println("RECEIVED PACKET");
-		DebugStream.print("LENGHT: ");
-		DebugStream.println(packet.nLenght, DEC);
+		DebugStream.print("Length: ");
+		DebugStream.println(packet.nLength, DEC);
 		DebugStream.print("CRC16: 0x");
 		DebugStream.println(packet.nCrc, HEX);
 		DebugStream.print("DATA: ");
-		for (uint16_t i = 0; i < packet.nLenght;i++)
+		for (uint16_t i = 0; i < packet.nLength;i++)
 		{
 			DebugStream.print("0x");
 			DebugStream.print(packet.pData[i], HEX);

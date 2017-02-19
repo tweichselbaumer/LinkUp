@@ -5,8 +5,8 @@
 #define DebugStream Serial
 #define DataStream Serial1
 
-#define DebugBaut 250000
-#define DataBaut 250000
+#define DebugBaud 250000
+#define DataBaud 250000
 
 #define PinLed 13
 
@@ -18,9 +18,9 @@ LinkUpRaw linkUpConnector;
 
 void setup()
 {
-	DebugStream.begin(DebugBaut);
+	DebugStream.begin(DebugBaud);
 	DebugStream.setTimeout(1);
-	DataStream.begin(DataBaut);
+	DataStream.begin(DataBaud);
 	DataStream.setTimeout(1);
 
 	pinMode(PinLed, OUTPUT);
@@ -55,12 +55,12 @@ void loop()
 		linkUpConnector.send(packet);
 		DebugStream.println("*****");
 		DebugStream.println("RECEIVED PACKET");
-		DebugStream.print("LENGHT: ");
-		DebugStream.println(packet.nLenght, DEC);
+		DebugStream.print("LENGTH: ");
+		DebugStream.println(packet.nLength, DEC);
 		DebugStream.print("CRC16: 0x");
 		DebugStream.println(packet.nCrc, HEX);
 		DebugStream.print("DATA: ");
-		for (uint16_t i = 0; i < packet.nLenght;i++)
+		for (uint16_t i = 0; i < packet.nLength;i++)
 		{
 			if (packet.pData[i] > 0x0F)
 			{
