@@ -21,7 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpNameResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpSubNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpLogicType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpMemoryConnector.cs" />

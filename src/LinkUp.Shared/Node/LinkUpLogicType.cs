@@ -1,12 +1,12 @@
 ﻿namespace LinkUp.Node
 {
-    public enum LinkUpType : byte
+    public enum LinkUpLogicType : byte
     {
         NameRequest = 1,
         NameResponse = 2,
         PropertyGetRequest = 3,
         PropertyGetResponse = 4,
         PropertySetRequest = 5,
-        PropertySetResponse = 6,
+        PropertySetResponse = 6
     }
 }

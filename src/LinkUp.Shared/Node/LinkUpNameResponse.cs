@@ -58,7 +58,7 @@ namespace LinkUp.Node
 
         protected override byte[] ToRaw()
         {
-            return new byte[] { (byte)LinkUpType.NameResponse, (byte)LabelType }.Concat(BitConverter.GetBytes(Identifier)).Concat(Encoding.UTF8.GetBytes(Name)).ToArray();
+            return new byte[] { (byte)LinkUpLogicType.NameResponse, (byte)LabelType }.Concat(BitConverter.GetBytes(Identifier)).Concat(Encoding.UTF8.GetBytes(Name)).ToArray();
         }
     }
 }

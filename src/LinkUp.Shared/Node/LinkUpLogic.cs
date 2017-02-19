@@ -9,27 +9,27 @@ namespace LinkUp.Node
         internal static LinkUpLogic ParseFromPacket(LinkUpPacket packet)
         {
             //TODO: implement checks
-            LinkUpType type = (LinkUpType)packet.Data[0];
+            LinkUpLogicType type = (LinkUpLogicType)packet.Data[0];
             LinkUpLogic logic = null;
 
             switch (type)
             {
-                case LinkUpType.NameRequest:
+                case LinkUpLogicType.NameRequest:
                     logic = new LinkUpNameRequest();
                     break;
-                case LinkUpType.NameResponse:
+                case LinkUpLogicType.NameResponse:
                     logic = new LinkUpNameResponse();
                     break;
-                case LinkUpType.PropertyGetRequest:
+                case LinkUpLogicType.PropertyGetRequest:
                     logic = new LinkUpPropertyGetRequest();
                     break;
-                case LinkUpType.PropertyGetResponse:
+                case LinkUpLogicType.PropertyGetResponse:
                     logic = new LinkUpPropertyGetResponse();
                     break;
-                case LinkUpType.PropertySetRequest:
+                case LinkUpLogicType.PropertySetRequest:
                     logic = new LinkUpPropertySetRequest();
                     break;
-                case LinkUpType.PropertySetResponse:
+                case LinkUpLogicType.PropertySetResponse:
                     logic = new LinkUpPropertySetResponse();
                     break;
             }
