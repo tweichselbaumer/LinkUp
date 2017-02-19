@@ -64,7 +64,7 @@ The next example will show a basic communication between a C\# programm and an A
 
 ##### C\# Program
 ```cs
-LinkUpSerialPortConnector dataPort = new LinkUpSerialPortConnector(portName, bautRate);
+LinkUpSerialPortConnector dataPort = new LinkUpSerialPortConnector(portName, baudRate);
 ```
 
 ##### Arduino
