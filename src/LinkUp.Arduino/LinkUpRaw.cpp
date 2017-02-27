@@ -66,7 +66,7 @@ void LinkUpRaw::send(LinkUpPacket packet)
 
 		pPacketList->packet.nCrc = CRC16.calc(pPacketList->packet.pData, pPacketList->packet.nLength);
 
-		if (pHeadOut != NULL && pTailOut != NULL)
+		if (pHeadOut != NULL)
 		{
 			pTailOut->next = pPacketList;
 			pTailOut = pPacketList;

@@ -75,6 +75,32 @@ struct PACKED LinkUpPropertySetResponse
 	uint16_t nIdentifier;
 };
 
+class LinkUpLabel
+{
+private:
+	char* pName;
+	uint8_t nSize;
+	void* pValue;
+	bool isInitialized;
+	uint16_t nIdentifier;
+	LinkUpLabelType type;
+	struct {
+		uint32_t nLastInitTry;
+	} timestamps;
+public:
+	void init(char* pName, LinkUpLabelType type);
+	void set(void* pValue);
+	void* get();
+	void progress(LinkUpRaw* pConnector);
+	bool completeInitialization(char* pName, LinkUpLabelType type, uint16_t nIdentifier);
+	bool getRequest(uint16_t nIdentifier, LinkUpRaw* pConnector);
+};
+
+struct LinkUpLabelList
+{
+	LinkUpLabel *pLabel;
+	LinkUpLabelList *pNext;
+};
 
 class LinkUpNode
 {
@@ -85,6 +111,8 @@ private:
 	struct {
 		uint32_t nLastInitTry;
 	} timestamps;
+	char* pName = 0;
+	LinkUpLabelList* pHead = 0;
 	void receivedPacket(LinkUpPacket packet);
 	void receivedNameRequest(LinkUpPacket packet, LinkUpNameRequest* pNameRequest);
 	void receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* pNameResponse);
@@ -95,7 +123,8 @@ private:
 public:
 	void progress(uint8_t* pData, uint16_t nCount);
 	uint16_t getRaw(uint8_t* pData, uint16_t nMax);
-	char* pName = 0;
+	void init(char* pName);
+	LinkUpLabel* addLabel(char* pName, LinkUpLabelType type);
 };
 
 #endif

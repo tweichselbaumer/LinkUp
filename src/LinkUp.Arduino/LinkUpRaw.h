@@ -69,12 +69,12 @@ private:
 	bool skipOut = false;
 	uint16_t nBytesToRead;
 	uint16_t nBytesToSend;
-	LinkUpPacketList* pHeadIn;
-	LinkUpPacketList* pTailIn;
-	LinkUpPacketList* pHeadOut;
-	LinkUpPacketList* pTailOut;
-	LinkUpPacketList* pProgressingIn;
-	LinkUpPacketList* pProgressingOut;
+	LinkUpPacketList* pHeadIn = 0;
+	LinkUpPacketList* pTailIn = 0;
+	LinkUpPacketList* pHeadOut = 0;
+	LinkUpPacketList* pTailOut = 0;
+	LinkUpPacketList* pProgressingIn = 0;
+	LinkUpPacketList* pProgressingOut = 0;
 	bool checkForError(uint16_t nByte);
 public:
 	void progress(uint8_t* pData, uint16_t nCount);

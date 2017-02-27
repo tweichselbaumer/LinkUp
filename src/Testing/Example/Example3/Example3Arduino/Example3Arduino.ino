@@ -15,7 +15,8 @@ uint8_t nLedStatus = 1;
 uint8_t pBuffer[BUFFER_SIZE];
 uint32_t nLastTicks = 0;
 LinkUpNode linkUpNode;
-char linkUpNodeName[255];
+LinkUpLabel* value1;
+LinkUpLabel* value2;
 
 void setup()
 {
@@ -26,8 +27,9 @@ void setup()
 
 	pinMode(PinLed, OUTPUT);
 
-	strcpy(linkUpNodeName, "arduino");
-	linkUpNode.pName = linkUpNodeName;
+	linkUpNode.init((char *)"arduino");
+	value1 = linkUpNode.addLabel((char *)"value1", LinkUpLabelType::Int32);
+	value2 = linkUpNode.addLabel((char *)"value2", LinkUpLabelType::Int32);
 }
 
 void loop()
@@ -41,6 +43,9 @@ void loop()
 		nLastTicks = nTime;
 		nLedStatus = !nLedStatus;
 		digitalWrite(PinLed, nLedStatus);
+		value1->set(&nTime);
+		uint32_t* v = (uint32_t*)value2->get();
+		*v = *v + 1;
 	}
 
 	if (DataStream.available())
@@ -57,7 +62,6 @@ void loop()
 	}
 
 	nBytesToSend = linkUpNode.getRaw(pBuffer, BUFFER_SIZE);
-
 	if (nBytesToSend > 0) {
 		DataStream.write(pBuffer, nBytesToSend);
 	}

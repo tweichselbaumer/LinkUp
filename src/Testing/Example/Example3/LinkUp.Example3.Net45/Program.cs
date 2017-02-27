@@ -64,6 +64,15 @@ namespace LinkUp.Example3.Net45
 
             Thread.Sleep(5000);
 
+            while (true)
+            {
+                foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
+                {
+                    Console.WriteLine(string.Format("{0}: {1}", value.Name, value.Value));
+                }
+                Thread.Sleep(1000);
+            }
+
             Console.Read();
         }
 
