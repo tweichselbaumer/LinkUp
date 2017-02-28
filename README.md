@@ -102,3 +102,29 @@ if (connector.hasNext())
     LinkUpPacket packet = connector.next();
 }
 ```
+
+### C\#/C\# - LinkUpRaw (UDP)
+The next example will show a basic communication between a C\# programm and an other C\# programm over UDP.
+
+[Code](https://github.com/tweichselbaumer/LinkUp/tree/master/src/Testing/Example/Example4)
+
+#### Initialisation
+
+##### C\# Program
+```cs
+LinkUpUdpConnector connector = new LinkUpUdpConnector(sourceIp, destinationIp, sourcePort, destinationPort);
+```
+
+#### Send Packet
+
+##### C\# Program
+```cs
+connector.SendPacket(new LinkUpPacket() { Data = data });
+```
+
+#### Receive Packet
+
+##### C\# Program
+```cs
+connector.ReveivedPacket += DataPort_ReveivedPacket;
+```
