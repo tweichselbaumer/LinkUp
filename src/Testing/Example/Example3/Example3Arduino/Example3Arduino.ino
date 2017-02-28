@@ -28,8 +28,8 @@ void setup()
 	pinMode(PinLed, OUTPUT);
 
 	linkUpNode.init((char *)"arduino");
-	value1 = linkUpNode.addLabel((char *)"value1", LinkUpLabelType::Int32);
-	value2 = linkUpNode.addLabel((char *)"value2", LinkUpLabelType::Int32);
+	value1 = linkUpNode.addLabel("value1", LinkUpLabelType::Int32);
+	value2 = linkUpNode.addLabel("value2", LinkUpLabelType::Int32);
 }
 
 void loop()

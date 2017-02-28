@@ -40,9 +40,10 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 	}
 }
 
-void LinkUpNode::init(char* pName)
+void LinkUpNode::init(const char* pName)
 {
-	this->pName = pName;
+	this->pName = (char*)calloc(strlen(pName) + 1, sizeof(uint8_t));
+	strcpy(this->pName, pName);
 }
 
 void LinkUpNode::receivedPacket(LinkUpPacket packet)
@@ -64,7 +65,7 @@ void LinkUpNode::receivedPacket(LinkUpPacket packet)
 			receivedPropertyGetResponse(packet, (LinkUpPropertyGetResponse*)logic->pInnerHeader);
 			break;
 		case LinkUpLogicType::PropertySetRequest:
-			receivedPropertySetRequestt(packet, (LinkUpPropertySetRequest*)logic->pInnerHeader);
+			receivedPropertySetRequest(packet, (LinkUpPropertySetRequest*)logic->pInnerHeader);
 			break;
 		case LinkUpLogicType::PropertySetResponse:
 			receivedPropertySetResponse(packet, (LinkUpPropertySetResponse*)logic->pInnerHeader);
@@ -97,7 +98,7 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 	else {
 		LinkUpLabelList* pCurrent = pHead;
 		while (pCurrent != 0) {
-			if (pCurrent->pLabel->completeInitialization(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier))
+			if (pCurrent->pLabel->receivedNameResponse(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier))
 			{
 				pCurrent = 0;
 			}
@@ -113,8 +114,9 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyGetRequest* pPropertyGetRequest)
 {
 	LinkUpLabelList* pCurrent = pHead;
-	while (pCurrent != 0) {
-		if (pCurrent->pLabel->getRequest(pPropertyGetRequest->nIdentifier, &connector))
+	while (pCurrent != 0)
+	{
+		if (pCurrent->pLabel->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector))
 		{
 			pCurrent = 0;
 		}
@@ -128,13 +130,26 @@ void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyG
 void LinkUpNode::receivedPropertyGetResponse(LinkUpPacket packet, LinkUpPropertyGetResponse* pPropertyGetResponse) {
 }
 
-void LinkUpNode::receivedPropertySetRequestt(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest) {
+void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest)
+{
+	LinkUpLabelList* pCurrent = pHead;
+	while (pCurrent != 0)
+	{
+		if (pCurrent->pLabel->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector))
+		{
+			pCurrent = 0;
+		}
+		else
+		{
+			pCurrent = pCurrent->pNext;
+		}
+	}
 }
 
 void LinkUpNode::receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse) {
 }
 
-LinkUpLabel* LinkUpNode::addLabel(char* pName, LinkUpLabelType type)
+LinkUpLabel* LinkUpNode::addLabel(const char* pName, LinkUpLabelType type)
 {
 	LinkUpLabel* pLabel = new LinkUpLabel();
 	LinkUpLabelList* pCurrent = (LinkUpLabelList*)calloc(1, sizeof(LinkUpLabelList));
@@ -147,9 +162,12 @@ LinkUpLabel* LinkUpNode::addLabel(char* pName, LinkUpLabelType type)
 	return pLabel;
 }
 
-void LinkUpLabel::init(char* pName, LinkUpLabelType type) {
-	this->pName = pName;
+void LinkUpLabel::init(const char* pName, LinkUpLabelType type)
+{
+	this->pName = (char*)calloc(strlen(pName) + 1, sizeof(uint8_t));
+	strcpy(this->pName, pName);
 	this->type = type;
+
 	switch (type)
 	{
 	case Node:
@@ -234,7 +252,32 @@ void LinkUpLabel::progress(LinkUpRaw* pConnector) {
 	}
 }
 
-bool LinkUpLabel::completeInitialization(char* pName, LinkUpLabelType type, uint16_t nIdentifier) {
+bool LinkUpLabel::receivedPropertySetRequest(uint16_t nIdentifier, uint8_t* pValue, LinkUpRaw* pConnector)
+{
+	if (this->nIdentifier == nIdentifier)
+	{
+		LinkUpPacket packet;
+		packet.nLength = nSize + sizeof(LinkUpLogic) + sizeof(LinkUpPropertySetResponse);
+		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
+
+		LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
+		LinkUpPropertySetResponse* setResponse = (LinkUpPropertySetResponse*)logic->pInnerHeader;
+
+		logic->nLogicType = LinkUpLogicType::PropertySetResponse;
+		setResponse->nIdentifier = nIdentifier;
+
+		memcpy(this->pValue, pValue, nSize);
+
+		pConnector->send(packet);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool LinkUpLabel::receivedNameResponse(const char* pName, LinkUpLabelType type, uint16_t nIdentifier) {
 	if (strcmp(this->pName, pName) == 0 && this->type == type)
 	{
 		isInitialized = true;
@@ -247,7 +290,7 @@ bool LinkUpLabel::completeInitialization(char* pName, LinkUpLabelType type, uint
 	}
 }
 
-bool LinkUpLabel::getRequest(uint16_t nIdentifier, LinkUpRaw* pConnector)
+bool LinkUpLabel::receivedPropertyGetRequest(uint16_t nIdentifier, LinkUpRaw* pConnector)
 {
 	if (this->nIdentifier == nIdentifier)
 	{

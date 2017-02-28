@@ -66,11 +66,18 @@ namespace LinkUp.Example3.Net45
 
             while (true)
             {
+                for (int i = 0; i < 3; i++)
+                {
+                    foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
+                    {
+                        Console.WriteLine(string.Format("{0}: {1}", value.Name, value.Value));
+                    }
+                    Thread.Sleep(1000);
+                }
                 foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
                 {
-                    Console.WriteLine(string.Format("{0}: {1}", value.Name, value.Value));
+                    value.Value = 100;
                 }
-                Thread.Sleep(1000);
             }
 
             Console.Read();

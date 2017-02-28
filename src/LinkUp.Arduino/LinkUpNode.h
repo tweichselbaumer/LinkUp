@@ -88,12 +88,13 @@ private:
 		uint32_t nLastInitTry;
 	} timestamps;
 public:
-	void init(char* pName, LinkUpLabelType type);
+	void init(const char* pName, LinkUpLabelType type);
 	void set(void* pValue);
 	void* get();
 	void progress(LinkUpRaw* pConnector);
-	bool completeInitialization(char* pName, LinkUpLabelType type, uint16_t nIdentifier);
-	bool getRequest(uint16_t nIdentifier, LinkUpRaw* pConnector);
+	bool receivedNameResponse(const char* pName, LinkUpLabelType type, uint16_t nIdentifier);
+	bool receivedPropertyGetRequest(uint16_t nIdentifier, LinkUpRaw* pConnector);
+	bool receivedPropertySetRequest(uint16_t nIdentifier, uint8_t* value, LinkUpRaw* pConnector);
 };
 
 struct LinkUpLabelList
@@ -118,13 +119,13 @@ private:
 	void receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* pNameResponse);
 	void receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyGetRequest* pPropertyGetRequest);
 	void receivedPropertyGetResponse(LinkUpPacket packet, LinkUpPropertyGetResponse* pPropertyGetResponse);
-	void receivedPropertySetRequestt(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest);
+	void receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest);
 	void receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse);
 public:
 	void progress(uint8_t* pData, uint16_t nCount);
 	uint16_t getRaw(uint8_t* pData, uint16_t nMax);
-	void init(char* pName);
-	LinkUpLabel* addLabel(char* pName, LinkUpLabelType type);
+	void init(const char* pName);
+	LinkUpLabel* addLabel(const char* pName, LinkUpLabelType type);
 };
 
 #endif
