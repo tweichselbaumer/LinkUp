@@ -13,6 +13,7 @@ namespace LinkUp.Raw
 #if NET45
         private SerialPort _SerialPort;
         private Task _Task;
+        private bool _IsRunning = true;
 #endif
 
         public LinkUpSerialPortConnector(string portName, int baudRate)
@@ -20,7 +21,7 @@ namespace LinkUp.Raw
 #if NET45
             _Task = Task.Run(() =>
             {
-                while (true)
+                while (_IsRunning)
                 {
                     try
                     {
@@ -44,7 +45,8 @@ namespace LinkUp.Raw
         public override void Dispose()
         {
 #if NET45
-            _Task.Dispose();
+            _IsRunning = false;
+            _Task.Wait();
             if (_SerialPort != null)
             {
                 _SerialPort.Dispose();

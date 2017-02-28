@@ -27,6 +27,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpMemoryConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpSerialPortConnector.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpTcpConnector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpUdpConnector.cs" />
   </ItemGroup>
 </Project>
