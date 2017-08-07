@@ -1,7 +1,10 @@
-#![LinkUp](https://raw.githubusercontent.com/tweichselbaumer/LinkUp/master/Graphics/Raw/LinkUp-logo.png)
+![LinkUp](https://raw.githubusercontent.com/tweichselbaumer/LinkUp/master/Graphics/Raw/LinkUp-logo.png)
 
 ## About
 LinkUp is a cross platform lightweight communication library. The framework is able to transmit data between different microcontrollers, mobile devices and computers.
+
+## Build
+[![Build status](https://ci.appveyor.com/api/projects/status/u8krtoysxm048o7x?svg=true)](https://ci.appveyor.com/project/tweichselbaumer/linkup)
 
 ## Installation
 The current version of the library is released on [nuget](https://www.nuget.org/packages/LinkUp).
