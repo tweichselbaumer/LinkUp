@@ -14,7 +14,7 @@ namespace LinkUp.Example3.Net45
         private const int DATA_BAUD = 250000;
         private const string DATA_PORT = "COM6";
         private const int DEBUG_BAUD = 115200;
-        private const string DEBUG_PORT = "COM3";
+        private const string DEBUG_PORT = "COM5";
         private static SerialPort port;
         private static Stopwatch watch;
 
@@ -24,6 +24,16 @@ namespace LinkUp.Example3.Net45
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("{0} - Receive:\n\t{1}", watch.ElapsedTicks * 1000 / Stopwatch.Frequency, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+                Console.ResetColor();
+            }
+        }
+
+        private static void Connector_SentPacket(LinkUpConnector connector, LinkUpPacket packet)
+        {
+            lock (Console.Out)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("{0} - Sent:\n\t{1}", watch.ElapsedTicks * 1000 / Stopwatch.Frequency, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
                 Console.ResetColor();
             }
         }
@@ -57,6 +67,7 @@ namespace LinkUp.Example3.Net45
 
             LinkUpSerialPortConnector connector = new LinkUpSerialPortConnector(DATA_PORT, DATA_BAUD);
             connector.ReveivedPacket += Connector_ReveivedPacket;
+            connector.SentPacket += Connector_SentPacket;
 
             LinkUpNode node = new LinkUpNode();
             node.Name = "net45";
@@ -66,20 +77,30 @@ namespace LinkUp.Example3.Net45
 
             while (true)
             {
-                for (int i = 0; i < 3; i++)
+
+                foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
                 {
-                    foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
+                    try
                     {
                         Console.WriteLine(string.Format("{0}: {1}", value.Name, value.Value));
                     }
-                    Thread.Sleep(1000);
+                    catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
                 }
+
+
+                Thread.Sleep(5000);
+
                 foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
                 {
-                    value.Value = 100;
-                }
-            }
+                    try
+                    {
+                        value.Value = 100;
+                    }
+                    catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
 
+                }
+
+            }
             Console.Read();
         }
 

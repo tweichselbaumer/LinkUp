@@ -8,7 +8,7 @@
 #ifndef _CRC16_h
 #define _CRC16_h
 
-#include <Arduino.h>
+#include "Platform.h"
 
 class CRC16Class
 {

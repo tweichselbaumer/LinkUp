@@ -3,8 +3,7 @@
 
 #include "LinkUpRaw.h"
 
-#define INITIALIZATION_TIMEOUT 1000 * 1000 * 1
-#define PACKED  __attribute__((packed))
+#define INITIALIZATION_TIMEOUT 1000 * 1000 * 10
 
 enum LinkUpLogicType : uint8_t
 {
@@ -13,7 +12,9 @@ enum LinkUpLogicType : uint8_t
 	PropertyGetRequest = 3,
 	PropertyGetResponse = 4,
 	PropertySetRequest = 5,
-	PropertySetResponse = 6
+	PropertySetResponse = 6,
+	PingRequest = 7,
+	PingResponse = 8
 };
 
 enum LinkUpLabelType : uint8_t
@@ -37,7 +38,7 @@ enum LinkUpLabelType : uint8_t
 struct PACKED LinkUpLogic
 {
 	LinkUpLogicType nLogicType;
-	byte pInnerHeader[];
+	uint8_t pInnerHeader[];
 };
 
 struct PACKED LinkUpNameRequest

@@ -7,6 +7,8 @@
         PropertyGetRequest = 3,
         PropertyGetResponse = 4,
         PropertySetRequest = 5,
-        PropertySetResponse = 6
+        PropertySetResponse = 6,
+        PingRequest = 7,
+        PingResponse = 8
     }
 }

@@ -22,5 +22,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CRC16.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpRaw.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Platform.h" />
   </ItemGroup>
 </Project>

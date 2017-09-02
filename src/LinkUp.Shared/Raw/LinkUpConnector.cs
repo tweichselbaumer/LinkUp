@@ -3,6 +3,7 @@
 namespace LinkUp.Raw
 {
     public delegate void ReveicedPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
+    public delegate void SentPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
 
     public abstract class LinkUpConnector : IDisposable
     {
@@ -11,6 +12,7 @@ namespace LinkUp.Raw
         private bool _IsDisposed;
 
         public event ReveicedPacketEventHandler ReveivedPacket;
+        public event SentPacketEventHandler SentPacket;
 
         public string Name
         {
@@ -42,6 +44,7 @@ namespace LinkUp.Raw
         public void SendPacket(LinkUpPacket packet)
         {
             SendData(_Converter.ConvertToSend(packet));
+            SentPacket?.Invoke(this, packet);
         }
 
         protected void OnDataReceived(byte[] data)

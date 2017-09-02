@@ -8,7 +8,7 @@
 #ifndef _LINKUP_RAW_h
 #define _LINKUP_RAW_h
 
-#include <Arduino.h>
+#include "Platform.h"
 
 #include "CRC16.h"
 

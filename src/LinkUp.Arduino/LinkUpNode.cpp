@@ -12,7 +12,9 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 	connector.progress(pData, nCount);
 
 	if (connector.hasNext()) {
-		receivedPacket(connector.next());
+		LinkUpPacket packet = connector.next();
+		receivedPacket(packet);
+		//free(packet.pData);
 	}
 
 	if (!isInitialized && nTime - timestamps.nLastInitTry > INITIALIZATION_TIMEOUT && pName != NULL) {

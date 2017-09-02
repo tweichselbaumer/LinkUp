@@ -24,13 +24,32 @@ where T : IConvertible, new()
 where T : new()
 #endif
     {
-        private const int GET_REQUEST_TIMEOUT = 1000;
-        private const int SET_REQUEST_TIMEOUT = 1000;
-        private AutoResetEvent _AutoResetEvent = new AutoResetEvent(false);
-        private List<BlockingCollection<T>> _Consumer = new List<BlockingCollection<T>>();
-        private volatile bool _GetRequestIsRunning;
-        private volatile bool _SetRequestIsRunning;
+
+        private const int GET_REQUEST_TIMEOUT = -1;
+        private const int SET_REQUEST_TIMEOUT = -1;
+        private AutoResetEvent _SetAutoResetEvent = new AutoResetEvent(false);
+        private AutoResetEvent _GetAutoResetEvent = new AutoResetEvent(false);
+        private Task _Task;
+        private bool _IsRunning = true;
         private T _Value;
+        private volatile bool _RequestValue = false;
+
+        public LinkUpPrimitiveLabel()
+        {
+            _Task = Task.Run(() =>
+            {
+                while (_IsRunning)
+                {
+                    if (_RequestValue)
+                    {
+                        _SetAutoResetEvent.Reset();
+                        Owner.GetLabel(this);
+                        if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
+                            _RequestValue = false;
+                    }
+                }
+            });
+        }
 
         public T Value
         {
@@ -136,27 +155,20 @@ where T : new()
 
         public override void Dispose()
         {
-            //TODO:Close all
+            _IsRunning = false;
+            _Task.Wait();
         }
 
         internal override void GetDone(byte[] data)
         {
-            List<BlockingCollection<T>> consumer;
-            lock (_Consumer)
-            {
-                consumer = _Consumer.Select(c => c).ToList();
-                _Consumer.Clear();
-                _GetRequestIsRunning = false;
-            }
-            foreach (BlockingCollection<T> wait in consumer)
-            {
-                wait.Add((T)ConvertFromBytes(data));
-            }
+            _Value = (T)ConvertFromBytes(data);
+            _RequestValue = false;
+            _GetAutoResetEvent.Set();
         }
 
         internal override void SetDone()
         {
-            _AutoResetEvent.Set();
+            _SetAutoResetEvent.Set();
         }
 
         private object ConvertFromBytes(byte[] value)
@@ -259,53 +271,21 @@ where T : new()
 
         private T RequestValue()
         {
-            BlockingCollection<T> _Wait = new BlockingCollection<T>();
-            lock (_Consumer)
-            {
-                _Consumer.Add(_Wait);
-            }
-            if (!_GetRequestIsRunning)
-            {
-                _GetRequestIsRunning = true;
-
-                T value = new T();
-                Task task = Task.Run(() =>
-                {
-                    do
-                    {
-                        Owner.GetLabel(this);
-                    } while (!_Wait.TryTake(out value, GET_REQUEST_TIMEOUT));
-                });
-                task.Wait();
-                _GetRequestIsRunning = false;
-                return value;
-            }
-            else
-            {
-                return _Wait.Take();
-            }
+            _RequestValue = true;
+            if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
+                throw new Exception(string.Format("Unable to get label: {0}.", Name));
+            return _Value;
         }
+
 
         private void SetValue(T value)
         {
-            if (!_SetRequestIsRunning)
+            lock (_SetAutoResetEvent)
             {
-                _SetRequestIsRunning = true;
-
-                Task task = Task.Run(() =>
-                {
-                    _AutoResetEvent.Reset();
-                    do
-                    {
-                        Owner.SetLabel(this, ConvertToBytes(value));
-                    } while (!_AutoResetEvent.WaitOne(SET_REQUEST_TIMEOUT));
-                });
-                _SetRequestIsRunning = false;
-                task.Wait();
-            }
-            else
-            {
-                _AutoResetEvent.WaitOne();
+                _SetAutoResetEvent.Reset();
+                Owner.SetLabel(this, ConvertToBytes(value));
+                if (!_SetAutoResetEvent.WaitOne(SET_REQUEST_TIMEOUT))
+                    throw new Exception(string.Format("Unable to set label: {0}.", Name));
             }
         }
     }
