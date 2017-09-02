@@ -1,7 +1,10 @@
-#![LinkUp](https://raw.githubusercontent.com/tweichselbaumer/LinkUp/master/Graphics/Raw/LinkUp-logo.png)
+![LinkUp](https://raw.githubusercontent.com/tweichselbaumer/LinkUp/master/Graphics/Raw/LinkUp-logo.png)
 
 ## About
 LinkUp is a cross platform lightweight communication library. The framework is able to transmit data between different microcontrollers, mobile devices and computers.
+
+## Build
+[![Build status](https://ci.appveyor.com/api/projects/status/u8krtoysxm048o7x?svg=true)](https://ci.appveyor.com/project/tweichselbaumer/linkup)
 
 ## Installation
 The current version of the library is released on [nuget](https://www.nuget.org/packages/LinkUp).
@@ -19,7 +22,7 @@ If you create a portable library, make sure to use this LinkUp nuget package als
 The LinkUp protocol is splitted into several layer. The LinkUpRaw layer which provides a communication protocol between two endpoints. The LinkUpLogic organizes nodes in a hirachical tree. Each node can provide there one labels. Labels represents different kinds of functionalties and are accessable from there node and all it's parent nodes.
 
 ### LinkUpRaw Layer
-LinkUpRaw provides basic data transmissions between two endpoints. It encapsulats binary data into a header with preamble, length, data, CRC16 and EOP(end of packet). It has the capability to detect bit errors. Bytes with the value of preamble, EOP, skip pattern are replaced by the skip pattern and the actual value XOR 0x20.
+LinkUpRaw provides basic data transmissions between two endpoints. It encapsulats binary data into a header with preamble, length, data, CRC16 and EOP(end of packet). It has the capability to detect bit errors. The m Bytes with the value of preamble, EOP, skip pattern are replaced by the skip pattern and the actual value XOR 0x20.
 
 #### LinkUpPacket
 Name | Size (Byte) | Offset (Byte)
@@ -27,8 +30,8 @@ Name | Size (Byte) | Offset (Byte)
 Preamble | 1 | 0
 Length | 2 | 1
 Data | n (max 2^16) | 3
-CRC16 | 2 | n + 3
-EOP | 1 | n + 5
+CRC16 | 2 | n + m + 3
+EOP | 1 | n + m + 5
 
 ## Get Started
 ### C\# - LinkUpRaw (single process)
