@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+#if NET45
 using System.IO.Pipes;
+#endif
 using System.Threading.Tasks;
 
 namespace LinkUp.Raw
