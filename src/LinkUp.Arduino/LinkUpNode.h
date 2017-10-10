@@ -86,7 +86,7 @@ private:
 	uint16_t nIdentifier;
 	LinkUpLabelType type;
 	struct {
-		uint32_t nLastInitTry;
+		uint32_t nInitTryTimeout = 0;
 	} timestamps;
 public:
 	void init(const char* pName, LinkUpLabelType type);
@@ -111,7 +111,7 @@ private:
 	uint16_t nIdentifier = 0;
 	LinkUpRaw connector;
 	struct {
-		uint32_t nLastInitTry;
+		uint32_t nInitTryTimeout;
 	} timestamps;
 	char* pName = 0;
 	LinkUpLabelList* pHead = 0;

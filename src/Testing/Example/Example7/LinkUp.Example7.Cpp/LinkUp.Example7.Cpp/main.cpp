@@ -17,7 +17,7 @@ int __cdecl main(int argc, char **argv)
 	DWORD nBytesLeftThisMessag;
 	LinkUpRaw linkUpConnector;
 	DWORD nBytesToSend;
-	LinkUpNode linkUpNode;
+	LinkUpNode linkUpNode = {};
 	LinkUpLabel* values[VALUES];
 
 	hPipe = CreateFile(TEXT("\\\\.\\pipe\\linkup"), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
@@ -31,13 +31,20 @@ int __cdecl main(int argc, char **argv)
 
 	while (true)
 	{
+		
 		PeekNamedPipe(hPipe, pBuffer, 1024, &nBytesRead, &nTotalBytesAvail, &nBytesLeftThisMessag);
-		if (nTotalBytesAvail > 0) 
+		if (nTotalBytesAvail > 0)
 		{
 			if (ReadFile(hPipe, pBuffer, 1024, &nBytesRead, NULL))
 			{
 				if (nBytesRead > 0)
-				{ 
+				{
+					printf("%d - Receive:\n\t", micros()/1000);
+					for (DWORD i = 0; i < nBytesRead;i++) 
+					{
+						printf("%02X ", pBuffer[i]);
+					}
+					printf("\n");
 					linkUpNode.progress(pBuffer, nBytesRead);
 				}
 			}
@@ -51,6 +58,12 @@ int __cdecl main(int argc, char **argv)
 
 		if (nBytesToSend > 0)
 		{
+			printf("%d - Sent:\n\t", micros() / 1000);
+			for (DWORD i = 0; i < nBytesToSend;i++) 
+			{
+				printf("%X ", pBuffer[i]);
+			}
+			printf("\n");
 			WriteFile(hPipe, pBuffer, nBytesToSend, 0, 0);
 		}
 	}

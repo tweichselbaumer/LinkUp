@@ -67,6 +67,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example6", "Example6", "{A5
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Example6.Net45", "Testing\Example\Example6\LinkUp.Example6.Net45\LinkUp.Example6.Net45.csproj", "{F51AE9C9-9529-4BA1-A663-489B0E83C061}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example7", "Example7", "{236EEBB3-152D-4772-A02D-3779D3DA2C3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Example7.Net45", "Testing\Example\Example7\LinkUp.Example7.Net45\LinkUp.Example7.Net45.csproj", "{824C3DEF-DE4F-41BA-9768-842D5919CAFF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LinkUp.Example7.Cpp", "Testing\Example\Example7\LinkUp.Example7.Cpp\LinkUp.Example7.Cpp\LinkUp.Example7.Cpp.vcxproj", "{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		LinkUp.Shared\LinkUp.Shared.projitems*{289814d8-dca6-42da-be76-f2f7a2c355a5}*SharedItemsImports = 4
@@ -76,6 +82,7 @@ Global
 		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{4645a031-29aa-4222-84a5-793d26e2fbc1}*SharedItemsImports = 4
 		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{4ee931f8-0759-4626-9950-edd4d01afb87}*SharedItemsImports = 4
 		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{cbc4a46f-f8b9-4731-a9a9-3b3510ca383e}*SharedItemsImports = 4
 		LinkUp.Shared\LinkUp.Shared.projitems*{f907c3a5-b8ef-4dff-8b18-1cdbc9a7f6ce}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -307,6 +314,34 @@ Global
 		{F51AE9C9-9529-4BA1-A663-489B0E83C061}.Release|x64.Build.0 = Release|Any CPU
 		{F51AE9C9-9529-4BA1-A663-489B0E83C061}.Release|x86.ActiveCfg = Release|Any CPU
 		{F51AE9C9-9529-4BA1-A663-489B0E83C061}.Release|x86.Build.0 = Release|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Debug|ARM.Build.0 = Debug|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Debug|x64.Build.0 = Debug|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Debug|x86.Build.0 = Debug|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Release|ARM.ActiveCfg = Release|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Release|ARM.Build.0 = Release|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Release|x64.ActiveCfg = Release|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Release|x64.Build.0 = Release|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Release|x86.ActiveCfg = Release|Any CPU
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF}.Release|x86.Build.0 = Release|Any CPU
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Debug|ARM.ActiveCfg = Debug|Win32
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Debug|x64.ActiveCfg = Debug|x64
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Debug|x64.Build.0 = Debug|x64
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Debug|x86.ActiveCfg = Debug|Win32
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Debug|x86.Build.0 = Debug|Win32
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Release|Any CPU.ActiveCfg = Release|Win32
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Release|ARM.ActiveCfg = Release|Win32
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Release|x64.ActiveCfg = Release|x64
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Release|x64.Build.0 = Release|x64
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Release|x86.ActiveCfg = Release|Win32
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -339,5 +374,8 @@ Global
 		{4EE931F8-0759-4626-9950-EDD4D01AFB87} = {3FF977DE-F7BB-4C48-9657-C249778D847D}
 		{A5F51732-1421-474D-AEE5-0DA3E1C07936} = {A1C6404D-7FAB-4FD7-B290-F4153A4CD19D}
 		{F51AE9C9-9529-4BA1-A663-489B0E83C061} = {A5F51732-1421-474D-AEE5-0DA3E1C07936}
+		{236EEBB3-152D-4772-A02D-3779D3DA2C3F} = {A1C6404D-7FAB-4FD7-B290-F4153A4CD19D}
+		{824C3DEF-DE4F-41BA-9768-842D5919CAFF} = {236EEBB3-152D-4772-A02D-3779D3DA2C3F}
+		{CBC4A46F-F8B9-4731-A9A9-3B3510CA383E} = {236EEBB3-152D-4772-A02D-3779D3DA2C3F}
 	EndGlobalSection
 EndGlobal

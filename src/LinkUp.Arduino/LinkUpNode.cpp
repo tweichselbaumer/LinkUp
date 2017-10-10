@@ -14,11 +14,10 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 	if (connector.hasNext()) {
 		LinkUpPacket packet = connector.next();
 		receivedPacket(packet);
-		//free(packet.pData);
 	}
 
-	if (!isInitialized && nTime - timestamps.nLastInitTry > INITIALIZATION_TIMEOUT && pName != NULL) {
-		timestamps.nLastInitTry = nTime;
+	if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
+		timestamps.nInitTryTimeout = nTime + INITIALIZATION_TIMEOUT;
 
 		LinkUpPacket packet;
 		packet.nLength = strlen(pName) + sizeof(LinkUpLogic) + sizeof(LinkUpNameRequest);
@@ -33,7 +32,8 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 
 		connector.send(packet);
 	}
-	else {
+	else if (isInitialized)
+	{
 		LinkUpLabelList* pCurrent = pHead;
 		while (pCurrent != 0) {
 			pCurrent->pLabel->progress(&connector);
@@ -79,6 +79,7 @@ void LinkUpNode::receivedPacket(LinkUpPacket packet)
 
 	if (packet.pData != NULL) {
 		free(packet.pData);
+		packet.pData = NULL;
 	}
 }
 
@@ -235,9 +236,8 @@ void* LinkUpLabel::get()
 void LinkUpLabel::progress(LinkUpRaw* pConnector) {
 	uint32_t nTime = micros();
 
-	if (!isInitialized && nTime - timestamps.nLastInitTry > INITIALIZATION_TIMEOUT && pName != NULL)
-	{
-		timestamps.nLastInitTry = nTime;
+	if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
+		timestamps.nInitTryTimeout = nTime + INITIALIZATION_TIMEOUT;
 
 		LinkUpPacket packet;
 		packet.nLength = strlen(pName) + sizeof(LinkUpLogic) + sizeof(LinkUpNameRequest);

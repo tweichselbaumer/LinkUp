@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
+
 #if NET45
 using System.IO.Pipes;
 #endif
+
 using System.Threading.Tasks;
 
 namespace LinkUp.Raw
@@ -36,30 +38,37 @@ namespace LinkUp.Raw
                 {
                     NamedPipeServerStream server = new NamedPipeServerStream(name, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
                     server.WaitForConnection();
-                    Task localTask;
+                    Task localReadTask = null;
+                    Task localWriteTask = null;
                     while (_IsRunning)
                     {
                         try
                         {
                             byte[] dataIn;
                             byte[] dataOut;
-                            localTask = Task.Run(() =>
+                            if (localReadTask == null || localReadTask.IsCanceled || localReadTask.IsCompleted || localReadTask.IsFaulted)
                             {
-                                dataIn = new byte[BUFFER_SIZE];
-                                int bytesRead = server.Read(dataIn, 0, BUFFER_SIZE);
-                                if (bytesRead > 0)
+                                localReadTask = Task.Run(() =>
                                 {
-                                    byte[] result = new byte[bytesRead];
-                                    Array.Copy(dataIn, result, bytesRead);
-                                    OnDataReceived(result);
-                                }
-                            });
+                                    dataIn = new byte[BUFFER_SIZE];
+                                    int bytesRead = server.Read(dataIn, 0, BUFFER_SIZE);
+                                    if (bytesRead > 0)
+                                    {
+                                        byte[] result = new byte[bytesRead];
+                                        Array.Copy(dataIn, result, bytesRead);
+                                        Task.Run(() => { OnDataReceived(result); });
+                                    }
+                                });
+                            }
 
-                            _OutStream.TryTake(out dataOut, TIMEOUT);
-                            if (dataOut != null)
+                            if (localWriteTask == null || localWriteTask.IsCanceled || localWriteTask.IsCompleted || localWriteTask.IsFaulted)
                             {
-                                server.Write(dataOut, 0, dataOut.Length);
-                                server.Flush();
+                                localWriteTask = Task.Run(() =>
+                                {
+                                    dataOut = _OutStream.Take();
+                                    server.Write(dataOut, 0, dataOut.Length);
+                                    server.Flush();
+                                });
                             }
                         }
                         catch (Exception ex)
@@ -75,25 +84,28 @@ namespace LinkUp.Raw
                 {
                     NamedPipeClientStream client = new NamedPipeClientStream(".", name, PipeDirection.InOut, PipeOptions.Asynchronous);
                     client.Connect();
-                    Task localTask;
+                    Task localTask = null;
                     while (_IsRunning)
                     {
                         try
                         {
                             byte[] dataIn;
                             byte[] dataOut;
-                            localTask = Task.Run(() =>
+                            if (localTask == null || localTask.IsCanceled || localTask.IsCompleted || localTask.IsFaulted)
                             {
-                                dataIn = new byte[BUFFER_SIZE];
-
-                                int bytesRead = client.Read(dataIn, 0, BUFFER_SIZE);
-                                if (bytesRead > 0)
+                                localTask = Task.Run(() =>
                                 {
-                                    byte[] result = new byte[bytesRead];
-                                    Array.Copy(dataIn, result, bytesRead);
-                                    OnDataReceived(result);
-                                }
-                            });
+                                    dataIn = new byte[BUFFER_SIZE];
+
+                                    int bytesRead = client.Read(dataIn, 0, BUFFER_SIZE);
+                                    if (bytesRead > 0)
+                                    {
+                                        byte[] result = new byte[bytesRead];
+                                        Array.Copy(dataIn, result, bytesRead);
+                                        OnDataReceived(result);
+                                    }
+                                });
+                            }
 
                             _OutStream.TryTake(out dataOut, TIMEOUT);
                             if (dataOut != null)
