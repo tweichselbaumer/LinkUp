@@ -26,15 +26,26 @@ namespace LinkUp.Example5.Net45
 
             LinkUpNamedPipeConnector connector = new LinkUpNamedPipeConnector("linkup", LinkUpNamedPipeConnector.Mode.Server);
 
-            connector.ReveivedPacket += Connector_ReveivedPacket; ;
+            connector.ReveivedPacket += Connector_ReveivedPacket;
+            connector.SentPacket += Connector_SentPacket;
 
             while (true)
             {
                 connector.SendPacket(new LinkUpPacket() { Data = data });
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
 
             Console.Read();
+        }
+
+        private static void Connector_SentPacket(LinkUpConnector connector, LinkUpPacket packet)
+        {
+            lock (Console.Out)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("- Master to Slave:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+                Console.ResetColor();
+            }
         }
     }
 }

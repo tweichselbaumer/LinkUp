@@ -50,14 +50,18 @@ namespace LinkUp.Raw
                             {
                                 localReadTask = Task.Run(() =>
                                 {
-                                    dataIn = new byte[BUFFER_SIZE];
-                                    int bytesRead = server.Read(dataIn, 0, BUFFER_SIZE);
-                                    if (bytesRead > 0)
+                                    try
                                     {
-                                        byte[] result = new byte[bytesRead];
-                                        Array.Copy(dataIn, result, bytesRead);
-                                        Task.Run(() => { OnDataReceived(result); });
+                                        dataIn = new byte[BUFFER_SIZE];
+                                        int bytesRead = server.Read(dataIn, 0, BUFFER_SIZE);
+                                        if (bytesRead > 0)
+                                        {
+                                            byte[] result = new byte[bytesRead];
+                                            Array.Copy(dataIn, result, bytesRead);
+                                            Task.Run(() => { OnDataReceived(result); });
+                                        }
                                     }
+                                    catch (Exception ex) { }
                                 });
                             }
 
@@ -65,10 +69,20 @@ namespace LinkUp.Raw
                             {
                                 localWriteTask = Task.Run(() =>
                                 {
-                                    dataOut = _OutStream.Take();
-                                    server.Write(dataOut, 0, dataOut.Length);
-                                    server.Flush();
+                                    try
+                                    {
+                                        dataOut = _OutStream.Take();
+                                        server.Write(dataOut, 0, dataOut.Length);
+                                        server.Flush();
+                                    }
+                                    catch (Exception ex) { }
                                 });
+                            }
+                            if (!server.IsConnected)
+                            {
+                                server.Close();
+                                server = new NamedPipeServerStream(name, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                                server.WaitForConnection();
                             }
                         }
                         catch (Exception ex)
