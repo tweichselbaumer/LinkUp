@@ -26,7 +26,7 @@ namespace GyroWpf
         const string DATA_PORT = "COM4";
         const string DEBUG_PORT = "COM3";
 
-        const int DATA_BAUD = 250000;
+        const int DATA_BAUD = 2000000;
         const int DEBUG_BAUD = 250000;
 
         SerialPort port;
@@ -56,7 +56,16 @@ namespace GyroWpf
 
         private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-
+            if (sender is SerialPort)
+            {
+                SerialPort port = (SerialPort)sender;
+                lock (Console.Out)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("{0} - Debug:\t{1}", watch.ElapsedTicks * 1000 / Stopwatch.Frequency, port.ReadExisting());
+                    Console.ResetColor();
+                }
+            }
         }
     }
 }

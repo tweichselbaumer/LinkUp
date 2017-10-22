@@ -7,7 +7,7 @@
 #define DataStream Serial1
 
 #define DebugBaud 115200
-#define DataBaud 250000
+#define DataBaud 2000000
 
 #define PinLed 13
 
@@ -50,6 +50,7 @@ void setup()
 	pinMode(PinLed, OUTPUT);
 
 	IMU.begin(ACCEL_RANGE_4G, GYRO_RANGE_250DPS);
+	//IMU.setFilt((mpu9250_dlpf_bandwidth)-1, 255);
 }
 
 void loop()
@@ -64,8 +65,9 @@ void loop()
 		digitalWrite(PinLed, nLedStatus);
 	}
 
-	if (nTime - nLastTicksFast > 1000 * 5 && IMU.checkDataReady())
+	if (nTime - nLastTicksFast >= 1000 * 5/* && IMU.checkDataReady()*/)
 	{
+		DebugStream.println(nTime);
 		nLastTicksFast = nTime;
 		data.time = nTime;
 		IMU.getMotion10Counts(&data.ax, &data.ay, &data.az, &data.gx, &data.gy, &data.gz, &data.mx, &data.my, &data.mz, &data.t);
