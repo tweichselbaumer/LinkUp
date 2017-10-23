@@ -3,10 +3,7 @@
 
 #define BUFFER_SIZE 1024
 
-#define DebugStream Serial
-#define DataStream Serial1
-
-#define DebugBaud 115200
+#define DataStream Serial
 #define DataBaud 2000000
 
 #define PinLed 13
@@ -14,16 +11,17 @@
 uint8_t nLedStatus = 1;
 
 uint8_t pBuffer[BUFFER_SIZE];
-uint32_t nLastTicks = 0;
-uint32_t nLastTicksFast = 0;
 LinkUpRaw linkUpConnector;
 
-MPU9250 IMU((uint8_t)0x68, (uint8_t)0);
+uint32_t nLastTicks = 0;
+uint32_t nLastTicksFast = 0;
+
+MPU9250 IMU(10);
 
 
 int beginStatus;
 
-struct DATA {
+struct PACKED DATA {
 	uint32_t time;
 	int16_t gx;
 	int16_t gy;
@@ -42,15 +40,11 @@ DATA data;
 
 void setup()
 {
-	DebugStream.begin(DebugBaud);
-	DebugStream.setTimeout(1);
 	DataStream.begin(DataBaud);
 	DataStream.setTimeout(1);
-
-	pinMode(PinLed, OUTPUT);
-
+	pinMode(10, OUTPUT);
+	//pinMode(PinLed, OUTPUT);
 	IMU.begin(ACCEL_RANGE_4G, GYRO_RANGE_250DPS);
-	//IMU.setFilt((mpu9250_dlpf_bandwidth)-1, 255);
 }
 
 void loop()
@@ -60,15 +54,15 @@ void loop()
 
 	if (nTime - nLastTicks > 1000 * 1000 * 1)
 	{
-		nLastTicks = nTime;
+		nLastTicks += 1000 * 1000 * 1;
 		nLedStatus = !nLedStatus;
-		digitalWrite(PinLed, nLedStatus);
+		//digitalWrite(PinLed, nLedStatus);
 	}
+	
 
-	if (nTime - nLastTicksFast >= 1000 * 5/* && IMU.checkDataReady()*/)
+	if (nTime - nLastTicksFast >= 1000)
 	{
-		DebugStream.println(nTime);
-		nLastTicksFast = nTime;
+		nLastTicksFast += 1000;
 		data.time = nTime;
 		IMU.getMotion10Counts(&data.ax, &data.ay, &data.az, &data.gx, &data.gy, &data.gz, &data.mx, &data.my, &data.mz, &data.t);
 		LinkUpPacket packet;
@@ -83,4 +77,5 @@ void loop()
 	if (nBytesToSend > 0) {
 		DataStream.write(pBuffer, nBytesToSend);
 	}
+	DataStream.flush();
 }

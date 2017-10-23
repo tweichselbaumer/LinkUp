@@ -75,6 +75,7 @@ class MPU9250{
         void getMotion10(float* ax, float* ay, float* az, float* gx, float* gy, float* gz, float* hx, float* hy, float* hz, float* t);
 		
 		bool checkDataReady();
+		uint8_t whoAmI();
 
         void getAccelCounts(int16_t* ax, int16_t* ay, int16_t* az);
         void getGyroCounts(int16_t* gx, int16_t* gy, int16_t* gz);
@@ -203,7 +204,7 @@ class MPU9250{
         void readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest);
         bool writeAK8963Register(uint8_t subAddress, uint8_t data);
         void readAK8963Registers(uint8_t subAddress, uint8_t count, uint8_t* dest);
-        uint8_t whoAmI();
+        
         uint8_t whoAmIAK8963();
 };
 

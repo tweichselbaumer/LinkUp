@@ -403,22 +403,22 @@ int MPU9250::setFilt(mpu9250_dlpf_bandwidth bandwidth, uint8_t SRD) {
 		return -1;
 	}
 
-	if (SRD > 9) {
-		// set AK8963 to Power Down
-		if (!writeAK8963Register(AK8963_CNTL1, AK8963_PWR_DOWN)) {
-			return -1;
-		}
-		delay(100); // long wait between AK8963 mode changes
+	//if (SRD > 9) {
+	//	// set AK8963 to Power Down
+	//	if (!writeAK8963Register(AK8963_CNTL1, AK8963_PWR_DOWN)) {
+	//		return -1;
+	//	}
+	//	delay(100); // long wait between AK8963 mode changes
 
-		// set AK8963 to 16 bit resolution, 8 Hz update rate
-		if (!writeAK8963Register(AK8963_CNTL1, AK8963_CNT_MEAS1)) {
-			return -1;
-		}
-		delay(100); // long wait between AK8963 mode changes
+	//	// set AK8963 to 16 bit resolution, 8 Hz update rate
+	//	if (!writeAK8963Register(AK8963_CNTL1, AK8963_CNT_MEAS1)) {
+	//		return -1;
+	//	}
+	//	delay(100); // long wait between AK8963 mode changes
 
-		// instruct the MPU9250 to get 7 bytes of data from the AK8963 at the sample rate
-		readAK8963Registers(AK8963_HXL, sizeof(data), &data[0]);
-	}
+	//	// instruct the MPU9250 to get 7 bytes of data from the AK8963 at the sample rate
+	//	readAK8963Registers(AK8963_HXL, sizeof(data), &data[0]);
+	//}
 
 	/* setting the interrupt */
 	if (!writeRegister(INT_PIN_CFG, INT_PULSE_50US)) { // setup interrupt, 50 us pulse
