@@ -1,20 +1,17 @@
 #include "LinkUpRaw.h"
 #include "MPU9250.h"
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 64
 
 #define DataStream Serial
 #define DataBaud 2000000
 
-#define PinLed 13
-
-uint8_t nLedStatus = 1;
+IntervalTimer imuTimer;
 
 uint8_t pBuffer[BUFFER_SIZE];
 LinkUpRaw linkUpConnector;
 
-uint32_t nLastTicks = 0;
-uint32_t nLastTicksFast = 0;
+uint32_t nNextUpdate = 0;
 
 MPU9250 IMU(10);
 
@@ -36,46 +33,40 @@ struct PACKED DATA {
 	int16_t p;
 };
 
-DATA data;
 
 void setup()
 {
 	DataStream.begin(DataBaud);
 	DataStream.setTimeout(1);
 	pinMode(10, OUTPUT);
-	//pinMode(PinLed, OUTPUT);
 	IMU.begin(ACCEL_RANGE_4G, GYRO_RANGE_250DPS);
+	imuTimer.begin(readImu, 500);
+	imuTimer.priority(0);
+}
+
+void readImu() {
+	DATA data;
+	data.time = micros();
+	IMU.getMotion10Counts(&data.ax, &data.ay, &data.az, &data.gx, &data.gy, &data.gz, &data.mx, &data.my, &data.mz, &data.t);
+	LinkUpPacket packet;
+	packet.pData = (uint8_t*)malloc(sizeof(DATA));
+	*(DATA*)packet.pData = data;
+	packet.nLength = sizeof(DATA);
+	linkUpConnector.send(packet);
 }
 
 void loop()
 {
-	uint32_t nBytesToSend;
 	uint32_t nTime = micros();
+	uint32_t nBytesToSend;
 
-	if (nTime - nLastTicks > 1000 * 1000 * 1)
-	{
-		nLastTicks += 1000 * 1000 * 1;
-		nLedStatus = !nLedStatus;
-		//digitalWrite(PinLed, nLedStatus);
-	}
-	
+	/*if (nNextUpdate < nTime) {
+		nNextUpdate = nTime + 2000;*/
+		nBytesToSend = linkUpConnector.getRaw(pBuffer, BUFFER_SIZE);
 
-	if (nTime - nLastTicksFast >= 1000)
-	{
-		nLastTicksFast += 1000;
-		data.time = nTime;
-		IMU.getMotion10Counts(&data.ax, &data.ay, &data.az, &data.gx, &data.gy, &data.gz, &data.mx, &data.my, &data.mz, &data.t);
-		LinkUpPacket packet;
-		packet.pData = (uint8_t*)malloc(sizeof(DATA));
-		*(DATA*)packet.pData = data;
-		packet.nLength = sizeof(DATA);
-		linkUpConnector.send(packet);
-	}
-
-	nBytesToSend = linkUpConnector.getRaw(pBuffer, BUFFER_SIZE);
-
-	if (nBytesToSend > 0) {
-		DataStream.write(pBuffer, nBytesToSend);
-	}
-	DataStream.flush();
+		if (nBytesToSend > 0) {
+			DataStream.write(pBuffer, nBytesToSend);
+			DataStream.send_now();
+		}
+	//}
 }
