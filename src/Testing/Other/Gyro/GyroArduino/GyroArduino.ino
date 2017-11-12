@@ -1,5 +1,6 @@
 #include "LinkUpRaw.h"
 #include "MPU9250.h"
+#include "SystemTime.h"
 
 #define BUFFER_SIZE 64
 
@@ -14,12 +15,14 @@ LinkUpRaw linkUpConnector;
 uint32_t nNextUpdate = 0;
 
 MPU9250 IMU(10);
+SystemTime systemTime;
 
 
 int beginStatus;
 
 struct PACKED DATA {
-	uint32_t time;
+	uint32_t timeL;
+	uint32_t timeH;
 	int16_t gx;
 	int16_t gy;
 	int16_t gz;
@@ -39,15 +42,19 @@ void setup()
 	DataStream.begin(DataBaud);
 	DataStream.setTimeout(1);
 	pinMode(10, OUTPUT);
-	IMU.begin(ACCEL_RANGE_4G, GYRO_RANGE_250DPS);
+	IMU.begin(ACCEL_RANGE_16G, GYRO_RANGE_2000DPS);
 	imuTimer.begin(readImu, 500);
 	imuTimer.priority(0);
 }
 
 void readImu() {
 	DATA data;
-	data.time = micros();
+	systemTime.update();
+	data.timeL = systemTime.time.lowerTime;
+	data.timeH = systemTime.time.upperTime;
+
 	IMU.getMotion10Counts(&data.ax, &data.ay, &data.az, &data.gx, &data.gy, &data.gz, &data.mx, &data.my, &data.mz, &data.t);
+
 	LinkUpPacket packet;
 	packet.pData = (uint8_t*)malloc(sizeof(DATA));
 	*(DATA*)packet.pData = data;
@@ -57,16 +64,13 @@ void readImu() {
 
 void loop()
 {
-	uint32_t nTime = micros();
+	systemTime.update();
 	uint32_t nBytesToSend;
 
-	/*if (nNextUpdate < nTime) {
-		nNextUpdate = nTime + 2000;*/
-		nBytesToSend = linkUpConnector.getRaw(pBuffer, BUFFER_SIZE);
+	nBytesToSend = linkUpConnector.getRaw(pBuffer, BUFFER_SIZE);
 
-		if (nBytesToSend > 0) {
-			DataStream.write(pBuffer, nBytesToSend);
-			DataStream.send_now();
-		}
-	//}
+	if (nBytesToSend > 0) {
+		DataStream.write(pBuffer, nBytesToSend);
+		DataStream.send_now();
+	}
 }

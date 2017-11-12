@@ -90,10 +90,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MPU9250.h" />
+    <ClInclude Include="SystemTime.h" />
     <ClInclude Include="__vm\.GyroArduino.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MPU9250.cpp" />
+    <ClCompile Include="SystemTime.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

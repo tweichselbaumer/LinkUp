@@ -24,9 +24,15 @@
     <ClInclude Include="MPU9250.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SystemTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MPU9250.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
