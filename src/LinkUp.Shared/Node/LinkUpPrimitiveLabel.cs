@@ -25,8 +25,8 @@ where T : new()
 #endif
     {
 
-        private const int GET_REQUEST_TIMEOUT = -1;
-        private const int SET_REQUEST_TIMEOUT = -1;
+        private const int GET_REQUEST_TIMEOUT = 2000;
+        private const int SET_REQUEST_TIMEOUT = 2000;
         private AutoResetEvent _SetAutoResetEvent = new AutoResetEvent(false);
         private AutoResetEvent _GetAutoResetEvent = new AutoResetEvent(false);
         private Task _Task;
@@ -59,6 +59,7 @@ where T : new()
 #if DEBUG
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
+                Debug.WriteLine(string.Format("Get value '{0}'", Name));
 #endif
                 if (Owner == null)
                     result = _Value;
@@ -76,6 +77,7 @@ where T : new()
 #if DEBUG
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
+                Debug.WriteLine(string.Format("Set value '{0}'", Name));
 #endif
                 if (Owner == null)
                     _Value = value;

@@ -34,7 +34,7 @@ namespace LinkUp.Raw
 
             if (mode == Mode.Server)
             {
-                _Task = Task.Run(() =>
+                _Task = Task.Factory.StartNew(() =>
                 {
                     NamedPipeServerStream server = new NamedPipeServerStream(name, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
                     server.WaitForConnection();
@@ -90,7 +90,7 @@ namespace LinkUp.Raw
                         }
                     }
                     server.Close();
-                });
+                }, TaskCreationOptions.LongRunning);
             }
             else if (mode == Mode.Client)
             {

@@ -32,7 +32,8 @@ enum LinkUpLabelType : uint8_t
 	Int64 = 11,
 	UInt64 = 12,
 	Single = 13,
-	Double = 14
+	Double = 14,
+	Binary = 15
 };
 
 struct PACKED LinkUpLogic

@@ -12,9 +12,9 @@ namespace LinkUp.Example3.Net45
     internal class Program
     {
         private const int DATA_BAUD = 250000;
-        private const string DATA_PORT = "COM6";
+        private const string DATA_PORT = "COM3";
         private const int DEBUG_BAUD = 115200;
-        private const string DEBUG_PORT = "COM5";
+        private const string DEBUG_PORT = "";
         private static SerialPort port;
         private static Stopwatch watch;
 
@@ -43,27 +43,30 @@ namespace LinkUp.Example3.Net45
             watch = new Stopwatch();
             watch.Start();
 
-            Task.Run(() =>
+            if (!string.IsNullOrEmpty(DEBUG_PORT))
             {
-                while (true)
+                Task.Run(() =>
                 {
-                    try
+                    while (true)
                     {
-                        if (port == null || !port.IsOpen)
+                        try
                         {
-                            port = new SerialPort(DEBUG_PORT, DEBUG_BAUD);
-                            port.Open();
-                            port.ReadExisting();
-                            port.DataReceived += Port_DataReceived;
+                            if (port == null || !port.IsOpen)
+                            {
+                                port = new SerialPort(DEBUG_PORT, DEBUG_BAUD);
+                                port.Open();
+                                port.ReadExisting();
+                                port.DataReceived += Port_DataReceived;
+                            }
                         }
+                        catch (Exception)
+                        {
+                            port = null;
+                        }
+                        Thread.Sleep(100);
                     }
-                    catch (Exception)
-                    {
-                        port = null;
-                    }
-                    Thread.Sleep(100);
-                }
-            });
+                });
+            }
 
             LinkUpSerialPortConnector connector = new LinkUpSerialPortConnector(DATA_PORT, DATA_BAUD);
             connector.ReveivedPacket += Connector_ReveivedPacket;
@@ -88,8 +91,6 @@ namespace LinkUp.Example3.Net45
                 }
 
 
-                Thread.Sleep(5000);
-
                 foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
                 {
                     try
@@ -100,8 +101,9 @@ namespace LinkUp.Example3.Net45
 
                 }
 
+                Console.Read();
+
             }
-            Console.Read();
         }
 
         private static void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)

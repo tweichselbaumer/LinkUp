@@ -31,6 +31,9 @@ namespace LinkUp.Example7.Net45
             while (true)
             {
 
+                Console.WriteLine("ENTER FOR GET");
+                Console.ReadLine();
+
                 foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
                 {
                     try
@@ -41,7 +44,8 @@ namespace LinkUp.Example7.Net45
                 }
 
 
-                Thread.Sleep(5000);
+                Console.WriteLine("ENTER FOR SET");
+                Console.ReadLine();
 
                 foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
                 {
@@ -54,7 +58,6 @@ namespace LinkUp.Example7.Net45
                 }
 
             }
-            Console.Read();
         }
         private static void Connector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {

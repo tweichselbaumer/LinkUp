@@ -1,10 +1,9 @@
 #include "LinkUpNode.h"
 
 #define BUFFER_SIZE 1024
-#define VALUES 2
 
-#define DebugStream Serial
-#define DataStream Serial1
+#define DebugStream Serial1
+#define DataStream Serial
 
 #define DebugBaud 115200
 #define DataBaud 250000
@@ -16,7 +15,9 @@ uint8_t nLedStatus = 1;
 uint8_t pBuffer[BUFFER_SIZE];
 uint32_t nLastTicks = 0;
 LinkUpNode linkUpNode;
-LinkUpLabel* values[VALUES];
+LinkUpLabel* label1;
+LinkUpLabel* label2;
+LinkUpLabel* label3;
 
 void setup()
 {
@@ -29,11 +30,9 @@ void setup()
 	digitalWrite(PinLed, HIGH);
 
 	linkUpNode.init((char *)"arduino");
-	for (int i = 0; i < VALUES; i++) {
-		char pName[200];
-		sprintf(pName, "value%d", i);
-		values[i] = linkUpNode.addLabel(pName, LinkUpLabelType::Int32);
-	}
+	label1 = linkUpNode.addLabel((char *)"val1", LinkUpLabelType::Int32);
+	//label2 = linkUpNode.addLabel((char *)"val2", LinkUpLabelType::Int32);
+	//label3 = linkUpNode.addLabel((char *)"val3", LinkUpLabelType::Int32);
 }
 
 void loop()
@@ -47,9 +46,6 @@ void loop()
 		nLastTicks = nTime;
 		nLedStatus = !nLedStatus;
 		digitalWrite(PinLed, nLedStatus);
-		values[0]->set(&nTime);
-		uint32_t* v = (uint32_t*)values[1]->get();
-		*v = *v + 1;
 	}
 
 	if (DataStream.available())
@@ -68,6 +64,6 @@ void loop()
 	nBytesToSend = linkUpNode.getRaw(pBuffer, BUFFER_SIZE);
 	if (nBytesToSend > 0) {
 		DataStream.write(pBuffer, nBytesToSend);
-		DebugStream.println(nBytesToSend);
+		//DebugStream.println(nBytesToSend);
 	}
 }
