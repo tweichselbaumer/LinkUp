@@ -36,7 +36,7 @@ namespace LinkUp.Raw
             {
                 _Task = Task.Factory.StartNew(() =>
                 {
-                    NamedPipeServerStream server = new NamedPipeServerStream(name, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                    NamedPipeServerStream server = new NamedPipeServerStream(name, PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
                     server.WaitForConnection();
                     Task localReadTask = null;
                     Task localWriteTask = null;

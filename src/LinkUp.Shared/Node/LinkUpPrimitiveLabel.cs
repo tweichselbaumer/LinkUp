@@ -36,19 +36,19 @@ where T : new()
 
         public LinkUpPrimitiveLabel()
         {
-            _Task = Task.Run(() =>
-            {
-                while (_IsRunning)
-                {
-                    if (_RequestValue)
-                    {
-                        _SetAutoResetEvent.Reset();
-                        Owner.GetLabel(this);
-                        if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
-                            _RequestValue = false;
-                    }
-                }
-            });
+            //_Task = Task.Factory.StartNew(() =>
+            //{
+            //    while (_IsRunning)
+            //    {
+            //        if (_RequestValue)
+            //        {
+            //            _SetAutoResetEvent.Reset();
+                        
+            //            if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
+            //                _RequestValue = false;
+            //        }
+            //    }
+            //}, TaskCreationOptions.LongRunning);
         }
 
         public T Value
@@ -274,6 +274,8 @@ where T : new()
         private T RequestValue()
         {
             _RequestValue = true;
+            _GetAutoResetEvent.Reset();
+            Owner.GetLabel(this);
             if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
                 throw new Exception(string.Format("Unable to get label: {0}.", Name));
             return _Value;

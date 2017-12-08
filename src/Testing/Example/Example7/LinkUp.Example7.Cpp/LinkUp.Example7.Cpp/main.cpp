@@ -10,7 +10,7 @@
 
 int __cdecl main(int argc, char **argv)
 {
-	HANDLE hPipe;
+	HANDLE hPipe = INVALID_HANDLE_VALUE;
 	uint8_t pBuffer[BUFFER_SIZE];
 	DWORD nBytesRead;
 	DWORD nTotalBytesAvail;
