@@ -10,7 +10,7 @@
 
 int __cdecl main(int argc, char **argv)
 {
-	HANDLE hPipe;
+	HANDLE hPipe = INVALID_HANDLE_VALUE;
 	uint8_t pBuffer[BUFFER_SIZE];
 	DWORD nBytesRead;
 	DWORD nTotalBytesAvail;
@@ -24,7 +24,6 @@ int __cdecl main(int argc, char **argv)
 
 	while (true)
 	{
-
 		if (hPipe == INVALID_HANDLE_VALUE)
 		{
 			hPipe = CreateFile(TEXT("\\\\.\\pipe\\linkup"), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
@@ -36,6 +35,7 @@ int __cdecl main(int argc, char **argv)
 					values[i] = linkUpNode.addLabel(pName, LinkUpLabelType::Int32);
 				}
 			}
+			Sleep(1);
 		}
 
 		PeekNamedPipe(hPipe, pBuffer, 1024, &nBytesRead, &nTotalBytesAvail, &nBytesLeftThisMessag);

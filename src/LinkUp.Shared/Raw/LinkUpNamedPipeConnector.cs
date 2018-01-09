@@ -25,7 +25,7 @@ namespace LinkUp.Raw
         private Mode _Mode;
         private Task _Task;
         private bool _IsRunning = true;
-        private BlockingCollection<byte[]> _OutStream = new BlockingCollection<byte[]>();
+        private PipeStream _Stream;
 
         public LinkUpNamedPipeConnector(string name, Mode mode)
         {
@@ -36,24 +36,23 @@ namespace LinkUp.Raw
             {
                 _Task = Task.Factory.StartNew(() =>
                 {
-                    NamedPipeServerStream server = new NamedPipeServerStream(name, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
-                    server.WaitForConnection();
+                    _Stream = new NamedPipeServerStream(name, PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
+                    (_Stream as NamedPipeServerStream).WaitForConnection();
                     Task localReadTask = null;
-                    Task localWriteTask = null;
                     while (_IsRunning)
                     {
                         try
                         {
                             byte[] dataIn;
-                            byte[] dataOut;
-                            if (localReadTask == null || localReadTask.IsCanceled || localReadTask.IsCompleted || localReadTask.IsFaulted)
+
+                            localReadTask = Task.Run(() =>
                             {
-                                localReadTask = Task.Run(() =>
+                                try
                                 {
-                                    try
+                                    while (_IsRunning)
                                     {
                                         dataIn = new byte[BUFFER_SIZE];
-                                        int bytesRead = server.Read(dataIn, 0, BUFFER_SIZE);
+                                        int bytesRead = _Stream.Read(dataIn, 0, BUFFER_SIZE);
                                         if (bytesRead > 0)
                                         {
                                             byte[] result = new byte[bytesRead];
@@ -61,57 +60,49 @@ namespace LinkUp.Raw
                                             Task.Run(() => { OnDataReceived(result); });
                                         }
                                     }
-                                    catch (Exception ex) { }
-                                });
-                            }
+                                }
+                                catch (Exception ex) { }
+                            });
 
-                            if (localWriteTask == null || localWriteTask.IsCanceled || localWriteTask.IsCompleted || localWriteTask.IsFaulted)
+
+
+
+
+                            if (!(_Stream as NamedPipeServerStream).IsConnected)
                             {
-                                localWriteTask = Task.Run(() =>
-                                {
-                                    try
-                                    {
-                                        dataOut = _OutStream.Take();
-                                        server.Write(dataOut, 0, dataOut.Length);
-                                        server.Flush();
-                                    }
-                                    catch (Exception ex) { }
-                                });
+                                (_Stream as NamedPipeServerStream).Close();
+                                _Stream = new NamedPipeServerStream(name, PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
+                                (_Stream as NamedPipeServerStream).WaitForConnection();
                             }
-                            if (!server.IsConnected)
-                            {
-                                server.Close();
-                                server = new NamedPipeServerStream(name, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
-                                server.WaitForConnection();
-                            }
+                            localReadTask.Wait();
+
                         }
                         catch (Exception ex)
                         {
                         }
                     }
-                    server.Close();
+                    _Stream.Close();
                 }, TaskCreationOptions.LongRunning);
             }
             else if (mode == Mode.Client)
             {
                 _Task = Task.Run(() =>
                 {
-                    NamedPipeClientStream client = new NamedPipeClientStream(".", name, PipeDirection.InOut, PipeOptions.Asynchronous);
-                    client.Connect();
+                    _Stream = new NamedPipeClientStream(".", name, PipeDirection.InOut, PipeOptions.Asynchronous);
+                    (_Stream as NamedPipeClientStream).Connect();
                     Task localTask = null;
                     while (_IsRunning)
                     {
                         try
                         {
                             byte[] dataIn;
-                            byte[] dataOut;
                             if (localTask == null || localTask.IsCanceled || localTask.IsCompleted || localTask.IsFaulted)
                             {
                                 localTask = Task.Run(() =>
                                 {
                                     dataIn = new byte[BUFFER_SIZE];
 
-                                    int bytesRead = client.Read(dataIn, 0, BUFFER_SIZE);
+                                    int bytesRead = _Stream.Read(dataIn, 0, BUFFER_SIZE);
                                     if (bytesRead > 0)
                                     {
                                         byte[] result = new byte[bytesRead];
@@ -120,19 +111,12 @@ namespace LinkUp.Raw
                                     }
                                 });
                             }
-
-                            _OutStream.TryTake(out dataOut, TIMEOUT);
-                            if (dataOut != null)
-                            {
-                                client.Write(dataOut, 0, dataOut.Length);
-                                client.Flush();
-                            }
                         }
                         catch (Exception ex)
                         {
                         }
                     }
-                    client.Close();
+                    _Stream.Close();
                 });
             }
         }
@@ -152,7 +136,8 @@ namespace LinkUp.Raw
         protected override void SendData(byte[] data)
         {
 #if NET45
-            _OutStream.Add(data);
+            _Stream.Write(data, 0, data.Length);
+            _Stream.Flush();
 #endif
         }
     }

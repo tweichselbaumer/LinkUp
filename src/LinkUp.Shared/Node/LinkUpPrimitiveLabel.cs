@@ -36,19 +36,19 @@ where T : new()
 
         public LinkUpPrimitiveLabel()
         {
-            _Task = Task.Run(() =>
-            {
-                while (_IsRunning)
-                {
-                    if (_RequestValue)
-                    {
-                        _SetAutoResetEvent.Reset();
-                        Owner.GetLabel(this);
-                        if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
-                            _RequestValue = false;
-                    }
-                }
-            });
+            //_Task = Task.Run(() =>
+            //{
+            //    while (_IsRunning)
+            //    {
+            //        if (_RequestValue)
+            //        {
+            //            //_SetAutoResetEvent.Reset();
+            //            Owner.GetLabel(this);
+            //            if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
+            //                _RequestValue = false;
+            //        }
+            //    }
+            //});
         }
 
         public T Value
@@ -67,7 +67,7 @@ where T : new()
                     result = RequestValue();
 #if DEBUG
                 watch.Stop();
-                Debug.WriteLine(string.Format("Get value '{0}' took {1}ms.", Name, watch.ElapsedTicks * 1000 / Stopwatch.Frequency));
+                Debug.WriteLine(string.Format("Get value '{0}' took {1:0.###}ms.", Name, (double)watch.ElapsedTicks * 1000 / Stopwatch.Frequency));
 #endif
                 return result;
             }
@@ -85,7 +85,7 @@ where T : new()
                     SetValue(value);
 #if DEBUG
                 watch.Stop();
-                Debug.WriteLine(string.Format("Set value '{0}' took {1}ms.", Name, watch.ElapsedTicks * 1000 / Stopwatch.Frequency));
+                Debug.WriteLine(string.Format("Set value '{0}' took {1:0.###}ms.", Name, (double)watch.ElapsedTicks * 1000 / Stopwatch.Frequency));
 #endif
             }
         }
@@ -273,7 +273,8 @@ where T : new()
 
         private T RequestValue()
         {
-            _RequestValue = true;
+            _GetAutoResetEvent.Reset();
+            Owner.GetLabel(this);
             if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
                 throw new Exception(string.Format("Unable to get label: {0}.", Name));
             return _Value;
@@ -282,13 +283,13 @@ where T : new()
 
         private void SetValue(T value)
         {
-            lock (_SetAutoResetEvent)
-            {
+            //lock (_SetAutoResetEvent)
+            //{
                 _SetAutoResetEvent.Reset();
                 Owner.SetLabel(this, ConvertToBytes(value));
                 if (!_SetAutoResetEvent.WaitOne(SET_REQUEST_TIMEOUT))
                     throw new Exception(string.Format("Unable to set label: {0}.", Name));
-            }
+            //}
         }
     }
 }
