@@ -64,10 +64,6 @@ namespace LinkUp.Raw
                                 catch (Exception ex) { }
                             });
 
-
-
-
-
                             if (!(_Stream as NamedPipeServerStream).IsConnected)
                             {
                                 (_Stream as NamedPipeServerStream).Close();

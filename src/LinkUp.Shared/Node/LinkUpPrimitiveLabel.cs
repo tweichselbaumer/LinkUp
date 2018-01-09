@@ -29,10 +29,10 @@ where T : new()
         private const int SET_REQUEST_TIMEOUT = 2000;
         private AutoResetEvent _SetAutoResetEvent = new AutoResetEvent(false);
         private AutoResetEvent _GetAutoResetEvent = new AutoResetEvent(false);
-        private Task _Task;
-        private bool _IsRunning = true;
+        //private Task _Task;
+        //private bool _IsRunning = true;
         private T _Value;
-        private volatile bool _RequestValue = false;
+        //private volatile bool _RequestValue = false;
 
         public LinkUpPrimitiveLabel()
         {
@@ -157,14 +157,14 @@ where T : new()
 
         public override void Dispose()
         {
-            _IsRunning = false;
-            _Task.Wait();
+            //_IsRunning = false;
+            //_Task.Wait();
         }
 
         internal override void GetDone(byte[] data)
         {
             _Value = (T)ConvertFromBytes(data);
-            _RequestValue = false;
+            //_RequestValue = false;
             _GetAutoResetEvent.Set();
         }
 
@@ -273,7 +273,9 @@ where T : new()
 
         private T RequestValue()
         {
-            _RequestValue = true;
+            //_RequestValue = true;
+            _GetAutoResetEvent.Reset();
+            Owner.GetLabel(this);
             if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
                 throw new Exception(string.Format("Unable to get label: {0}.", Name));
             return _Value;
