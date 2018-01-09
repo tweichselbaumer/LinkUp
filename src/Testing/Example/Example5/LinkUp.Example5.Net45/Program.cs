@@ -32,7 +32,8 @@ namespace LinkUp.Example5.Net45
             while (true)
             {
                 connector.SendPacket(new LinkUpPacket() { Data = data });
-                Thread.Sleep(100);
+                Console.WriteLine("ENTER FOR SET");
+                Console.ReadLine();
             }
 
             Console.Read();

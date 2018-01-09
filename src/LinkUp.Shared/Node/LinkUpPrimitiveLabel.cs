@@ -273,8 +273,7 @@ where T : new()
 
         private T RequestValue()
         {
-            _GetAutoResetEvent.Reset();
-            Owner.GetLabel(this);
+            _RequestValue = true;
             if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
                 throw new Exception(string.Format("Unable to get label: {0}.", Name));
             return _Value;
