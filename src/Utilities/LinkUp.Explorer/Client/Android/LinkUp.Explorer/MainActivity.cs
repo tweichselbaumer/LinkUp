@@ -4,7 +4,7 @@ using Android.OS;
 
 namespace LinkUp.Explorer
 {
-    [Activity(Label = "LinkUp.Explorer", MainLauncher = true)]
+    [Activity(Label = "@string/app_name", MainLauncher = true)]
     public class MainActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)
