@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-#if NET45
+#if NET45 || NETCOREAPP2_0
 using System.IO.Pipes;
 #endif
 
@@ -11,7 +11,7 @@ namespace LinkUp.Raw
 {
     public class LinkUpNamedPipeConnector : LinkUpConnector
     {
-#if NET45
+#if NET45 || NETCOREAPP2_0
         public enum Mode
         {
             Server,
@@ -120,18 +120,16 @@ namespace LinkUp.Raw
 
         public override void Dispose()
         {
-#if NET45
-#if NET45
+#if NET45 || NETCOREAPP2_0
             _IsRunning = false;
             _Task.Wait();
-#endif
             IsDisposed = true;
 #endif
         }
 
         protected override void SendData(byte[] data)
         {
-#if NET45
+#if NET45 || NETCOREAPP2_0
             _Stream.Write(data, 0, data.Length);
             _Stream.Flush();
 #endif

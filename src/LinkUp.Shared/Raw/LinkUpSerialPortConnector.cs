@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Threading;
 
-#if NET45
+#if NET45 || NETCOREAPP2_0
 using System.IO.Ports;
 #endif
 
@@ -39,6 +39,9 @@ namespace LinkUp.Raw
                     Thread.Sleep(100);
                 }
             });
+#endif
+#if NETCOREAPP2_0
+            throw new NotImplementedException();
 #endif
         }
 

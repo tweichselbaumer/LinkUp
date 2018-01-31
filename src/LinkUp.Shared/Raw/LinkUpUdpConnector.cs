@@ -1,4 +1,4 @@
-﻿#if NET45
+﻿#if NET45 || NETCOREAPP2_0
 using System.Net.Sockets;
 #endif
 using System;
@@ -10,7 +10,7 @@ namespace LinkUp.Raw
 {
     public class LinkUpUdpConnector : LinkUpConnector
     {
-#if NET45
+#if NET45 || NETCOREAPP2_0
         private UdpClient _UdpClient;
         private Task _Task;
         private bool _IsRunning = true;
@@ -43,7 +43,7 @@ namespace LinkUp.Raw
 #endif
         public override void Dispose()
         {
-#if NET45
+#if NET45 || NETCOREAPP2_0
             _IsRunning = false;
             if(_UdpClient != null)
             {
@@ -55,7 +55,7 @@ namespace LinkUp.Raw
 
         protected override void SendData(byte[] data)
         {
-#if NET45
+#if NET45 || NETCOREAPP2_0
             if (_UdpClient == null)
             {
                 Thread.Sleep(200);
