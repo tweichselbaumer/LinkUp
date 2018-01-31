@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LinkUp.Explorer.WebService.DataContract;
 using LinkUp.Explorer.WebService.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,44 +10,45 @@ namespace LinkUp.Explorer.WebService.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    public class ConnectorController : Controller
+    public class NodeController : Controller
     {
-        public ConnectorController(IConnectorRepository connectorRepository)
+        public NodeController(INodeRepository nodeRepository)
         {
-            ConnectorRepository = connectorRepository;
+            NodeRepository = nodeRepository;
         }
 
-        public IConnectorRepository ConnectorRepository
+        public INodeRepository NodeRepository
         {
             get; set;
         }
-        // GET: api/Connector
-        [HttpGet]
-        public IEnumerable<Connector> Get()
+
+            // GET: api/Node
+            [HttpGet]
+        public IEnumerable<DataContract.Node> Get()
         {
-            return ConnectorRepository.GetAll();
+            return NodeRepository.GetAll();
         }
 
-        // GET: api/Connector/5
+        // GET: api/Node/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
         }
-        
-        // POST: api/Connector
+
+        // POST: api/Node
         [HttpPost]
         public void Post([FromBody]string value)
         {
         }
-        
-        // PUT: api/Connector/5
+
+        // PUT: api/Node/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
         {
         }
 
-        // DELETE: api/Connector/5
+        // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
