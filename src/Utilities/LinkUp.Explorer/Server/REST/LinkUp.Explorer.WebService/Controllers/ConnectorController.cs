@@ -2,15 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LinkUp.Explorer.WebService.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkUp.Explorer.WebService.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Connector")]
+    [Route("api/[controller]")]
     public class ConnectorController : Controller
     {
+        public ConnectorController(IConnectorRepository connectorRepository)
+        {
+            ConnectorRepository = connectorRepository;
+        }
+
+        public IConnectorRepository ConnectorRepository
+        {
+            get; set;
+        }
         // GET: api/Connector
         [HttpGet]
         public IEnumerable<string> Get()
@@ -19,7 +29,7 @@ namespace LinkUp.Explorer.WebService.Controllers
         }
 
         // GET: api/Connector/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";

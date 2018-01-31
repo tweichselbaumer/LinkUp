@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LinkUp.Explorer.WebService.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Label")]
+    [Route("api/[controller]")]
     public class LabelController : Controller
     {
         // GET: api/Label
@@ -19,7 +19,7 @@ namespace LinkUp.Explorer.WebService.Controllers
         }
 
         // GET: api/Label/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
