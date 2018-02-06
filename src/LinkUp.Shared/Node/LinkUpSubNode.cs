@@ -1,25 +1,42 @@
 ﻿using LinkUp.Raw;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 
 namespace LinkUp.Node
 {
-    internal class LinkUpSubNode : IDisposable
+    public class LinkUpSubNode : IDisposable
     {
         private LinkUpConnector _Connector;
         private bool _IsInitialized;
         private LinkUpNode _Master;
         private string _Name;
         private ushort _NextIdentifier = 1;
+#if NET45 || NETCOREAPP2_0
+        private Timer _PingTimer;
+#endif
 
         internal LinkUpSubNode(LinkUpConnector connector, LinkUpNode master)
         {
             _Master = master;
             _Connector = connector;
             _Connector.ReveivedPacket += _Connector_ReveivedPacket;
+#if NET45 || NETCOREAPP2_0
+            _PingTimer = new Timer(1000);
+            _PingTimer.Elapsed += _PingTimer_Elapsed;
+            _PingTimer.Start();
+#endif
         }
 
-        public LinkUpConnector Connector
+#if NET45 || NETCOREAPP2_0
+        private void _PingTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (_IsInitialized)
+                _Connector.SendPacket(new LinkUpPingRequest().ToPacket());
+        }
+#endif
+        internal LinkUpConnector Connector
         {
             get
             {
@@ -29,6 +46,9 @@ namespace LinkUp.Node
 
         public void Dispose()
         {
+#if NET45 || NETCOREAPP2_0
+            _PingTimer.Stop();
+#endif
             Connector?.Dispose();
         }
 
@@ -90,7 +110,7 @@ where T : new()
                             nameResponse.Identifier = _NextIdentifier++;
                             nameResponse.LabelType = nameRequest.LabelType;
                             _Connector.SendPacket(nameResponse.ToPacket());
-                            LinkUpLabel label = _Master.AddSubLabel(string.Format("{0}/{1}",_Name, nameRequest.Name), nameRequest.LabelType);
+                            LinkUpLabel label = _Master.AddSubLabel(string.Format("{0}/{1}", _Name, nameRequest.Name), nameRequest.LabelType);
                             label.Owner = this;
                             label.ChildIdentifier = nameResponse.Identifier;
                         }

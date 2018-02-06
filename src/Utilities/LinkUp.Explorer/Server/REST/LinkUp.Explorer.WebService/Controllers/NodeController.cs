@@ -22,9 +22,9 @@ namespace LinkUp.Explorer.WebService.Controllers
             get; set;
         }
 
-            // GET: api/Node
-            [HttpGet]
-        public IEnumerable<DataContract.Node> Get()
+        // GET: api/Node
+        [HttpGet]
+        public DataContract.Node Get()
         {
             return NodeRepository.GetAll();
         }

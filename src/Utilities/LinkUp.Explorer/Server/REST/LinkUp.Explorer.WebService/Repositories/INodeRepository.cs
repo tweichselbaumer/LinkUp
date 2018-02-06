@@ -8,6 +8,6 @@ namespace LinkUp.Explorer.WebService.Repositories
 {
     public interface INodeRepository
     {
-        IEnumerable<WebService.DataContract.Node> GetAll();
+        DataContract.Node GetAll();
     }
 }

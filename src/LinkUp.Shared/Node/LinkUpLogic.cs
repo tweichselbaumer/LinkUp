@@ -32,6 +32,12 @@ namespace LinkUp.Node
                 case LinkUpLogicType.PropertySetResponse:
                     logic = new LinkUpPropertySetResponse();
                     break;
+                case LinkUpLogicType.PingRequest:
+                    logic = new LinkUpPingRequest();
+                    break;
+                case LinkUpLogicType.PingResponse:
+                    logic = new LinkUpPingResponse();
+                    break;
             }
 
             logic?.ParseFromRaw(packet.Data);

@@ -14,6 +14,7 @@ namespace LinkUp.Node
         private bool _IsInitialized;
         private bool _IsRunning = true;
         private List<LinkUpLabel> _Labels = new List<LinkUpLabel>();
+        private List<LinkUpLabel> _SubLabels = new List<LinkUpLabel>();
         private DateTime _LastUpdate;
         private LinkUpConnector _MasterConnector;
         private string _Name;
@@ -30,7 +31,7 @@ namespace LinkUp.Node
                 {
                     _Event.Reset();
                     UpdateNames();
-                    _Event.WaitOne();
+                    _Event.WaitOne(1000);
                 }
             });
         }
@@ -40,6 +41,22 @@ namespace LinkUp.Node
             get
             {
                 return _Labels.ToList();
+            }
+        }
+
+        public List<LinkUpLabel> SubLabels
+        {
+            get
+            {
+                return _SubLabels.ToList();
+            }
+        }
+
+        public List<LinkUpLabel> AllLabels
+        {
+            get
+            {
+                return _Labels.ToList().Union(_SubLabels).ToList();
             }
         }
 
@@ -88,12 +105,14 @@ namespace LinkUp.Node
             }
         }
 
+        public List<LinkUpSubNode> SubNodes { get => _SubNodes; }
+
         public T AddLabel<T>(string name) where T : LinkUpLabel, new()
         {
             T label = new T();
             if (!name.Cast<char>().All(c => char.IsLetterOrDigit(c)))
             {
-                throw new Exception("Only letters and digits are allowed for the LinkUpNode name!");
+                throw new Exception("Only letters and digits are allowed for the LinkUpLabel name!");
             }
             label.Name = string.Format("{0}/{1}", Name, name);
             if (Labels.Any(c => c.Name == label.Name))
@@ -113,14 +132,14 @@ namespace LinkUp.Node
             {
                 throw new Exception("Label with specified name already exists!");
             }
-            _Labels.Add(label);
+            _SubLabels.Add(label);
             _Event.Set();
             return label;
         }
 
         public void AddSubNode(LinkUpConnector connector)
         {
-            _SubNodes.Add(new LinkUpSubNode(connector, this));
+            SubNodes.Add(new LinkUpSubNode(connector, this));
         }
 
         public void Dispose()
@@ -131,11 +150,11 @@ namespace LinkUp.Node
                 _Event.Set();
                 _Task.Wait();
             }
-            lock (_SubNodes)
+            lock (SubNodes)
             {
-                if (_SubNodes != null)
+                if (SubNodes != null)
                 {
-                    foreach (LinkUpSubNode subnode in _SubNodes)
+                    foreach (LinkUpSubNode subnode in SubNodes)
                     {
                         subnode?.Dispose();
                     }
@@ -225,13 +244,16 @@ namespace LinkUp.Node
                             _MasterConnector.SendPacket(nameRequest.ToPacket());
                             _LastUpdate = DateTime.Now;
                         }
-                        foreach (LinkUpLabel label in _Labels.Where(c => !c.IsInitialized && c.LastUpdate.AddMilliseconds(NAME_REQUEST_TIMEOUT) < DateTime.Now))
+                        if (_IsInitialized)
                         {
-                            LinkUpNameRequest nameRequest = new LinkUpNameRequest();
-                            nameRequest.Name = label.Name;
-                            nameRequest.LabelType = label.LabelType;
-                            _MasterConnector.SendPacket(nameRequest.ToPacket());
-                            label.LastUpdate = DateTime.Now;
+                            foreach (LinkUpLabel label in _Labels.Where(c => !c.IsInitialized && c.LastUpdate.AddMilliseconds(NAME_REQUEST_TIMEOUT) < DateTime.Now))
+                            {
+                                LinkUpNameRequest nameRequest = new LinkUpNameRequest();
+                                nameRequest.Name = label.Name;
+                                nameRequest.LabelType = label.LabelType;
+                                _MasterConnector.SendPacket(nameRequest.ToPacket());
+                                label.LastUpdate = DateTime.Now;
+                            }
                         }
                     }
                 }
