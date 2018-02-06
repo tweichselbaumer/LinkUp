@@ -25,9 +25,9 @@ namespace LinkUp.Explorer.TestNode
             masterNode.AddLabel<LinkUpPrimitiveLabel<int>>("val1");
 
             LinkUpNode slave1 = CreateNode(masterNode, "slave1");
-            LinkUpNode slave2 = CreateNode(masterNode, "slave1");
+            LinkUpNode slave2 = CreateNode(masterNode, "slave2");
 
-            LinkUpNode slaveSlave1 = CreateNode(slave1, "slaveSlave1");
+            LinkUpNode slaveSlave1 = CreateNode(slave1, "slave11");
 
             Console.Read();
 

@@ -1,6 +1,7 @@
 ﻿using LinkUp.Raw;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +15,6 @@ namespace LinkUp.Node
         private bool _IsInitialized;
         private bool _IsRunning = true;
         private List<LinkUpLabel> _Labels = new List<LinkUpLabel>();
-        private List<LinkUpLabel> _SubLabels = new List<LinkUpLabel>();
         private DateTime _LastUpdate;
         private LinkUpConnector _MasterConnector;
         private string _Name;
@@ -40,23 +40,12 @@ namespace LinkUp.Node
         {
             get
             {
-                return _Labels.ToList();
-            }
-        }
-
-        public List<LinkUpLabel> SubLabels
-        {
-            get
-            {
-                return _SubLabels.ToList();
-            }
-        }
-
-        public List<LinkUpLabel> AllLabels
-        {
-            get
-            {
-                return _Labels.ToList().Union(_SubLabels).ToList();
+                List<LinkUpLabel> result;
+                lock (_Labels)
+                {
+                    result = _Labels.ToList();
+                }
+                return result;
             }
         }
 
@@ -119,7 +108,10 @@ namespace LinkUp.Node
             {
                 throw new Exception("Label with specified name already exists!");
             }
-            _Labels.Add(label);
+            lock (_Labels)
+            {
+                _Labels.Add(label);
+            }
             _Event.Set();
             return label;
         }
@@ -132,7 +124,10 @@ namespace LinkUp.Node
             {
                 throw new Exception("Label with specified name already exists!");
             }
-            _SubLabels.Add(label);
+            lock (_Labels)
+            {
+                _Labels.Add(label);
+            }
             _Event.Set();
             return label;
         }
@@ -246,13 +241,16 @@ namespace LinkUp.Node
                         }
                         if (_IsInitialized)
                         {
-                            foreach (LinkUpLabel label in _Labels.Where(c => !c.IsInitialized && c.LastUpdate.AddMilliseconds(NAME_REQUEST_TIMEOUT) < DateTime.Now))
+                            lock (_Labels)
                             {
-                                LinkUpNameRequest nameRequest = new LinkUpNameRequest();
-                                nameRequest.Name = label.Name;
-                                nameRequest.LabelType = label.LabelType;
-                                _MasterConnector.SendPacket(nameRequest.ToPacket());
-                                label.LastUpdate = DateTime.Now;
+                                foreach (LinkUpLabel label in _Labels.Where(c => !c.IsInitialized && c.LastUpdate.AddMilliseconds(NAME_REQUEST_TIMEOUT) < DateTime.Now))
+                                {
+                                    LinkUpNameRequest nameRequest = new LinkUpNameRequest();
+                                    nameRequest.Name = label.Name;
+                                    nameRequest.LabelType = label.LabelType;
+                                    _MasterConnector.SendPacket(nameRequest.ToPacket());
+                                    label.LastUpdate = DateTime.Now;
+                                }
                             }
                         }
                     }

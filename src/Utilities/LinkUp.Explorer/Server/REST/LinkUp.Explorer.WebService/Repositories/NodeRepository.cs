@@ -21,16 +21,9 @@ namespace LinkUp.Explorer.WebService.Repositories
             DataContract.Node node = new DataContract.Node();
             node.Name = _Node.Name;
 
-            foreach (LinkUpLabel linkUpLabel in _Node.Labels)
+            foreach (LinkUpLabel label in _Node.Labels)
             {
-                Label label = new Label();
-                label.Name = linkUpLabel.Name;
-                node.Labels.Add(label);
-            }
-
-            foreach (LinkUpLabel label in _Node.SubLabels)
-            {
-                AddNode(label.Name.Split('/').ToList(), node);
+                AddNode(label.Name.Split('/').Skip(1).ToList(), node);
             }
             return node;
         }
@@ -43,7 +36,7 @@ namespace LinkUp.Explorer.WebService.Repositories
                 if (!parent.Children.Any(c => c.Name == labelnames[0]))
                 {
                     node = new DataContract.Node();
-                    node.Name = _Node.Name;
+                    node.Name = labelnames[0];
                     parent.Children.Add(node);
                 }
                 else

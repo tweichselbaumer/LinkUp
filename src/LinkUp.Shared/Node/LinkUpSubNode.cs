@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+#if NET45 || NETCOREAPP2_0
 using System.Timers;
+#endif
 
 namespace LinkUp.Node
 {
@@ -110,7 +112,7 @@ where T : new()
                             nameResponse.Identifier = _NextIdentifier++;
                             nameResponse.LabelType = nameRequest.LabelType;
                             _Connector.SendPacket(nameResponse.ToPacket());
-                            LinkUpLabel label = _Master.AddSubLabel(string.Format("{0}/{1}", _Name, nameRequest.Name), nameRequest.LabelType);
+                            LinkUpLabel label = _Master.AddSubLabel(nameRequest.Name, nameRequest.LabelType);
                             label.Owner = this;
                             label.ChildIdentifier = nameResponse.Identifier;
                         }
