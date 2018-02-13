@@ -21,6 +21,11 @@ namespace LinkUp.Node
         private List<LinkUpSubNode> _SubNodes = new List<LinkUpSubNode>();
         private Task _Task;
         private AutoResetEvent _Event;
+        private int _LostPings = 0;
+
+#if NET45 || NETCOREAPP2_0
+        private System.Timers.Timer _PingTimer;
+#endif
 
         public LinkUpNode()
         {
@@ -34,7 +39,33 @@ namespace LinkUp.Node
                     _Event.WaitOne(1000);
                 }
             });
+#if NET45 || NETCOREAPP2_0
+            _PingTimer = new System.Timers.Timer(500);
+            _PingTimer.Elapsed += _PingTimer_Elapsed;
+            _PingTimer.Start();
+#endif
         }
+
+#if NET45 || NETCOREAPP2_0
+        private void _PingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (_IsInitialized)
+            {
+                _LostPings++;
+            }
+            if (_LostPings > 10)
+            {
+                _IsInitialized = false;
+                lock (_Labels)
+                {
+                    foreach (LinkUpLabel label in _Labels)
+                    {
+                        label.IsInitialized = false;
+                    }
+                }
+            }
+        }
+#endif
 
         public List<LinkUpLabel> Labels
         {
@@ -170,7 +201,7 @@ namespace LinkUp.Node
                 {
                     //TODO:ERROR??
                 }
-                if (logic is LinkUpNameResponse)
+                else if (logic is LinkUpNameResponse)
                 {
                     LinkUpNameResponse nameResponse = logic as LinkUpNameResponse;
                     LinkUpLabel label = _Labels.FirstOrDefault(c => c.Name == nameResponse.Name);
@@ -185,7 +216,7 @@ namespace LinkUp.Node
                         _IsInitialized = true;
                     }
                 }
-                if (logic is LinkUpPropertyGetRequest)
+                else if (logic is LinkUpPropertyGetRequest)
                 {
                     LinkUpPropertyGetRequest propertyGetRequest = (LinkUpPropertyGetRequest)logic;
                     LinkUpPropertyGetResponse propertyGetResponse = new LinkUpPropertyGetResponse();
@@ -201,7 +232,7 @@ namespace LinkUp.Node
                         //TODO: ERROR?
                     }
                 }
-                if (logic is LinkUpPropertySetRequest)
+                else if (logic is LinkUpPropertySetRequest)
                 {
                     LinkUpPropertySetRequest propertySetRequest = (LinkUpPropertySetRequest)logic;
                     LinkUpPropertySetResponse propertyGetResponse = new LinkUpPropertySetResponse();
@@ -216,6 +247,11 @@ namespace LinkUp.Node
                     {
                         //TODO: ERROR?
                     }
+                }
+                else if (logic is LinkUpPingRequest)
+                {
+                    connector.SendPacket(new LinkUpPingResponse().ToPacket());
+                    _LostPings = 0;
                 }
             }
             catch (Exception)

@@ -15,6 +15,7 @@ namespace LinkUp.Node
         private LinkUpNode _Master;
         private string _Name;
         private ushort _NextIdentifier = 1;
+        private int _LostPings = 0;
 #if NET45 || NETCOREAPP2_0
         private Timer _PingTimer;
 #endif
@@ -25,7 +26,7 @@ namespace LinkUp.Node
             _Connector = connector;
             _Connector.ReveivedPacket += _Connector_ReveivedPacket;
 #if NET45 || NETCOREAPP2_0
-            _PingTimer = new Timer(1000);
+            _PingTimer = new Timer(500);
             _PingTimer.Elapsed += _PingTimer_Elapsed;
             _PingTimer.Start();
 #endif
@@ -35,7 +36,14 @@ namespace LinkUp.Node
         private void _PingTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (_IsInitialized)
+            {
                 _Connector.SendPacket(new LinkUpPingRequest().ToPacket());
+                _LostPings++;
+            }
+            if(_LostPings > 10)
+            {
+                _IsInitialized = false;
+            }
         }
 #endif
         internal LinkUpConnector Connector
@@ -118,11 +126,11 @@ where T : new()
                         }
                     }
                 }
-                if (logic is LinkUpNameResponse)
+                else if (logic is LinkUpNameResponse)
                 {
                     //TODO:ERROR??
                 }
-                if (logic is LinkUpPropertyGetResponse)
+                else if (logic is LinkUpPropertyGetResponse)
                 {
                     LinkUpPropertyGetResponse propertyGetResponse = (LinkUpPropertyGetResponse)logic;
                     LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == propertyGetResponse.Identifier);
@@ -134,7 +142,7 @@ where T : new()
                         }
                     }
                 }
-                if (logic is LinkUpPropertySetResponse)
+                else if (logic is LinkUpPropertySetResponse)
                 {
                     LinkUpPropertySetResponse propertySetResponse = (LinkUpPropertySetResponse)logic;
                     LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == propertySetResponse.Identifier);
@@ -145,6 +153,10 @@ where T : new()
                             (label as LinkUpPrimitiveBaseLabel).SetDone();
                         }
                     }
+                }
+                else if (logic is LinkUpPingResponse)
+                {
+                    _LostPings = 0;
                 }
             }
             catch (Exception)
