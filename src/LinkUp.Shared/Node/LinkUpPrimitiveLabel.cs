@@ -90,6 +90,14 @@ where T : new()
             }
         }
 
+        public override object ValueObject
+        {
+            get
+            {
+                return Value;
+            }
+        }
+
         internal override byte[] Data
         {
             set
@@ -286,10 +294,10 @@ where T : new()
         {
             //lock (_SetAutoResetEvent)
             //{
-                _SetAutoResetEvent.Reset();
-                Owner.SetLabel(this, ConvertToBytes(value));
-                if (!_SetAutoResetEvent.WaitOne(SET_REQUEST_TIMEOUT))
-                    throw new Exception(string.Format("Unable to set label: {0}.", Name));
+            _SetAutoResetEvent.Reset();
+            Owner.SetLabel(this, ConvertToBytes(value));
+            if (!_SetAutoResetEvent.WaitOne(SET_REQUEST_TIMEOUT))
+                throw new Exception(string.Format("Unable to set label: {0}.", Name));
             //}
         }
     }

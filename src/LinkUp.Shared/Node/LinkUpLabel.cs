@@ -81,6 +81,11 @@ namespace LinkUp.Node
             }
         }
 
+        public abstract object ValueObject
+        {
+            get;
+        }
+
         internal ushort ParentIdentifier
         {
             get

@@ -35,6 +35,7 @@ namespace LinkUp.Explorer.WebService
 
             services.AddSingleton<IConnectorRepository>(new ConnectorRepository(_Node));
             services.AddSingleton<INodeRepository>(new NodeRepository(_Node));
+            services.AddSingleton<ILabelRepository>(new LabelRepository(_Node));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

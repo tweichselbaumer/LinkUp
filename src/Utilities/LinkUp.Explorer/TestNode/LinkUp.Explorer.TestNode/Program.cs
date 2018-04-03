@@ -7,11 +7,14 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace LinkUp.Explorer.TestNode
 {
     class Program
     {
+        private static LinkUpNode masterNode = new LinkUpNode();
+
         static void Main(string[] args)
         {
             LinkUpUdpConnector apiConnector = new LinkUpUdpConnector(IPAddress.Parse("127.0.0.1"), IPAddress.Parse("127.0.0.1"), 1000, 2000);
@@ -19,7 +22,7 @@ namespace LinkUp.Explorer.TestNode
             apiConnector.ReveivedPacket += ReveivedPacket;
             apiConnector.SentPacket += SentPacket;
 
-            LinkUpNode masterNode = new LinkUpNode();
+
             masterNode.Name = "master";
             masterNode.MasterConnector = apiConnector;
             masterNode.AddLabel<LinkUpPrimitiveLabel<int>>("val1");
@@ -29,8 +32,20 @@ namespace LinkUp.Explorer.TestNode
 
             LinkUpNode slaveSlave1 = CreateNode(slave1, "slave11");
 
+            Timer t = new Timer(500);
+            t.Elapsed += T_Elapsed;
+            t.Start();
+
             Console.Read();
 
+        }
+
+        private static void T_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            foreach (LinkUpPrimitiveLabel<int> label in masterNode.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
+            {
+                label.Value = new Random((int)DateTime.Now.Ticks).Next(1, 100);
+            }
         }
 
         private static LinkUpNode CreateNode(LinkUpNode masterNode, string name)
