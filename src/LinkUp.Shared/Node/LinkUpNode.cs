@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -145,6 +146,25 @@ namespace LinkUp.Node
             }
             _Event.Set();
             return label;
+        }
+
+        public void RemoveLabel(string name)
+        {
+            string fullName = string.Format("{0}/{1}", Name, name);
+            if (Labels.Any(c => c.Name == fullName))
+            {
+                _Labels.RemoveAll(c => c.Name == fullName);
+            }
+            else
+            {
+                throw new Exception("Label with specified name doesn't exists!");
+            }
+        }
+
+        internal void RemoveLabels(string name)
+        {
+            string pattern = string.Format("{0}\\/{1}\\/[\\S]{{1,}}", _Name, name);
+            _Labels.RemoveAll(c => Regex.Match(c.Name, pattern).Success);
         }
 
         internal LinkUpLabel AddSubLabel(string name, LinkUpLabelType type)

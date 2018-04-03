@@ -40,8 +40,10 @@ namespace LinkUp.Node
                 _Connector.SendPacket(new LinkUpPingRequest().ToPacket());
                 _LostPings++;
             }
-            if(_LostPings > 10)
+            if (_LostPings > 10)
             {
+                if (_IsInitialized)
+                    _Master.RemoveLabels(_Name);
                 _IsInitialized = false;
             }
         }
@@ -110,7 +112,7 @@ where T : new()
                             nameResponse.Name = nameRequest.Name;
                             nameResponse.Identifier = 0;
                             nameResponse.LabelType = LinkUpLabelType.Node;
-                            //TODO: remove old labels
+                            _Master.RemoveLabels(_Name);
                             _Connector.SendPacket(nameResponse.ToPacket());
                         }
                         if (nameRequest.LabelType != LinkUpLabelType.Node)
