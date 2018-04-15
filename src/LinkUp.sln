@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LinkUp.Cpp", "LinkUp.Cpp", "{4E0ECFF1-9728-4DDB-B175-8C7DBC15A54F}"
 EndProject
@@ -108,6 +108,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestNode", "TestNode", "{989EC469-3714-4C9D-8599-476313C8A0AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Explorer.TestNode", "Utilities\LinkUp.Explorer\TestNode\LinkUp.Explorer.TestNode\LinkUp.Explorer.TestNode.csproj", "{F5E07707-D65B-43E9-BD05-496C9B59D6BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Explorer.Web.Data", "Utilities\LinkUp.Explorer\Data\LinkUp.Explorer.Web.Data\LinkUp.Explorer.Web.Data.csproj", "{B286A304-05C5-4C43-AB96-2A5B1B986818}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{8D2F3C53-10DA-4A46-ACA0-5BDB5463454E}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -509,6 +513,22 @@ Global
 		{F5E07707-D65B-43E9-BD05-496C9B59D6BD}.Release|x64.Build.0 = Release|Any CPU
 		{F5E07707-D65B-43E9-BD05-496C9B59D6BD}.Release|x86.ActiveCfg = Release|Any CPU
 		{F5E07707-D65B-43E9-BD05-496C9B59D6BD}.Release|x86.Build.0 = Release|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Debug|ARM.Build.0 = Debug|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Debug|x64.Build.0 = Debug|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Debug|x86.Build.0 = Debug|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Release|ARM.ActiveCfg = Release|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Release|ARM.Build.0 = Release|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Release|x64.ActiveCfg = Release|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Release|x64.Build.0 = Release|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Release|x86.ActiveCfg = Release|Any CPU
+		{B286A304-05C5-4C43-AB96-2A5B1B986818}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -560,6 +580,8 @@ Global
 		{16C5F4DC-E500-4EF4-9FF4-45728F334199} = {DE3301FB-9C0F-4840-9341-DAEBF192D385}
 		{989EC469-3714-4C9D-8599-476313C8A0AB} = {6A64E9C5-936B-4D08-BAF9-668E7CA4B6F2}
 		{F5E07707-D65B-43E9-BD05-496C9B59D6BD} = {989EC469-3714-4C9D-8599-476313C8A0AB}
+		{B286A304-05C5-4C43-AB96-2A5B1B986818} = {8D2F3C53-10DA-4A46-ACA0-5BDB5463454E}
+		{8D2F3C53-10DA-4A46-ACA0-5BDB5463454E} = {6A64E9C5-936B-4D08-BAF9-668E7CA4B6F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68B5C56E-8885-410E-8FE7-97DD65BCE5B1}

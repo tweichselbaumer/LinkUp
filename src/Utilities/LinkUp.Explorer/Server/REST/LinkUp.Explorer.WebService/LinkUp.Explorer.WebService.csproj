@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\LinkUp.DotnetCore\LinkUp.DotnetCore.csproj" />
+    <ProjectReference Include="..\..\..\Data\LinkUp.Explorer.Web.Data\LinkUp.Explorer.Web.Data.csproj" />
   </ItemGroup>
 
 </Project>
