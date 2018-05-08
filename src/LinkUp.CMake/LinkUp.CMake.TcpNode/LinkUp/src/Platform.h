@@ -15,7 +15,7 @@
 #define PACKED
 #pragma pack(1)
 #include <time.h>
-//#define micros (uint32_t)1000*1000/CLOCKS_PER_SEC*clock
+#define micros (uint32_t)1000*1000/CLOCKS_PER_SEC*clock
 #endif
 
 #ifdef __linux
