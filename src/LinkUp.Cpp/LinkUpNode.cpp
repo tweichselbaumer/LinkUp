@@ -7,7 +7,7 @@ uint16_t LinkUpNode::getRaw(uint8_t* pData, uint16_t nMax)
 
 void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 {
-#ifdef _WINDOWS || __linux
+#ifdef _WINDOWS | __linux
 	uint32_t nTime = (uint32_t)1000 * 1000 / CLOCKS_PER_SEC * clock();
 #else
 	uint32_t nTime = micros();
@@ -239,7 +239,7 @@ void* LinkUpLabel::get()
 }
 
 void LinkUpLabel::progress(LinkUpRaw* pConnector) {
-#ifdef _WINDOWS || __linux
+#ifdef _WINDOWS | __linux
 	uint32_t nTime = (uint32_t)1000 * 1000 / CLOCKS_PER_SEC * clock();
 #else
 	uint32_t nTime = micros();

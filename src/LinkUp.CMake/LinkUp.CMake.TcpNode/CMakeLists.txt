@@ -17,7 +17,7 @@ file(GLOB_RECURSE linkup_tcp_SOURCE_FILES "${PROJECT_SOURCE_DIR}/src"
 )
 add_subdirectory (${PROJECT_SOURCE_DIR}/LinkUp)
 
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system thread)
 include_directories(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
