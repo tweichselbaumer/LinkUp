@@ -109,7 +109,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestNode", "TestNode", "{98
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Explorer.TestNode", "Utilities\LinkUp.Explorer\TestNode\LinkUp.Explorer.TestNode\LinkUp.Explorer.TestNode.csproj", "{F5E07707-D65B-43E9-BD05-496C9B59D6BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Explorer.Web.Data", "Utilities\LinkUp.Explorer\Data\LinkUp.Explorer.Web.Data\LinkUp.Explorer.Web.Data.csproj", "{B286A304-05C5-4C43-AB96-2A5B1B986818}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkUp.Explorer.Web.Data", "Utilities\LinkUp.Explorer\Data\LinkUp.Explorer.Web.Data\LinkUp.Explorer.Web.Data.csproj", "{B286A304-05C5-4C43-AB96-2A5B1B986818}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{8D2F3C53-10DA-4A46-ACA0-5BDB5463454E}"
 EndProject
