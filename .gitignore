@@ -244,3 +244,5 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/src/LinkUp.CMake/LinkUp.CMake.TcpNode/lib
+/src/LinkUp.CMake/LinkUp.CMake.TcpNode/LinkUp/src

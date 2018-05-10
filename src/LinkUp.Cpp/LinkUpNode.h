@@ -110,7 +110,7 @@ class LinkUpNode
 private:
 	bool isInitialized = false;
 	uint16_t nIdentifier = 0;
-	LinkUpRaw connector;
+	LinkUpRaw connector = {};
 	struct {
 		uint32_t nInitTryTimeout;
 	} timestamps;
@@ -123,6 +123,7 @@ private:
 	void receivedPropertyGetResponse(LinkUpPacket packet, LinkUpPropertyGetResponse* pPropertyGetResponse);
 	void receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest);
 	void receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse);
+	void receivedPingRequest(LinkUpPacket packet);
 public:
 	void progress(uint8_t* pData, uint16_t nCount);
 	uint16_t getRaw(uint8_t* pData, uint16_t nMax);

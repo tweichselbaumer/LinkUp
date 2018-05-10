@@ -5,18 +5,16 @@
 
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
-#include "tcpserver/TcpServer.h"
+#include "socket/tcp_server.h"
 
 using boost::asio::ip::tcp;
 using namespace std;
 
 boost::asio::io_service io_service;
 
-void WorkerThread()
+void doWork()
 {
-	std::cout << "Thread Start\n";
 	io_service.run();
-	std::cout << "Thread Finish\n";
 }
 
 
@@ -26,16 +24,19 @@ int main(int argc, char* argv[])
 	{
 		LinkUpNode linkUpNode = {};
 		linkUpNode.init("test");
+		LinkUpLabel* label = linkUpNode.addLabel("test1", LinkUpLabelType::Int32);
+		*((int32_t*)(label->get())) = 12;
+
 		boost::shared_ptr< boost::asio::io_service::work > work(
 			new boost::asio::io_service::work(io_service)
 		);
 
-		TcpServer server(io_service, 3000, &linkUpNode);
+		tcp_server server(io_service, 3000, &linkUpNode, 1);
 
 		std::cout << "Press [return] to exit." << std::endl;
 
 		boost::thread_group worker_threads;
-		worker_threads.create_thread(WorkerThread);
+		worker_threads.create_thread(doWork);
 
 		std::cin.get();
 

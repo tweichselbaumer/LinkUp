@@ -31,5 +31,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpSerialPortConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpUdpConnector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpTcpClientConnector.cs" />
   </ItemGroup>
 </Project>

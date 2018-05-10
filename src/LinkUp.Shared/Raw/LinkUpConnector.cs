@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LinkUp.Raw
 {
@@ -51,7 +53,16 @@ namespace LinkUp.Raw
         {
             foreach (LinkUpPacket packet in _Converter.ConvertFromReceived(data))
             {
-                ReveivedPacket?.Invoke(this, packet);
+                if (ReveivedPacket != null)
+                {
+                    var receivers = ReveivedPacket.GetInvocationList();
+                    foreach (ReveicedPacketEventHandler receiver in receivers)
+                    {
+                        receiver.BeginInvoke(this, packet, null, null);
+                    }
+                }
+
+                //ReveivedPacket?.Invoke(this, packet);
             }
         }
 

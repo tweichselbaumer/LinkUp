@@ -77,6 +77,9 @@ void LinkUpNode::receivedPacket(LinkUpPacket packet)
 		case LinkUpLogicType::PropertySetResponse:
 			receivedPropertySetResponse(packet, (LinkUpPropertySetResponse*)logic->pInnerHeader);
 			break;
+		case LinkUpLogicType::PingRequest:
+			receivedPingRequest(packet);
+			break;
 		default:
 			break;
 		}
@@ -155,6 +158,20 @@ void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertyS
 }
 
 void LinkUpNode::receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse) {
+}
+
+void LinkUpNode::receivedPingRequest(LinkUpPacket packet)
+{
+	LinkUpPacket response;
+	response.nLength = sizeof(LinkUpLogic);
+	response.pData = (uint8_t*)calloc(response.nLength, sizeof(uint8_t));
+
+	LinkUpLogic* logic = (LinkUpLogic*)response.pData;
+	LinkUpPropertyGetResponse* getResponse = (LinkUpPropertyGetResponse*)logic->pInnerHeader;
+
+	logic->nLogicType = LinkUpLogicType::PingResponse;
+
+	connector.send(response);
 }
 
 LinkUpLabel* LinkUpNode::addLabel(const char* pName, LinkUpLabelType type)
