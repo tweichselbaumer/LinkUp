@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace LinkUp.Explorer.WebService.DataContract
+﻿namespace LinkUp.Explorer.WebService.DataContract
 {
     public class Connector
     {

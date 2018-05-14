@@ -1,19 +1,18 @@
 ﻿using Android.App;
-using Android.Widget;
 using Android.OS;
-using RestSharp;
-using System.Collections.Generic;
+using Android.Widget;
 using LinkUp.Explorer.WebService.DataContract;
 using Newtonsoft.Json;
-using System;
+using RestSharp;
+using System.Collections.Generic;
 
 namespace LinkUp.Explorer
 {
-
     [Activity(Label = "@string/app_name", MainLauncher = true)]
     public class MainActivity : Activity
     {
         private ListView _ListView;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -52,4 +51,3 @@ namespace LinkUp.Explorer
         }
     }
 }
-

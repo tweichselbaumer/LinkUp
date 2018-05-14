@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace LinkUp.Node
 {
@@ -24,14 +20,15 @@ where T : IConvertible, new()
 where T : new()
 #endif
     {
-
         private const int GET_REQUEST_TIMEOUT = 2000;
         private const int SET_REQUEST_TIMEOUT = 2000;
         private AutoResetEvent _SetAutoResetEvent = new AutoResetEvent(false);
         private AutoResetEvent _GetAutoResetEvent = new AutoResetEvent(false);
+
         //private Task _Task;
         //private bool _IsRunning = true;
         private T _Value;
+
         //private volatile bool _RequestValue = false;
 
         public LinkUpPrimitiveLabel()
@@ -288,7 +285,6 @@ where T : new()
                 throw new Exception(string.Format("Unable to get label: {0}.", Name));
             return _Value;
         }
-
 
         private void SetValue(T value)
         {

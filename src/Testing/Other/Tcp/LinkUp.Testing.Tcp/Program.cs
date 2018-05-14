@@ -1,18 +1,36 @@
 ﻿using LinkUp.Node;
 using LinkUp.Raw;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinkUp.Testing.Tcp
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void ClientToServer_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
+        {
+            lock (Console.Out)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("- Reveived:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+                Console.ResetColor();
+            }
+        }
+
+        private static void ClientToServer_SentPacket(LinkUpConnector connector, LinkUpPacket packet)
+        {
+            lock (Console.Out)
+            {
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine("- Sent:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+                Console.ResetColor();
+            }
+        }
+
+        private static void Main(string[] args)
         {
             using (LinkUpTcpClientConnector connector = new LinkUpTcpClientConnector(IPAddress.Parse("127.0.0.1"), 3000))
             {
@@ -27,7 +45,6 @@ namespace LinkUp.Testing.Tcp
 
                 Task.Run(() =>
                 {
-
                     while (running)
                     {
                         try
@@ -36,7 +53,6 @@ namespace LinkUp.Testing.Tcp
                             {
                                 if (lab is LinkUpPrimitiveLabel<Int32>)
                                 {
-                                    
                                     lock (Console.Out)
                                     {
                                         int value = (lab as LinkUpPrimitiveLabel<Int32>).Value;
@@ -64,27 +80,6 @@ namespace LinkUp.Testing.Tcp
                 running = false;
                 connector.Dispose();
             }
-        }
-
-        private static void ClientToServer_SentPacket(LinkUpConnector connector, LinkUpPacket packet)
-        {
-            lock (Console.Out)
-            {
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine("- Sent:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
-                Console.ResetColor();
-            }
-        }
-
-        private static void ClientToServer_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
-        {
-            lock (Console.Out)
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("- Reveived:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
-                Console.ResetColor();
-            }
-
         }
     }
 }

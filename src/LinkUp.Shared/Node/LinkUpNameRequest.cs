@@ -1,26 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 
 namespace LinkUp.Node
 {
     internal class LinkUpNameRequest : LinkUpLogic
     {
-        private string _Name;
         private LinkUpLabelType _LabelType;
-
-        public string Name
-        {
-            get
-            {
-                return _Name;
-            }
-
-            set
-            {
-                _Name = value;
-            }
-        }
+        private string _Name;
 
         public LinkUpLabelType LabelType
         {
@@ -32,6 +18,19 @@ namespace LinkUp.Node
             set
             {
                 _LabelType = value;
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return _Name;
+            }
+
+            set
+            {
+                _Name = value;
             }
         }
 

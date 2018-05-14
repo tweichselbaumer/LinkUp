@@ -1,20 +1,32 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LinkUp.Raw
 {
     public delegate void ReveicedPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
+
     public delegate void SentPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
 
     public abstract class LinkUpConnector : IDisposable
     {
         private LinkUpConverter _Converter = new LinkUpConverter();
-        private string _Name;
         private bool _IsDisposed;
+        private string _Name;
 
         public event ReveicedPacketEventHandler ReveivedPacket;
+
         public event SentPacketEventHandler SentPacket;
+
+        public bool IsDisposed
+        {
+            get
+            {
+                return _IsDisposed;
+            }
+            protected set
+            {
+                _IsDisposed = value;
+            }
+        }
 
         public string Name
         {
@@ -26,18 +38,6 @@ namespace LinkUp.Raw
             set
             {
                 _Name = value;
-            }
-        }
-
-        public bool IsDisposed
-        {
-            get
-            {
-                return _IsDisposed;
-            }
-            protected set
-            {
-                _IsDisposed = value;
             }
         }
 

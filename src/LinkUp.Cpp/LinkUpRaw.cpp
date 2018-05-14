@@ -191,7 +191,7 @@ uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint16_t nMax)
 			{
 				if (skipOut)
 				{
-					pData[nBytesSend] = nNextByte^ LINKUP_RAW_XOR;
+					pData[nBytesSend] = nNextByte ^ LINKUP_RAW_XOR;
 				}
 				else
 				{
@@ -293,7 +293,7 @@ void LinkUpRaw::progress(uint8_t *pData, uint16_t nCount)
 					skipIn = false;
 
 					pProgressingIn->packet.nLength |= (nNextByte << 8);
-					
+
 					nBytesToRead = pProgressingIn->packet.nLength;
 
 					if (pProgressingIn->packet.nLength > 0)

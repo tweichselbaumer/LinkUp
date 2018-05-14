@@ -5,19 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GyroWpf
 {
@@ -29,47 +18,24 @@ namespace GyroWpf
         //const string DATA_PORT = "COM3";
         //const string DEBUG_PORT = "COM3";
 
-        const int DATA_BAUD = 2000000;
-        const int DEBUG_BAUD = 250000;
-
-        SynchronizationContext Context;
-
-
-        public List<LinkUpPacket> Data
-        {
-            get { return (List<LinkUpPacket>)GetValue(DataProperty); }
-            set { SetValue(DataProperty, value); }
-        }
-
-
-
-        public int Count
-        {
-            get { return (int)GetValue(CountProperty); }
-            set { SetValue(CountProperty, value); }
-        }
-
         // Using a DependencyProperty as the backing store for Count.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CountProperty =
             DependencyProperty.Register("Count", typeof(int), typeof(MainWindow), new PropertyMetadata(0));
-
-
 
         // Using a DependencyProperty as the backing store for Data.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(List<LinkUpPacket>), typeof(MainWindow), new PropertyMetadata(new List<LinkUpPacket>()));
 
+        private const int DATA_BAUD = 2000000;
+        private const int DEBUG_BAUD = 250000;
 
+        private bool addData = false;
+        private LinkUpSerialPortConnector connector;
+        private SynchronizationContext Context;
 
+        private SerialPort port;
 
-
-        bool addData = false;
-
-        SerialPort port;
-        LinkUpSerialPortConnector connector;
-        Stopwatch watch;
-
-
+        private Stopwatch watch;
 
         public MainWindow(string port)
         {
@@ -89,53 +55,18 @@ namespace GyroWpf
             connector.ReveivedPacket += Connector_ReveivedPacket;
         }
 
-        private void Connector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
+        public int Count
         {
-            if (addData)
-            {
-                Context.Post((c) =>
-                {
-                    lock (Data)
-                    {
-                        Data.Add(packet);
-                        Count = Data.Count;
-                    }
-                }, null);
-            }
-            //Console.WriteLine("{0} - Receive:\n\t{1}", watch.ElapsedTicks * 1000 / Stopwatch.Frequency, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+            get { return (int)GetValue(CountProperty); }
+            set { SetValue(CountProperty, value); }
         }
 
-        //private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        //{
-        //    if (sender is SerialPort)
-        //    {
-        //        SerialPort port = (SerialPort)sender;
-        //        lock (Console.Out)
-        //        {
-        //            Console.ForegroundColor = ConsoleColor.Cyan;
-        //            Console.WriteLine("{0} - Debug:\t{1}", watch.ElapsedTicks * 1000 / Stopwatch.Frequency, port.ReadExisting());
-        //            Console.ResetColor();
-        //        }
-        //    }
-        //}
-
-        private void Button_Click_Start(object sender, RoutedEventArgs e)
+        public List<LinkUpPacket> Data
         {
-            Context.Post((c) =>
-            {
-                lock (Data)
-                {
-                    Data.Clear();
-                    addData = true;
-                    Count = Data.Count;
-                }
-            }, null);
+            get { return (List<LinkUpPacket>)GetValue(DataProperty); }
+            set { SetValue(DataProperty, value); }
         }
 
-        private void Button_Click_Stop(object sender, RoutedEventArgs e)
-        {
-            addData = false;
-        }
         private void Button_Click_Save(object sender, RoutedEventArgs e)
         {
             Context.Post((c) =>
@@ -158,7 +89,7 @@ namespace GyroWpf
                         }
                         catch
                         {
-                            // Handle any errors... 
+                            // Handle any errors...
                         }
                         finally
                         {
@@ -167,10 +98,56 @@ namespace GyroWpf
                             writeStream.Close();
                         }
                     }
-
                 }
                 catch (Exception) { }
             }, null);
+        }
+
+        private void Button_Click_Start(object sender, RoutedEventArgs e)
+        {
+            Context.Post((c) =>
+            {
+                lock (Data)
+                {
+                    Data.Clear();
+                    addData = true;
+                    Count = Data.Count;
+                }
+            }, null);
+        }
+
+        //private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        //{
+        //    if (sender is SerialPort)
+        //    {
+        //        SerialPort port = (SerialPort)sender;
+        //        lock (Console.Out)
+        //        {
+        //            Console.ForegroundColor = ConsoleColor.Cyan;
+        //            Console.WriteLine("{0} - Debug:\t{1}", watch.ElapsedTicks * 1000 / Stopwatch.Frequency, port.ReadExisting());
+        //            Console.ResetColor();
+        //        }
+        //    }
+        //}
+        private void Button_Click_Stop(object sender, RoutedEventArgs e)
+        {
+            addData = false;
+        }
+
+        private void Connector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
+        {
+            if (addData)
+            {
+                Context.Post((c) =>
+                {
+                    lock (Data)
+                    {
+                        Data.Add(packet);
+                        Count = Data.Count;
+                    }
+                }, null);
+            }
+            //Console.WriteLine("{0} - Receive:\n\t{1}", watch.ElapsedTicks * 1000 / Stopwatch.Frequency, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
         }
     }
 }

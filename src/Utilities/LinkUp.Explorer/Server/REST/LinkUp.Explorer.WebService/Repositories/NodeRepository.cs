@@ -1,21 +1,19 @@
-﻿using System;
+﻿using LinkUp.Explorer.WebService.DataContract;
+using LinkUp.Node;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using LinkUp.Explorer.WebService.DataContract;
-using LinkUp.Node;
 
 namespace LinkUp.Explorer.WebService.Repositories
 {
     public class NodeRepository : INodeRepository
     {
-
         private LinkUpNode _Node;
 
         public NodeRepository(LinkUpNode node)
         {
             _Node = node;
         }
+
         public DataContract.Node GetAll()
         {
             DataContract.Node node = new DataContract.Node();

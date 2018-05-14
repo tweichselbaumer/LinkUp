@@ -1,41 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
+﻿using Android.App;
 using Android.Views;
 using Android.Widget;
 using LinkUp.Explorer.WebService.DataContract;
+using System.Collections.Generic;
 
 namespace LinkUp.Explorer
 {
-
     public class MainActivityAdapter : BaseAdapter<Node>
     {
-        List<Node> items;
-        Activity context;
+        private Activity context;
+        private List<Node> items;
+
         public MainActivityAdapter(Activity context, List<Node> items)
             : base()
         {
             this.context = context;
             this.items = items;
         }
-        public override long GetItemId(int position)
-        {
-            return position;
-        }
-        public override Node this[int position]
-        {
-            get { return items[position]; }
-        }
+
         public override int Count
         {
             get { return items.Count; }
         }
+
+        public override Node this[int position]
+        {
+            get { return items[position]; }
+        }
+
+        public override long GetItemId(int position)
+        {
+            return position;
+        }
+
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var item = items[position];

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LinkUp.Raw;
+using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
@@ -7,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using LinkUp.Raw;
 
 namespace LinkUp.Testing.Net45.TestBrowser
 {
@@ -16,8 +16,8 @@ namespace LinkUp.Testing.Net45.TestBrowser
     /// </summary>
     public partial class MainWindow : Window
     {
-        private SerialPort _DebugPort;
         private LinkUpSerialPortConnector _DataPort;
+        private SerialPort _DebugPort;
         private Task _Task;
 
         public MainWindow()
@@ -31,6 +31,29 @@ namespace LinkUp.Testing.Net45.TestBrowser
             {
                 return SerialPort.GetPortNames().Distinct().OrderBy(c => c).ToList();
             }
+        }
+
+        private void _DataPort_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
+        {
+            Dispatcher.Invoke(delegate ()
+            {
+                textBox_DataOut.Text = Encoding.UTF8.GetString(packet.Data);
+            });
+        }
+
+        private void _DebugPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            Dispatcher.Invoke(delegate ()
+            {
+                textBox_Debug.AppendText(_DebugPort.ReadExisting());
+                textBox_Debug.ScrollToEnd();
+            });
+        }
+
+        private void comboBox_Data_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            _DataPort = new LinkUpSerialPortConnector(comboBox_Data.SelectedValue.ToString(), 3000000);
+            _DataPort.ReveivedPacket += _DataPort_ReveivedPacket;
         }
 
         private void comboBox_Debug_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -69,30 +92,6 @@ namespace LinkUp.Testing.Net45.TestBrowser
                     }
                 });
             }
-
-        }
-
-        private void _DebugPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            Dispatcher.Invoke(delegate ()
-            {
-                textBox_Debug.AppendText(_DebugPort.ReadExisting());
-                textBox_Debug.ScrollToEnd();
-            });
-        }
-
-        private void comboBox_Data_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            _DataPort = new LinkUpSerialPortConnector(comboBox_Data.SelectedValue.ToString(), 3000000);
-            _DataPort.ReveivedPacket += _DataPort_ReveivedPacket;
-        }
-
-        private void _DataPort_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
-        {
-            Dispatcher.Invoke(delegate ()
-            {
-                textBox_DataOut.Text = Encoding.UTF8.GetString(packet.Data);
-            });
         }
 
         private void textBox_Data_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)

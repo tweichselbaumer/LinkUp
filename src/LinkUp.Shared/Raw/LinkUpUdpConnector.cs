@@ -1,10 +1,11 @@
 ﻿#if NET45 || NETCOREAPP2_0
 using System.Net.Sockets;
 #endif
+
 using System;
 using System.Net;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace LinkUp.Raw
 {
@@ -23,7 +24,7 @@ namespace LinkUp.Raw
                 {
                     try
                     {
-                        if(_UdpClient == null)
+                        if (_UdpClient == null)
                         {
                             _UdpClient = new UdpClient(new IPEndPoint(sourceAddress, sourcePort));
                             _UdpClient.Connect(new IPEndPoint(destinationAddress, destinationPort));
@@ -41,11 +42,12 @@ namespace LinkUp.Raw
             });
         }
 #endif
+
         public override void Dispose()
         {
 #if NET45 || NETCOREAPP2_0
             _IsRunning = false;
-            if(_UdpClient != null)
+            if (_UdpClient != null)
             {
                 _UdpClient.Close();
             }

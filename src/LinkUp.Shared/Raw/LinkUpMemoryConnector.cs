@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace LinkUp.Raw
@@ -10,9 +7,9 @@ namespace LinkUp.Raw
     {
         private const int TIMEOUT = 100;
         private BlockingCollection<byte[]> _InStream;
+        private bool _IsRunning = true;
         private BlockingCollection<byte[]> _OutStream;
         private Task _Task;
-        private bool _IsRunning = true;
 
         public LinkUpMemoryConnector(BlockingCollection<byte[]> inStream, BlockingCollection<byte[]> outStream)
         {

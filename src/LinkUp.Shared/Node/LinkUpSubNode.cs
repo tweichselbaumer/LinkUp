@@ -1,7 +1,7 @@
 ﻿using LinkUp.Raw;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+
 #if NET45 || NETCOREAPP2_0
 using System.Timers;
 #endif
@@ -48,6 +48,7 @@ namespace LinkUp.Node
             }
         }
 #endif
+
         internal LinkUpConnector Connector
         {
             get

@@ -1,18 +1,15 @@
 ﻿using LinkUp.Node;
 using LinkUp.Raw;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LinkUp.Example8.Server.Net45
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Stopwatch watch = new Stopwatch();
             LinkUpUdpConnector serverToClient = new LinkUpUdpConnector(IPAddress.Parse("127.0.0.1"), IPAddress.Parse("127.0.0.1"), 1000, 2000);
@@ -39,11 +36,9 @@ namespace LinkUp.Example8.Server.Net45
 
         private static void ServerToClient_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
-
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("- Server from Client:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
             Console.ResetColor();
-
         }
     }
 }

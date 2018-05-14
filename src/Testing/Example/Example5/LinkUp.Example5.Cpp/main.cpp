@@ -1,4 +1,4 @@
-#include <windows.h> 
+#include <windows.h>
 #include <stdio.h>
 #include <conio.h>
 #include <tchar.h>
@@ -49,7 +49,7 @@ int __cdecl main(int argc, char **argv)
 			printf("LENGTH: %d\n", packet.nLength);
 			printf("CRC16: %02X\n", packet.nCrc);
 			printf("DATA: ");
-			for (uint16_t i = 0; i < packet.nLength;i++)
+			for (uint16_t i = 0; i < packet.nLength; i++)
 			{
 				printf("%02X ", pBuffer[i]);
 			}

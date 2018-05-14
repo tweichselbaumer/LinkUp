@@ -4,6 +4,5 @@
              xmlns:local="clr-namespace:LinkUp.Testing.Net45.TestBrowser"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
     </Application.Resources>
 </Application>

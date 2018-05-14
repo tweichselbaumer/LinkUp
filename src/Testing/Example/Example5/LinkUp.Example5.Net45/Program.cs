@@ -1,7 +1,6 @@
 ﻿using LinkUp.Raw;
 using System;
 using System.Linq;
-using System.Threading;
 
 namespace LinkUp.Example5.Net45
 {
@@ -13,6 +12,16 @@ namespace LinkUp.Example5.Net45
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("- Master from Slave:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+                Console.ResetColor();
+            }
+        }
+
+        private static void Connector_SentPacket(LinkUpConnector connector, LinkUpPacket packet)
+        {
+            lock (Console.Out)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("- Master to Slave:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
                 Console.ResetColor();
             }
         }
@@ -37,16 +46,6 @@ namespace LinkUp.Example5.Net45
             }
 
             Console.Read();
-        }
-
-        private static void Connector_SentPacket(LinkUpConnector connector, LinkUpPacket packet)
-        {
-            lock (Console.Out)
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("- Master to Slave:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
-                Console.ResetColor();
-            }
         }
     }
 }

@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using System.Threading;
 
 #if NET45 || NETCOREAPP2_0
+
 using System.IO.Ports;
+
 #endif
 
 namespace LinkUp.Raw
@@ -63,7 +65,7 @@ namespace LinkUp.Raw
 #if NET45
             if (_SerialPort == null || !_SerialPort.IsOpen)
             {
-                Thread.Sleep(200); 
+                Thread.Sleep(200);
             }
             if (_SerialPort != null && _SerialPort.IsOpen)
             {

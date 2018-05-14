@@ -48,16 +48,16 @@ void session::start()
 		node_->progress(data_, 0);
 		length = node_->getRaw(data_, max_length);
 
-		if (length > 0) {
-			for (uint16_t i = 0; i < length; i++)
-			{
-				std::cout << "0x";
-				cout.setf(ios::hex, ios::basefield);
-				std::cout << (int)data_[i];
-				std::cout << " ";
-			}
-			std::cout << std::endl;
-		}
+		//if (length > 0) {
+		//	for (uint16_t i = 0; i < length; i++)
+		//	{
+		//		std::cout << "0x";
+		//		cout.setf(ios::hex, ios::basefield);
+		//		std::cout << (int)data_[i];
+		//		std::cout << " ";
+		//	}
+		//	std::cout << std::endl;
+		//}
 
 		boost::asio::async_write(socket_, boost::asio::buffer(data_, length),
 			[this, self](boost::system::error_code ec, std::size_t /*length*/)

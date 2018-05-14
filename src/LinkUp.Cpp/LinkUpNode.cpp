@@ -13,7 +13,6 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 	uint32_t nTime = micros();
 #endif // _WINDOWS || __linux
 
-
 	connector.progress(pData, nCount);
 
 	if (connector.hasNext()) {

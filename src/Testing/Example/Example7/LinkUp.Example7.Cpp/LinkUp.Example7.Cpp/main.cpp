@@ -1,4 +1,4 @@
-#include <windows.h> 
+#include <windows.h>
 #include <stdio.h>
 #include <conio.h>
 #include <tchar.h>
@@ -19,8 +19,6 @@ int __cdecl main(int argc, char **argv)
 	DWORD nBytesToSend;
 	LinkUpNode linkUpNode = {};
 	LinkUpLabel* values[VALUES];
-
-	
 
 	while (true)
 	{
@@ -45,8 +43,8 @@ int __cdecl main(int argc, char **argv)
 			{
 				if (nBytesRead > 0)
 				{
-					printf("%d - Receive:\n\t", micros()/1000);
-					for (DWORD i = 0; i < nBytesRead;i++) 
+					printf("%d - Receive:\n\t", micros() / 1000);
+					for (DWORD i = 0; i < nBytesRead; i++)
 					{
 						printf("%02X ", pBuffer[i]);
 					}
@@ -65,7 +63,7 @@ int __cdecl main(int argc, char **argv)
 		if (nBytesToSend > 0)
 		{
 			printf("%d - Sent:\n\t", micros() / 1000);
-			for (DWORD i = 0; i < nBytesToSend;i++) 
+			for (DWORD i = 0; i < nBytesToSend; i++)
 			{
 				printf("%X ", pBuffer[i]);
 			}

@@ -41,7 +41,7 @@ struct LinkUpPacketList
 	LinkUpPacketList *next;
 };
 
-enum LinkUpState:uint8_t
+enum LinkUpState :uint8_t
 {
 	ReceivePreamble = 1,
 	ReceiveLength1 = 2,

@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 
 #if NET45 || NETCOREAPP2_0
+
 using System.IO.Pipes;
+
 #endif
 
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace LinkUp.Raw
     public class LinkUpNamedPipeConnector : LinkUpConnector
     {
 #if NET45 || NETCOREAPP2_0
+
         public enum Mode
         {
             Server,
@@ -71,7 +73,6 @@ namespace LinkUp.Raw
                                 (_Stream as NamedPipeServerStream).WaitForConnection();
                             }
                             localReadTask.Wait();
-
                         }
                         catch (Exception ex)
                         {
@@ -116,6 +117,7 @@ namespace LinkUp.Raw
                 });
             }
         }
+
 #endif
 
         public override void Dispose()

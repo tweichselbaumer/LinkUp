@@ -1,6 +1,4 @@
 ﻿using LinkUp.Raw;
-using System;
-using System.Linq;
 
 namespace LinkUp.Node
 {
@@ -17,24 +15,31 @@ namespace LinkUp.Node
                 case LinkUpLogicType.NameRequest:
                     logic = new LinkUpNameRequest();
                     break;
+
                 case LinkUpLogicType.NameResponse:
                     logic = new LinkUpNameResponse();
                     break;
+
                 case LinkUpLogicType.PropertyGetRequest:
                     logic = new LinkUpPropertyGetRequest();
                     break;
+
                 case LinkUpLogicType.PropertyGetResponse:
                     logic = new LinkUpPropertyGetResponse();
                     break;
+
                 case LinkUpLogicType.PropertySetRequest:
                     logic = new LinkUpPropertySetRequest();
                     break;
+
                 case LinkUpLogicType.PropertySetResponse:
                     logic = new LinkUpPropertySetResponse();
                     break;
+
                 case LinkUpLogicType.PingRequest:
                     logic = new LinkUpPingRequest();
                     break;
+
                 case LinkUpLogicType.PingResponse:
                     logic = new LinkUpPingResponse();
                     break;

@@ -1,10 +1,11 @@
 ﻿#if NET45 || NETCOREAPP2_0
 using System.Net.Sockets;
 #endif
+
 using System;
 using System.Net;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace LinkUp.Raw
 {
@@ -40,7 +41,6 @@ namespace LinkUp.Raw
                         }
                         else
                         {
-
                         }
                     }
                     catch (Exception ex)
@@ -52,6 +52,7 @@ namespace LinkUp.Raw
             }, TaskCreationOptions.LongRunning);
         }
 #endif
+
         public override void Dispose()
         {
 #if NET45 || NETCOREAPP2_0

@@ -9,18 +9,18 @@
         Title="MainWindow" Height="720" Width="1280">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="80"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="80"/>
+            <RowDefinition Height="80" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="80" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <ComboBox x:Name="comboBox_Debug" HorizontalAlignment="Center" Grid.Row="2" VerticalAlignment="Center" Width="120" ItemsSource="{Binding Path=SerialPortNames, ElementName=main}" SelectionChanged="comboBox_Debug_SelectionChanged" />
-        <ComboBox x:Name="comboBox_Data" HorizontalAlignment="Center" Grid.Row="2" VerticalAlignment="Center" Width="120" Grid.Column="1" ItemsSource="{Binding Path=SerialPortNames, ElementName=main}" SelectionChanged="comboBox_Data_SelectionChanged"/>
-        <TextBox x:Name="textBox_Debug" HorizontalAlignment="Stretch" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Stretch" IsReadOnly="True"/>
-        <TextBox x:Name="textBox_DataIn" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" KeyDown="textBox_Data_KeyDown"/>
+        <ComboBox x:Name="comboBox_Data" HorizontalAlignment="Center" Grid.Row="2" VerticalAlignment="Center" Width="120" Grid.Column="1" ItemsSource="{Binding Path=SerialPortNames, ElementName=main}" SelectionChanged="comboBox_Data_SelectionChanged" />
+        <TextBox x:Name="textBox_Debug" HorizontalAlignment="Stretch" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Stretch" IsReadOnly="True" />
+        <TextBox x:Name="textBox_DataIn" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Bottom" KeyDown="textBox_Data_KeyDown" />
         <TextBox x:Name="textBox_DataOut" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" />
     </Grid>
 </Window>

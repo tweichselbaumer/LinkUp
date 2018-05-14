@@ -5,10 +5,7 @@ namespace LinkUp.Node
 {
     internal class LinkUpPropertySetResponse : LinkUpLogic
     {
-
         private ushort _Identifier;
-
-
 
         public ushort Identifier
         {
