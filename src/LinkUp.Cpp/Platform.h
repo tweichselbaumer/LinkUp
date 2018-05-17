@@ -15,7 +15,9 @@
 #define PACKED
 #pragma pack(1)
 #include <time.h>
-//#define micros (uint32_t)1000*1000/CLOCKS_PER_SEC*clock
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
 #endif
 
 #ifdef __linux
@@ -25,7 +27,17 @@
 #define PACKED
 #pragma pack(1)
 #include <time.h>
-#define micros (uint32_t)1000*1000/CLOCKS_PER_SEC*clock
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#endif
+
+
+#define min(a,b) (((a)<(b))?(a):(b))
+#define max(a,b) (((a)>(b))?(a):(b))
+
+#ifdef LINKUP_BOOST_THREADSAFE
+#include <boost/thread.hpp>
 #endif
 
 #endif

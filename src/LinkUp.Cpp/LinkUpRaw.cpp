@@ -64,7 +64,7 @@ void LinkUpRaw::send(LinkUpPacket packet)
 		LinkUpPacketList* pPacketList = (LinkUpPacketList*)calloc(1, sizeof(LinkUpPacketList));
 		pPacketList->packet = packet;
 
-		pPacketList->packet.nCrc = CRC16.calc(pPacketList->packet.pData, pPacketList->packet.nLength);
+		pPacketList->packet.nCrc = CRC16::calc(pPacketList->packet.pData, pPacketList->packet.nLength);
 
 		if (pHeadOut != NULL)
 		{
@@ -376,7 +376,7 @@ void LinkUpRaw::progress(uint8_t *pData, uint16_t nCount)
 
 					pProgressingIn->packet.nCrc = pProgressingIn->packet.nCrc | (nNextByte << 8);
 
-					if (pProgressingIn->packet.nCrc == CRC16.calc(pProgressingIn->packet.pData, pProgressingIn->packet.nLength))
+					if (pProgressingIn->packet.nCrc == CRC16::calc(pProgressingIn->packet.pData, pProgressingIn->packet.nLength))
 					{
 						stateIn = LinkUpState::ReceiveEnd;
 					}

@@ -7,6 +7,8 @@
 #include <boost/thread.hpp>
 #include "socket/tcp_server.h"
 
+#include "AVLTree.h"
+
 using boost::asio::ip::tcp;
 using namespace std;
 
@@ -24,9 +26,12 @@ int main(int argc, char* argv[])
 	{
 		LinkUpNode linkUpNode = {};
 		linkUpNode.init("test");
-		LinkUpLabel* label = linkUpNode.addLabel("test1", LinkUpLabelType::Int32);
-		*((int32_t*)(label->get())) = 12;
-
+		for (int i = 1; i <= 1000; i++) {
+			char str[25];
+			sprintf(str, "label%d", i);
+			LinkUpLabel* label = linkUpNode.addLabel(str, LinkUpLabelType::Int32);
+			*((int32_t*)(label->get())) = 12;
+		}
 		boost::shared_ptr< boost::asio::io_service::work > work(
 			new boost::asio::io_service::work(io_service)
 		);

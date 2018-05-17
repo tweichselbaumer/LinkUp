@@ -16,6 +16,7 @@ namespace LinkUp.Node
         private string _Name;
         private ushort _NextIdentifier = 1;
         private int _LostPings = 0;
+        private object _LockObject = new object();
 #if NET45 || NETCOREAPP2_0
         private Timer _PingTimer;
 #endif
@@ -48,6 +49,15 @@ namespace LinkUp.Node
             }
         }
 #endif
+
+        private ushort GetNextIdentifier()
+        {
+            lock (_LockObject)
+            {
+                return _NextIdentifier++;
+            }
+
+        }
 
         internal LinkUpConnector Connector
         {
@@ -98,12 +108,12 @@ where T : new()
                 if (logic is LinkUpNameRequest)
                 {
                     LinkUpNameRequest nameRequest = logic as LinkUpNameRequest;
-                    if (!_IsInitialized && nameRequest.LabelType != LinkUpLabelType.Node)
-                    {
-                        //TODO:ERROR??
-                    }
-                    else
-                    {
+                    //if (!_IsInitialized && nameRequest.LabelType != LinkUpLabelType.Node)
+                    //{
+                    //    //TODO:ERROR??
+                    //}
+                    //else
+                    //{
                         if (nameRequest.LabelType == LinkUpLabelType.Node)
                         {
                             _IsInitialized = true;
@@ -118,16 +128,22 @@ where T : new()
                         }
                         if (nameRequest.LabelType != LinkUpLabelType.Node)
                         {
+                            LinkUpLabel label = _Master.AddSubLabel(nameRequest.Name, nameRequest.LabelType);
+                            if (label.ChildIdentifier == 0)
+                            {
+                                label.ChildIdentifier = GetNextIdentifier();
+                            }
+                            label.Owner = this;
+
                             LinkUpNameResponse nameResponse = new LinkUpNameResponse();
                             nameResponse.Name = nameRequest.Name;
-                            nameResponse.Identifier = _NextIdentifier++;
+                            nameResponse.Identifier = label.ChildIdentifier;
                             nameResponse.LabelType = nameRequest.LabelType;
+
                             _Connector.SendPacket(nameResponse.ToPacket());
-                            LinkUpLabel label = _Master.AddSubLabel(nameRequest.Name, nameRequest.LabelType);
-                            label.Owner = this;
-                            label.ChildIdentifier = nameResponse.Identifier;
+                            Console.WriteLine("ID: {0} Name: {1}", nameResponse.Identifier, nameResponse.Name);
                         }
-                    }
+                    //}
                 }
                 else if (logic is LinkUpNameResponse)
                 {

@@ -5,8 +5,37 @@ uint16_t LinkUpNode::getRaw(uint8_t* pData, uint16_t nMax)
 	return connector.getRaw(pData, nMax);
 }
 
+void LinkUpNode::lock()
+{
+#ifdef LINKUP_BOOST_THREADSAFE
+	mtx.lock();
+#endif
+}
+
+void LinkUpNode::unlock()
+{
+#ifdef LINKUP_BOOST_THREADSAFE
+	mtx.unlock();
+#endif
+}
+
+void LinkUpLabel::lock()
+{
+#ifdef LINKUP_BOOST_THREADSAFE
+	mtx.lock();
+#endif
+}
+
+void LinkUpLabel::unlock()
+{
+#ifdef LINKUP_BOOST_THREADSAFE
+	mtx.unlock();
+#endif
+}
+
 void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 {
+	lock();
 #ifdef _WINDOWS | __linux
 	uint32_t nTime = (uint32_t)1000 * 1000 / CLOCKS_PER_SEC * clock();
 #else
@@ -38,12 +67,23 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 	}
 	else if (isInitialized)
 	{
+		AvlTreeIterator iterator(pAvlTree);
+		AvlNode* pNode;
+		while ((pNode = iterator.next()) != NULL)
+		{
+			if (pNode->pData != NULL)
+			{
+				((LinkUpLabel*)pNode->pData)->progress(&connector);
+			}
+		}
+
 		LinkUpLabelList* pCurrent = pHead;
 		while (pCurrent != 0) {
 			pCurrent->pLabel->progress(&connector);
 			pCurrent = pCurrent->pNext;
 		}
 	}
+	unlock();
 }
 
 void LinkUpNode::init(const char* pName)
@@ -106,14 +146,42 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 		isInitialized = true;
 	}
 	else {
+
+		/*AvlTreeIterator iterator(pAvlTree);
+		AvlNode* pNode;
+		while ((pNode = iterator.next()) != NULL)
+		{
+			if (pNode->pData != NULL)
+			{
+				if (((LinkUpLabel*)pNode->pData)->receivedNameResponse(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier)) {
+					break;
+				}
+			}
+		}*/
+
 		LinkUpLabelList* pCurrent = pHead;
+		LinkUpLabelList* pPrev = pHead;
 		while (pCurrent != 0) {
 			if (pCurrent->pLabel->receivedNameResponse(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier))
 			{
+				pAvlTree->insert(pNameResponse->nIdentifier, pCurrent->pLabel);
+
+				cout << " ID: " << pNameResponse->nIdentifier << " Name: " << pResponseName << endl;
+
+				if (pCurrent == pHead)
+				{
+					pHead = pCurrent->pNext;
+				}
+				else
+				{
+					pPrev->pNext = pCurrent->pNext;
+				}
+				free(pCurrent);
 				pCurrent = 0;
 			}
 			else
 			{
+				pPrev = pCurrent;
 				pCurrent = pCurrent->pNext;
 			}
 		}
@@ -123,7 +191,28 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 
 void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyGetRequest* pPropertyGetRequest)
 {
-	LinkUpLabelList* pCurrent = pHead;
+	/*AvlTreeIterator iterator(pAvlTree);
+	AvlNode* pNode;
+	while ((pNode = iterator.next()) != NULL)
+	{
+		if (pNode->pData != NULL)
+		{
+			if (((LinkUpLabel*)pNode->pData)->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
+				break;
+			}
+		}
+	}
+	while (iterator.next()) {}*/
+	if (pAvlTree != NULL && pPropertyGetRequest != NULL) {
+		AvlNode* pNode = pAvlTree->find(pPropertyGetRequest->nIdentifier);
+		if (pNode != NULL && pNode->pData != NULL) {
+			if (((LinkUpLabel*)pNode->pData)->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
+				//TODO: error??
+			}
+		}
+	}
+
+	/*LinkUpLabelList* pCurrent = pHead;
 	while (pCurrent != 0)
 	{
 		if (pCurrent->pLabel->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector))
@@ -134,7 +223,7 @@ void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyG
 		{
 			pCurrent = pCurrent->pNext;
 		}
-	}
+	}*/
 }
 
 void LinkUpNode::receivedPropertyGetResponse(LinkUpPacket packet, LinkUpPropertyGetResponse* pPropertyGetResponse) {
@@ -142,7 +231,21 @@ void LinkUpNode::receivedPropertyGetResponse(LinkUpPacket packet, LinkUpProperty
 
 void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest)
 {
-	LinkUpLabelList* pCurrent = pHead;
+	AvlTreeIterator iterator(pAvlTree);
+	AvlNode* pNode;
+	while ((pNode = iterator.next()) != NULL)
+	{
+		if (pNode->pData != NULL)
+		{
+			if (((LinkUpLabel*)pNode->pData)->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector)) {
+				break;
+			}
+		}
+	}
+	while (iterator.next()) {}
+	//TODO: us tree-find();
+
+	/*LinkUpLabelList* pCurrent = pHead;
 	while (pCurrent != 0)
 	{
 		if (pCurrent->pLabel->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector))
@@ -153,7 +256,7 @@ void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertyS
 		{
 			pCurrent = pCurrent->pNext;
 		}
-	}
+	}*/
 }
 
 void LinkUpNode::receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse) {
@@ -315,6 +418,10 @@ bool LinkUpLabel::receivedNameResponse(const char* pName, LinkUpLabelType type, 
 	{
 		return false;
 	}
+}
+
+char* LinkUpLabel::getName() {
+	return pName;
 }
 
 bool LinkUpLabel::receivedPropertyGetRequest(uint16_t nIdentifier, LinkUpRaw* pConnector)

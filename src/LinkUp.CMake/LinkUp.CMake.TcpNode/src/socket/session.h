@@ -20,6 +20,7 @@ private:
 	enum { max_length = 1024 };
 
 	uint8_t data_[max_length];
+	uint64_t totalsend = 0;
 
 	bool read_done = true;
 

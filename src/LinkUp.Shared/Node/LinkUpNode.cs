@@ -172,11 +172,17 @@ namespace LinkUp.Node
             label.Name = string.Format("{0}/{1}", Name, name);
             if (Labels.Any(c => c.Name == label.Name))
             {
-                throw new Exception("Label with specified name already exists!");
+                lock (_Labels)
+                {
+                    label = _Labels.FirstOrDefault(c => c.Name == label.Name);
+                }
             }
-            lock (_Labels)
+            else
             {
-                _Labels.Add(label);
+                lock (_Labels)
+                {
+                    _Labels.Add(label);
+                }
             }
             _Event.Set();
             return label;

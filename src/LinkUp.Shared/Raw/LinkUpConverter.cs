@@ -82,7 +82,7 @@ namespace LinkUp.Raw
                 {
                     TotalFailedPackets++;
                 }
-                _Buffer = _Buffer.Skip(indexOfPreamble + 1).ToList();
+                _Buffer = _Buffer.Skip(indexOfPreamble).ToList();
             }
             if (indexOfEndOfPacket != -1)
             {

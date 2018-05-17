@@ -10,24 +10,33 @@ namespace LinkUp.Testing.Tcp
 {
     internal class Program
     {
+        private static int count = 0;
+
         private static void ClientToServer_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
-            lock (Console.Out)
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("- Reveived:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
-                Console.ResetColor();
-            }
+            //lock (Console.Out)
+            //{
+            //    Console.ForegroundColor = ConsoleColor.Yellow;
+            //    if (packet.Data.Length > 2 && packet.Data[0] == 0x01 && packet.Data[1] == 0x9)
+            //    {
+            //       Console.WriteLine("- Reveived ({0}):\n\t{1}", count++, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("- Reveived (-):\n\t{1}", count++, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+            //    }
+            //    Console.ResetColor();
+            //}
         }
 
         private static void ClientToServer_SentPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
-            lock (Console.Out)
-            {
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine("- Sent:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
-                Console.ResetColor();
-            }
+            //lock (Console.Out)
+            //{
+            //    Console.ForegroundColor = ConsoleColor.Magenta;
+            //    Console.WriteLine("- Sent:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+            //    Console.ResetColor();
+            //}
         }
 
         private static void Main(string[] args)
@@ -49,15 +58,18 @@ namespace LinkUp.Testing.Tcp
                     {
                         try
                         {
-                            foreach (LinkUpLabel lab in node.Labels)
+                            if (node.Labels.Count == 1000)
                             {
-                                if (lab is LinkUpPrimitiveLabel<Int32>)
+                                foreach (LinkUpLabel lab in node.Labels)
                                 {
-                                    lock (Console.Out)
+                                    if (lab is LinkUpPrimitiveLabel<Int32>)
                                     {
-                                        int value = (lab as LinkUpPrimitiveLabel<Int32>).Value;
-                                        Console.ResetColor();
-                                        Console.WriteLine("{0}: {1}", lab.Name, value);
+                                        lock (Console.Out)
+                                        {
+                                            int value = (lab as LinkUpPrimitiveLabel<Int32>).Value;
+                                            Console.ResetColor();
+                                            //Console.WriteLine("{0}: {1}", lab.Name, value);
+                                        }
                                     }
                                 }
                             }
@@ -67,7 +79,7 @@ namespace LinkUp.Testing.Tcp
                             lock (Console.Out)
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine(e.ToString());
+                                Console.WriteLine(e.Message);
                                 Console.ResetColor();
                             }
                         }

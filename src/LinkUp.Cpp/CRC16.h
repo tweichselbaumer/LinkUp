@@ -10,12 +10,10 @@
 
 #include "Platform.h"
 
-class CRC16Class
+class CRC16
 {
 public:
-	uint16_t calc(uint8_t *pData, uint32_t nCount);
+	static uint16_t calc(uint8_t *pData, uint32_t nCount);
 };
-
-extern CRC16Class CRC16;
 
 #endif

@@ -20,6 +20,7 @@ namespace LinkUp.Raw
         {
             _Task = Task.Factory.StartNew(() =>
             {
+                int totalreceived = 0;
                 while (_IsRunning)
                 {
                     try
@@ -35,8 +36,13 @@ namespace LinkUp.Raw
                         {
                             if (_TcpClient.GetStream().DataAvailable)
                             {
-                                _TcpClient.GetStream().Read(data, 0, 1024);
-                                OnDataReceived(data);
+                                int read = _TcpClient.GetStream().Read(data, 0, 1024);
+                                if (read > 0)
+                                {
+                                    byte[] temp = new byte[read];
+                                    Array.Copy(data, temp, read);
+                                    OnDataReceived(temp);
+                                }
                             }
                         }
                         else

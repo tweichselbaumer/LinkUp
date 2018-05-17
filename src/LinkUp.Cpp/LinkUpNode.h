@@ -2,8 +2,9 @@
 #define _LINKUP_NODE_h
 
 #include "LinkUpRaw.h"
+#include "AVLTree.h"
 
-#define INITIALIZATION_TIMEOUT 1000 * 1000 * 10
+#define INITIALIZATION_TIMEOUT 1000 * 1000 * 2
 
 enum LinkUpLogicType : uint8_t
 {
@@ -89,6 +90,14 @@ private:
 	struct {
 		uint32_t nInitTryTimeout = 0;
 	} timestamps;
+
+	void lock();
+	void unlock();
+
+#ifdef LINKUP_BOOST_THREADSAFE
+	boost::mutex mtx;
+#endif
+
 public:
 	void init(const char* pName, LinkUpLabelType type);
 	void set(void* pValue);
@@ -97,6 +106,7 @@ public:
 	bool receivedNameResponse(const char* pName, LinkUpLabelType type, uint16_t nIdentifier);
 	bool receivedPropertyGetRequest(uint16_t nIdentifier, LinkUpRaw* pConnector);
 	bool receivedPropertySetRequest(uint16_t nIdentifier, uint8_t* value, LinkUpRaw* pConnector);
+	char* getName();
 };
 
 struct LinkUpLabelList
@@ -116,6 +126,7 @@ private:
 	} timestamps;
 	char* pName = 0;
 	LinkUpLabelList* pHead = 0;
+	AvlTree *pAvlTree = new AvlTree();
 	void receivedPacket(LinkUpPacket packet);
 	void receivedNameRequest(LinkUpPacket packet, LinkUpNameRequest* pNameRequest);
 	void receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* pNameResponse);
@@ -124,6 +135,13 @@ private:
 	void receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest);
 	void receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse);
 	void receivedPingRequest(LinkUpPacket packet);
+
+	void lock();
+	void unlock();
+
+#ifdef LINKUP_BOOST_THREADSAFE
+	boost::mutex mtx;
+#endif
 public:
 	void progress(uint8_t* pData, uint16_t nCount);
 	uint16_t getRaw(uint8_t* pData, uint16_t nMax);

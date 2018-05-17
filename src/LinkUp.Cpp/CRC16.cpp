@@ -7,7 +7,7 @@
 
 #include "CRC16.h"
 
-uint16_t CRC16Class::calc(uint8_t *pData, uint32_t nCount)
+uint16_t CRC16::calc(uint8_t *pData, uint32_t nCount)
 {
 	uint16_t  crc;
 	uint8_t i;
@@ -28,5 +28,3 @@ uint16_t CRC16Class::calc(uint8_t *pData, uint32_t nCount)
 	}
 	return (crc);
 }
-
-CRC16Class CRC16;

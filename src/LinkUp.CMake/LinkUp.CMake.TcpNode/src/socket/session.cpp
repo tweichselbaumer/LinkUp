@@ -47,7 +47,8 @@ void session::start()
 		}
 		node_->progress(data_, 0);
 		length = node_->getRaw(data_, max_length);
-
+		totalsend += length;
+		//std::cout << totalsend << std::endl;
 		//if (length > 0) {
 		//	for (uint16_t i = 0; i < length; i++)
 		//	{
