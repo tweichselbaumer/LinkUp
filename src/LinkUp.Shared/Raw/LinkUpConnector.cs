@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LinkUp.Raw
 {
@@ -11,6 +13,9 @@ namespace LinkUp.Raw
         private LinkUpConverter _Converter = new LinkUpConverter();
         private bool _IsDisposed;
         private string _Name;
+        private int _TotalSendPackets;
+        private long _TotalSendBytes;
+        private long _TotalReceivedBytes;
 
         public event ReveicedPacketEventHandler ReveivedPacket;
 
@@ -41,17 +46,68 @@ namespace LinkUp.Raw
             }
         }
 
+        public int TotalSendPackets
+        {
+            get
+            {
+                return _TotalSendPackets;
+            }
+        }
+
+        public int TotalFailedPackets
+        {
+            get
+            {
+                return _Converter.TotalFailedPackets;
+            }
+
+        }
+
+        public long TotalSendBytes
+        {
+            get
+            {
+                return _TotalSendBytes;
+            }
+
+        }
+
+        public long TotalReceivedBytes
+        {
+            get
+            {
+                return _TotalReceivedBytes;
+            }
+
+        }
+
+        public int TotalReceivedPackets
+        {
+            get
+            {
+                return _Converter.TotalReceivedPackets;
+            }
+
+        }
+
         public abstract void Dispose();
 
         public void SendPacket(LinkUpPacket packet)
         {
-            SendData(_Converter.ConvertToSend(packet));
+            byte[] data = _Converter.ConvertToSend(packet);
+            SendData(data);
             SentPacket?.Invoke(this, packet);
+            _TotalSendPackets++;
+            _TotalSendBytes += data.Length;
+            //Console.WriteLine("PTotal Received Packets: {0} Total Failed Packets: {1} Total Send Packets: {2} Bytes In: {3} Bytes Out: {4}", TotalReceivedPackets, TotalFailedPackets, TotalSendPackets, TotalReceivedBytes, TotalSendBytes);
         }
 
         protected void OnDataReceived(byte[] data)
         {
-            foreach (LinkUpPacket packet in _Converter.ConvertFromReceived(data))
+            _TotalReceivedBytes += data.Length;
+            List<LinkUpPacket> list = _Converter.ConvertFromReceived(data);
+            //Console.WriteLine(list.Count);
+            foreach (LinkUpPacket packet in list)
             {
                 if (ReveivedPacket != null)
                 {
@@ -64,6 +120,10 @@ namespace LinkUp.Raw
 
                 //ReveivedPacket?.Invoke(this, packet);
             }
+            //Task.Run(() =>
+            //{
+           // Console.WriteLine("PTotal Received Packets: {0} Total Failed Packets: {1} Total Send Packets: {2} Bytes In: {3} Bytes Out: {4}", TotalReceivedPackets, TotalFailedPackets, TotalSendPackets, TotalReceivedBytes, TotalSendBytes);
+            //});
         }
 
         protected abstract void SendData(byte[] data);

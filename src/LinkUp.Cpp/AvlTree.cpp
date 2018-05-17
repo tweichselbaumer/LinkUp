@@ -172,7 +172,7 @@ AvlTree::AvlTree()
 void AvlTree::insert(uint16_t nId, void* pData)
 {
 	pRoot = insert(nId, pData, pRoot);
-	AvlTree::printDot();
+	//AvlTree::printDot();
 }
 
 void AvlTree::remove(uint16_t nId)

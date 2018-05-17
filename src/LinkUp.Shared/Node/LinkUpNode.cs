@@ -170,17 +170,16 @@ namespace LinkUp.Node
         {
             LinkUpLabel label = LinkUpLabel.CreateNew(type);
             label.Name = string.Format("{0}/{1}", Name, name);
-            if (Labels.Any(c => c.Name == label.Name))
+            lock (_Labels)
             {
-                lock (_Labels)
+                if (_Labels.Any(c => c.Name == label.Name))
                 {
+
                     label = _Labels.FirstOrDefault(c => c.Name == label.Name);
                 }
-            }
-            else
-            {
-                lock (_Labels)
+                else
                 {
+
                     _Labels.Add(label);
                 }
             }

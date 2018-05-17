@@ -15,12 +15,13 @@ session::session(tcp::socket socket, tcp_server* server, LinkUpNode* node)
 void session::read()
 {
 	auto self(shared_from_this());
-	socket_.async_read_some(boost::asio::buffer(data_, max_length),
+	socket_.async_read_some(boost::asio::buffer(dataIn_, max_length),
 		[this, self](boost::system::error_code ec, std::size_t length)
 	{
 		if (ec == 0)
 		{
-			node_->progress(data_, length);
+			//cout << "in: " << length << endl;
+			node_->progress(dataIn_, length, 100000);
 			read_done = true;
 		}
 		else {
@@ -45,22 +46,28 @@ void session::start()
 			read_done = false;
 			read();
 		}
-		node_->progress(data_, 0);
-		length = node_->getRaw(data_, max_length);
+
+		node_->progress(dataIn_, 0, 100000);
+		length = node_->getRaw(dataOut_, max_length);
+
 		totalsend += length;
 		//std::cout << totalsend << std::endl;
-		//if (length > 0) {
-		//	for (uint16_t i = 0; i < length; i++)
-		//	{
-		//		std::cout << "0x";
-		//		cout.setf(ios::hex, ios::basefield);
-		//		std::cout << (int)data_[i];
-		//		std::cout << " ";
-		//	}
-		//	std::cout << std::endl;
-		//}
+		if (length == 0) {
+			//	for (uint16_t i = 0; i < length; i++)
+			//	{
+			//		std::cout << "0x";
+			//		cout.setf(ios::hex, ios::basefield);
+			//		std::cout << (int)data_[i];
+			//		std::cout << " ";
+			//	}
+			//	std::cout << std::endl;
+			boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+		}
+		else {
+			//std::cout << "out: " << length << std::endl;
+		}
 
-		boost::asio::async_write(socket_, boost::asio::buffer(data_, length),
+		boost::asio::async_write(socket_, boost::asio::buffer(dataOut_, length),
 			[this, self](boost::system::error_code ec, std::size_t /*length*/)
 		{
 			if (ec == 0)

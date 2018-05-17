@@ -2,7 +2,11 @@
 
 uint16_t LinkUpNode::getRaw(uint8_t* pData, uint16_t nMax)
 {
-	return connector.getRaw(pData, nMax);
+	uint16_t nResult;
+	lock();
+	nResult = connector.getRaw(pData, nMax);
+	unlock();
+	return nResult;
 }
 
 void LinkUpNode::lock()
@@ -33,7 +37,7 @@ void LinkUpLabel::unlock()
 #endif
 }
 
-void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
+void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 {
 	lock();
 #ifdef _WINDOWS | __linux
@@ -44,7 +48,10 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 
 	connector.progress(pData, nCount);
 
-	if (connector.hasNext()) {
+	uint16_t i = 0;
+
+	while (connector.hasNext() && nMax > i) {
+		i++;
 		LinkUpPacket packet = connector.next();
 		receivedPacket(packet);
 	}
@@ -78,6 +85,7 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount)
 		}
 
 		LinkUpLabelList* pCurrent = pHead;
+
 		while (pCurrent != 0) {
 			pCurrent->pLabel->progress(&connector);
 			pCurrent = pCurrent->pNext;
@@ -140,6 +148,8 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 	pResponseName = (char*)calloc(nLength + 1, sizeof(uint8_t));
 	memcpy(pResponseName, pNameResponse->pName, nLength);
 
+
+
 	if (pNameResponse->nLabelType == LinkUpLabelType::Node && strcmp(pName, pResponseName) == 0)
 	{
 		nIdentifier = pNameResponse->nIdentifier;
@@ -166,7 +176,7 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 			{
 				pAvlTree->insert(pNameResponse->nIdentifier, pCurrent->pLabel);
 
-				cout << " ID: " << pNameResponse->nIdentifier << " Name: " << pResponseName << endl;
+				//cout << " ID: " << pNameResponse->nIdentifier << " Name: " << pResponseName << endl;
 
 				if (pCurrent == pHead)
 				{
@@ -206,9 +216,14 @@ void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyG
 	if (pAvlTree != NULL && pPropertyGetRequest != NULL) {
 		AvlNode* pNode = pAvlTree->find(pPropertyGetRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
-			if (((LinkUpLabel*)pNode->pData)->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
+			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
+			if (!label->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
 				//TODO: error??
+				int a = 0;
 			}
+		}
+		else {
+			int a = 0;
 		}
 	}
 

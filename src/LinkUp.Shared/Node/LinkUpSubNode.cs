@@ -114,35 +114,36 @@ where T : new()
                     //}
                     //else
                     //{
-                        if (nameRequest.LabelType == LinkUpLabelType.Node)
+                    if (nameRequest.LabelType == LinkUpLabelType.Node)
+                    {
+                        _IsInitialized = true;
+                        _Name = nameRequest.Name;
+
+                        LinkUpNameResponse nameResponse = new LinkUpNameResponse();
+                        nameResponse.Name = nameRequest.Name;
+                        nameResponse.Identifier = 0;
+                        nameResponse.LabelType = LinkUpLabelType.Node;
+                        _Master.RemoveLabels(_Name);
+                        _Connector.SendPacket(nameResponse.ToPacket());
+                    }
+                    if (nameRequest.LabelType != LinkUpLabelType.Node)
+                    {
+                        LinkUpLabel label = _Master.AddSubLabel(nameRequest.Name, nameRequest.LabelType);
+                        if (label.ChildIdentifier == 0)
                         {
-                            _IsInitialized = true;
-                            _Name = nameRequest.Name;
-
-                            LinkUpNameResponse nameResponse = new LinkUpNameResponse();
-                            nameResponse.Name = nameRequest.Name;
-                            nameResponse.Identifier = 0;
-                            nameResponse.LabelType = LinkUpLabelType.Node;
-                            _Master.RemoveLabels(_Name);
-                            _Connector.SendPacket(nameResponse.ToPacket());
+                            label.ChildIdentifier = GetNextIdentifier();
+                            //Console.WriteLine("ID: {0} Name: {1}", label.ChildIdentifier, label.Name);
                         }
-                        if (nameRequest.LabelType != LinkUpLabelType.Node)
-                        {
-                            LinkUpLabel label = _Master.AddSubLabel(nameRequest.Name, nameRequest.LabelType);
-                            if (label.ChildIdentifier == 0)
-                            {
-                                label.ChildIdentifier = GetNextIdentifier();
-                            }
-                            label.Owner = this;
+                        label.Owner = this;
 
-                            LinkUpNameResponse nameResponse = new LinkUpNameResponse();
-                            nameResponse.Name = nameRequest.Name;
-                            nameResponse.Identifier = label.ChildIdentifier;
-                            nameResponse.LabelType = nameRequest.LabelType;
+                        LinkUpNameResponse nameResponse = new LinkUpNameResponse();
+                        nameResponse.Name = nameRequest.Name;
+                        nameResponse.Identifier = label.ChildIdentifier;
+                        nameResponse.LabelType = nameRequest.LabelType;
 
-                            _Connector.SendPacket(nameResponse.ToPacket());
-                            Console.WriteLine("ID: {0} Name: {1}", nameResponse.Identifier, nameResponse.Name);
-                        }
+                        _Connector.SendPacket(nameResponse.ToPacket());
+
+                    }
                     //}
                 }
                 else if (logic is LinkUpNameResponse)

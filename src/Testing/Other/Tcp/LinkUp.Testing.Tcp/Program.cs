@@ -10,7 +10,7 @@ namespace LinkUp.Testing.Tcp
 {
     internal class Program
     {
-        private static int count = 0;
+        //private static int count = 0;
 
         private static void ClientToServer_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
@@ -37,6 +37,13 @@ namespace LinkUp.Testing.Tcp
             //    Console.WriteLine("- Sent:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
             //    Console.ResetColor();
             //}
+            //lock (Console.Out)
+            //{
+            //    if (packet.Data.Length > 2 && packet.Data[0] == 0x02 && packet.Data[1] == 0x9)
+            //    {
+            //        Console.WriteLine("- Sent ({0}): {1}", count++, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+            //    }
+            //}
         }
 
         private static void Main(string[] args)
@@ -60,6 +67,7 @@ namespace LinkUp.Testing.Tcp
                         {
                             if (node.Labels.Count == 1000)
                             {
+                                Console.WriteLine("done");
                                 foreach (LinkUpLabel lab in node.Labels)
                                 {
                                     if (lab is LinkUpPrimitiveLabel<Int32>)
@@ -72,6 +80,7 @@ namespace LinkUp.Testing.Tcp
                                         }
                                     }
                                 }
+                                Thread.Sleep(5000);
                             }
                         }
                         catch (Exception e)
@@ -84,11 +93,11 @@ namespace LinkUp.Testing.Tcp
                             }
                         }
 
-                        Thread.Sleep(10);
+                        Thread.Sleep(100);
                     }
                 });
 
-                Console.Read();
+               Console.Read();
                 running = false;
                 connector.Dispose();
             }

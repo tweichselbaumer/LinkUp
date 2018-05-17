@@ -17,10 +17,6 @@ namespace LinkUp.Raw
                 return _TotalFailedPackets;
             }
 
-            set
-            {
-                _TotalFailedPackets = value;
-            }
         }
 
         public int TotalReceivedPackets
@@ -29,10 +25,7 @@ namespace LinkUp.Raw
             {
                 return _TotalReceivedPackets;
             }
-            set
-            {
-                _TotalReceivedPackets = value;
-            }
+
         }
 
         public List<LinkUpPacket> ConvertFromReceived(byte[] data)
@@ -76,13 +69,22 @@ namespace LinkUp.Raw
                 if (packet.IsValid)
                 {
                     result.Add(packet);
-                    TotalReceivedPackets++;
+                    _TotalReceivedPackets++;
                 }
                 else
                 {
-                    TotalFailedPackets++;
+                    _TotalFailedPackets++;
                 }
                 _Buffer = _Buffer.Skip(indexOfPreamble).ToList();
+
+                if (indexOfPreamble != 0)
+                {
+                    string b = "";
+                }
+            }
+            else
+            {
+                string b = "";
             }
             if (indexOfEndOfPacket != -1)
             {

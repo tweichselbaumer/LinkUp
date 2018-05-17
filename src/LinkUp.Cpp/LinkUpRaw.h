@@ -84,6 +84,9 @@ public:
 	LinkUpPacket next();
 	uint32_t nTotalFailedPackets;
 	uint32_t nTotalReceivedPackets;
+	uint32_t nTotalSendPackets;
+	uint64_t nTotalSendBytes;
+	uint64_t nTotalReceivedBytes;
 };
 
 #endif

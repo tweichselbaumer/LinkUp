@@ -96,6 +96,7 @@ uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint16_t nMax)
 			}
 			if (pHeadOut != NULL)
 			{
+				nTotalSendPackets++;
 				pProgressingOut = pHeadOut;
 				pHeadOut = pProgressingOut->next;
 				stateOut = LinkUpState::SendPreamble;
@@ -232,7 +233,12 @@ uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint16_t nMax)
 		default:
 			break;
 		}
-	} while (nBytesSend <= nMax && stateOut != LinkUpState::SendIdle);
+	} while (nBytesSend <= nMax && (stateOut != LinkUpState::SendIdle || pHeadOut != NULL));
+
+	if (nBytesSend > 0) {
+		nTotalSendBytes += nBytesSend;
+		//std::cout << "p rec " << nTotalReceivedPackets << " p f: " << nTotalFailedPackets << " p sen: " << nTotalSendPackets << " brec: " << nTotalReceivedBytes << " bsen: " << nTotalSendBytes << std::endl;
+	}
 
 	return nBytesSend;
 }
@@ -241,6 +247,8 @@ void LinkUpRaw::progress(uint8_t *pData, uint16_t nCount)
 {
 	uint16_t i = 0;
 	uint8_t nNextByte;
+
+	nTotalReceivedBytes += nCount;
 
 	while (i < nCount)
 	{
@@ -424,5 +432,9 @@ void LinkUpRaw::progress(uint8_t *pData, uint16_t nCount)
 			break;
 		}
 		i++;
+	}
+
+	if (nCount > 0) {
+		//std::cout << "p rec " << nTotalReceivedPackets << " p f: " << nTotalFailedPackets << " p sen: " << nTotalSendPackets << " brec: " << nTotalReceivedBytes << " bsen: " << nTotalSendBytes << std::endl;
 	}
 }

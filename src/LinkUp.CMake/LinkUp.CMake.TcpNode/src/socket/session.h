@@ -17,9 +17,10 @@ public:
 	void read();
 
 private:
-	enum { max_length = 1024 };
+	enum { max_length = 1024 * 100 };
 
-	uint8_t data_[max_length];
+	uint8_t dataIn_[max_length];
+	uint8_t dataOut_[max_length];
 	uint64_t totalsend = 0;
 
 	bool read_done = true;

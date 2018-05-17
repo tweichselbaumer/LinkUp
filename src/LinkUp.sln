@@ -118,6 +118,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Testing.Tcp", "Testing\Other\Tcp\LinkUp.Testing.Tcp\LinkUp.Testing.Tcp.csproj", "{F743A63C-083F-4CBF-8002-E404465B328B}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		LinkUp.Shared\LinkUp.Shared.projitems*{289814d8-dca6-42da-be76-f2f7a2c355a5}*SharedItemsImports = 4
 		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{3f6f77d9-8f6e-4044-ba76-9ff0bc06dfb9}*SharedItemsImports = 4

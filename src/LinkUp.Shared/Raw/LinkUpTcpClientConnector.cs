@@ -15,12 +15,13 @@ namespace LinkUp.Raw
         private TcpClient _TcpClient;
         private Task _Task;
         private bool _IsRunning = true;
+        byte[] data = new byte[4096];
 
         public LinkUpTcpClientConnector(IPAddress destinationAddress, int destinationPort)
         {
             _Task = Task.Factory.StartNew(() =>
             {
-                int totalreceived = 0;
+
                 while (_IsRunning)
                 {
                     try
@@ -29,25 +30,10 @@ namespace LinkUp.Raw
                         {
                             _TcpClient = new TcpClient();
                             _TcpClient.Connect(new IPEndPoint(destinationAddress, destinationPort));
+                            BeginRead();
                         }
 
-                        byte[] data = new byte[1024];
-                        if (_TcpClient.Connected)
-                        {
-                            if (_TcpClient.GetStream().DataAvailable)
-                            {
-                                int read = _TcpClient.GetStream().Read(data, 0, 1024);
-                                if (read > 0)
-                                {
-                                    byte[] temp = new byte[read];
-                                    Array.Copy(data, temp, read);
-                                    OnDataReceived(temp);
-                                }
-                            }
-                        }
-                        else
-                        {
-                        }
+                        Thread.Sleep(1000);
                     }
                     catch (Exception ex)
                     {
@@ -57,6 +43,33 @@ namespace LinkUp.Raw
                 }
             }, TaskCreationOptions.LongRunning);
         }
+
+        public void BeginRead()
+        {
+            var ns = _TcpClient.GetStream();
+            ns.BeginRead(data, 0, data.Length, EndRead, data);
+        }
+
+        public void EndRead(IAsyncResult result)
+        {
+            try
+            {
+                var buffer = (byte[])result.AsyncState;
+                var ns = _TcpClient.GetStream();
+                var bytesAvailable = ns.EndRead(result);
+
+                byte[] data = new byte[bytesAvailable];
+                Array.Copy(buffer, data, bytesAvailable);
+                OnDataReceived(data);
+                BeginRead();
+            }
+            catch (Exception ex)
+            {
+                _TcpClient.Close();
+                _TcpClient = null;
+            }
+        }
+
 #endif
 
         public override void Dispose()
@@ -84,7 +97,7 @@ namespace LinkUp.Raw
                 if (_TcpClient.Connected)
                 {
                     _TcpClient.GetStream().Write(data, 0, data.Length);
-                    _TcpClient.GetStream().Flush();
+                    //_TcpClient.GetStream().Flush();
                 }
             }
             else

@@ -4,7 +4,7 @@
 #include "LinkUpRaw.h"
 #include "AVLTree.h"
 
-#define INITIALIZATION_TIMEOUT 1000 * 1000 * 2
+#define INITIALIZATION_TIMEOUT 1000 * 1000 * 1000
 
 enum LinkUpLogicType : uint8_t
 {
@@ -126,6 +126,7 @@ private:
 	} timestamps;
 	char* pName = 0;
 	LinkUpLabelList* pHead = 0;
+
 	AvlTree *pAvlTree = new AvlTree();
 	void receivedPacket(LinkUpPacket packet);
 	void receivedNameRequest(LinkUpPacket packet, LinkUpNameRequest* pNameRequest);
@@ -143,7 +144,7 @@ private:
 	boost::mutex mtx;
 #endif
 public:
-	void progress(uint8_t* pData, uint16_t nCount);
+	void progress(uint8_t* pData, uint16_t nCount, uint16_t nMax);
 	uint16_t getRaw(uint8_t* pData, uint16_t nMax);
 	void init(const char* pName);
 	LinkUpLabel* addLabel(const char* pName, LinkUpLabelType type);
