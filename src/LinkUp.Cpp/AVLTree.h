@@ -1,10 +1,3 @@
-/**
-* Author: Thomas Weichselbaumer
-* Version: 1.0.0
-* File Name: CRC16.h
-* Description: Header file for the LinkUp lib.
-**/
-
 #ifndef _AVL_TREE_h
 #define _AVL_TREE_h
 

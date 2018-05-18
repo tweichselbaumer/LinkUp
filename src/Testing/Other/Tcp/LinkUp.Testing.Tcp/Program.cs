@@ -65,7 +65,7 @@ namespace LinkUp.Testing.Tcp
                     {
                         try
                         {
-                            if (node.Labels.Count == 1000)
+                            if (node.Labels.Count == 100)
                             {
                                 Console.WriteLine("done");
                                 foreach (LinkUpLabel lab in node.Labels)

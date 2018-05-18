@@ -7,8 +7,14 @@ IF (WIN32)
 #  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpRaw.cpp"
 #  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpRaw.h"
 #  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/Platform.h"
+#  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/Platform.cpp"
 #  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/AvlTree.h"
 #  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/AvlTree.cpp"
+#  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpLabel.cpp"
+#  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpLabel.h"
+#  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpLogic.h"
+#  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkedList.h"
+#  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkedList.cpp"
 #)
 #
 #file( COPY ${linkup_SOURCE_FILES1} DESTINATION "${PROJECT_SOURCE_DIR}/LinkUp/src" NO_SOURCE_PERMISSIONS )
@@ -21,8 +27,14 @@ set(linkup_SOURCE_FILES
   "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpRaw.cpp"
   "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpRaw.h"
   "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/Platform.h"
+  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/Platform.cpp"
   "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/AvlTree.h"
   "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/AvlTree.cpp"
+  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpLabel.cpp"
+  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpLabel.h"
+  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpLogic.h"
+  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkedList.h"
+  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkedList.cpp"
 )
 
 add_library(LinkUp ${linkup_SOURCE_FILES})
@@ -37,13 +49,19 @@ ELSE()
 #set(linkup_SOURCE_FILES
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/CRC16.cpp"
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/CRC16.h"
-#   "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpNode.cpp"
+#  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpNode.cpp"
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpNode.h"
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpRaw.cpp"
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpRaw.h"
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/Platform.h"
+#  "${PROJECT_SOURCE_DIR}/LinkUp/src/Platform.cpp"
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/AvlTree.h"
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/AvlTree.cpp"
+#  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpLabel.cpp"
+#  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpLabel.h"
+#  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpLogic.h"
+#  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkedList.h"
+#  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkedList.cpp"
 #)
 #
 #add_library(LinkUp ${linkup_SOURCE_FILES})

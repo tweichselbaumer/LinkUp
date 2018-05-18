@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	{
 		LinkUpNode linkUpNode = {};
 		linkUpNode.init("test");
-		for (int i = 1; i <= 1000; i++) {
+		for (int i = 1; i <= 100; i++) {
 			char str[25];
 			sprintf(str, "label%d", i);
 			LinkUpLabel* label = linkUpNode.addLabel(str, LinkUpLabelType::Int32);

@@ -40,11 +40,8 @@ void LinkUpLabel::unlock()
 void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 {
 	lock();
-#ifdef _WINDOWS | __linux
-	uint32_t nTime = (uint32_t)1000 * 1000 / CLOCKS_PER_SEC * clock();
-#else
-	uint32_t nTime = micros();
-#endif // _WINDOWS || __linux
+
+	uint32_t nTime = getSystemTime();
 
 	connector.progress(pData, nCount);
 
@@ -57,7 +54,7 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 	}
 
 	if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
-		timestamps.nInitTryTimeout = nTime + INITIALIZATION_TIMEOUT;
+		timestamps.nInitTryTimeout = nTime + initialization_timeout;
 
 		LinkUpPacket packet;
 		packet.nLength = strlen(pName) + sizeof(LinkUpLogic) + sizeof(LinkUpNameRequest);
@@ -74,21 +71,12 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 	}
 	else if (isInitialized)
 	{
-		AvlTreeIterator iterator(pAvlTree);
-		AvlNode* pNode;
-		while ((pNode = iterator.next()) != NULL)
+		LinkedListIterator iterator(pList);
+		LinkUpLabel* pLabel;
+
+		while ((pLabel = (LinkUpLabel*)iterator.next()) != NULL)
 		{
-			if (pNode->pData != NULL)
-			{
-				((LinkUpLabel*)pNode->pData)->progress(&connector);
-			}
-		}
-
-		LinkUpLabelList* pCurrent = pHead;
-
-		while (pCurrent != 0) {
-			pCurrent->pLabel->progress(&connector);
-			pCurrent = pCurrent->pNext;
+			pLabel->progress(&connector);
 		}
 	}
 	unlock();
@@ -148,51 +136,22 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 	pResponseName = (char*)calloc(nLength + 1, sizeof(uint8_t));
 	memcpy(pResponseName, pNameResponse->pName, nLength);
 
-
-
 	if (pNameResponse->nLabelType == LinkUpLabelType::Node && strcmp(pName, pResponseName) == 0)
 	{
 		nIdentifier = pNameResponse->nIdentifier;
 		isInitialized = true;
 	}
-	else {
+	else
+	{
+		LinkedListIterator iterator(pList);
+		LinkUpLabel* pLabel;
 
-		/*AvlTreeIterator iterator(pAvlTree);
-		AvlNode* pNode;
-		while ((pNode = iterator.next()) != NULL)
+		while ((pLabel = (LinkUpLabel*)iterator.next()) != NULL)
 		{
-			if (pNode->pData != NULL)
-			{
-				if (((LinkUpLabel*)pNode->pData)->receivedNameResponse(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier)) {
-					break;
-				}
-			}
-		}*/
-
-		LinkUpLabelList* pCurrent = pHead;
-		LinkUpLabelList* pPrev = pHead;
-		while (pCurrent != 0) {
-			if (pCurrent->pLabel->receivedNameResponse(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier))
-			{
-				pAvlTree->insert(pNameResponse->nIdentifier, pCurrent->pLabel);
-
+			if (pLabel->receivedNameResponse(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier)) {
+				pAvlTree->insert(pNameResponse->nIdentifier, pLabel);
+				pList->remove(pLabel);
 				//cout << " ID: " << pNameResponse->nIdentifier << " Name: " << pResponseName << endl;
-
-				if (pCurrent == pHead)
-				{
-					pHead = pCurrent->pNext;
-				}
-				else
-				{
-					pPrev->pNext = pCurrent->pNext;
-				}
-				free(pCurrent);
-				pCurrent = 0;
-			}
-			else
-			{
-				pPrev = pCurrent;
-				pCurrent = pCurrent->pNext;
 			}
 		}
 	}
@@ -201,44 +160,18 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 
 void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyGetRequest* pPropertyGetRequest)
 {
-	/*AvlTreeIterator iterator(pAvlTree);
-	AvlNode* pNode;
-	while ((pNode = iterator.next()) != NULL)
-	{
-		if (pNode->pData != NULL)
-		{
-			if (((LinkUpLabel*)pNode->pData)->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
-				break;
-			}
-		}
-	}
-	while (iterator.next()) {}*/
 	if (pAvlTree != NULL && pPropertyGetRequest != NULL) {
 		AvlNode* pNode = pAvlTree->find(pPropertyGetRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
 			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
 			if (!label->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
 				//TODO: error??
-				int a = 0;
 			}
 		}
 		else {
-			int a = 0;
+			//TODO: error??
 		}
 	}
-
-	/*LinkUpLabelList* pCurrent = pHead;
-	while (pCurrent != 0)
-	{
-		if (pCurrent->pLabel->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector))
-		{
-			pCurrent = 0;
-		}
-		else
-		{
-			pCurrent = pCurrent->pNext;
-		}
-	}*/
 }
 
 void LinkUpNode::receivedPropertyGetResponse(LinkUpPacket packet, LinkUpPropertyGetResponse* pPropertyGetResponse) {
@@ -246,32 +179,18 @@ void LinkUpNode::receivedPropertyGetResponse(LinkUpPacket packet, LinkUpProperty
 
 void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest)
 {
-	AvlTreeIterator iterator(pAvlTree);
-	AvlNode* pNode;
-	while ((pNode = iterator.next()) != NULL)
-	{
-		if (pNode->pData != NULL)
-		{
-			if (((LinkUpLabel*)pNode->pData)->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector)) {
-				break;
+	if (pAvlTree != NULL && pPropertySetRequest != NULL) {
+		AvlNode* pNode = pAvlTree->find(pPropertySetRequest->nIdentifier);
+		if (pNode != NULL && pNode->pData != NULL) {
+			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
+			if (!label->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector)) {
+				//TODO: error??
 			}
 		}
+		else {
+			//TODO: error??
+		}
 	}
-	while (iterator.next()) {}
-	//TODO: us tree-find();
-
-	/*LinkUpLabelList* pCurrent = pHead;
-	while (pCurrent != 0)
-	{
-		if (pCurrent->pLabel->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector))
-		{
-			pCurrent = 0;
-		}
-		else
-		{
-			pCurrent = pCurrent->pNext;
-		}
-	}*/
 }
 
 void LinkUpNode::receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse) {
@@ -293,172 +212,12 @@ void LinkUpNode::receivedPingRequest(LinkUpPacket packet)
 
 LinkUpLabel* LinkUpNode::addLabel(const char* pName, LinkUpLabelType type)
 {
+	lock();
+
 	LinkUpLabel* pLabel = new LinkUpLabel();
-	LinkUpLabelList* pCurrent = (LinkUpLabelList*)calloc(1, sizeof(LinkUpLabelList));
-
+	pList->insert(pLabel);
 	pLabel->init(pName, type);
-	pCurrent->pLabel = pLabel;
-	pCurrent->pNext = pHead;
-	pHead = pCurrent;
 
+	unlock();
 	return pLabel;
-}
-
-void LinkUpLabel::init(const char* pName, LinkUpLabelType type)
-{
-	this->pName = (char*)calloc(strlen(pName) + 1, sizeof(uint8_t));
-	strcpy(this->pName, pName);
-	this->type = type;
-
-	switch (type)
-	{
-	case Node:
-		nSize = 0;
-		break;
-	case Event:
-		nSize = 0;
-		break;
-	case Function:
-		nSize = 0;
-		break;
-	case Boolean:
-		nSize = 1;
-		break;
-	case SByte:
-		nSize = 1;
-		break;
-	case Byte:
-		nSize = 1;
-		break;
-	case Int16:
-		nSize = 2;
-		break;
-	case UInt16:
-		nSize = 2;
-		break;
-	case Int32:
-		nSize = 4;
-		break;
-	case UInt32:
-		nSize = 4;
-		break;
-	case Int64:
-		nSize = 8;
-		break;
-	case UInt64:
-		nSize = 8;
-		break;
-	case Single:
-		nSize = 4;
-		break;
-	case Double:
-		nSize = 8;
-		break;
-	default:
-		break;
-	}
-	if (nSize > 0) {
-		pValue = calloc(nSize, sizeof(uint8_t));
-	}
-}
-
-void LinkUpLabel::set(void* pValue)
-{
-	memcpy(this->pValue, pValue, nSize);
-}
-
-void* LinkUpLabel::get()
-{
-	return pValue;
-}
-
-void LinkUpLabel::progress(LinkUpRaw* pConnector) {
-#ifdef _WINDOWS | __linux
-	uint32_t nTime = (uint32_t)1000 * 1000 / CLOCKS_PER_SEC * clock();
-#else
-	uint32_t nTime = micros();
-#endif // _WINDOWS || __linux
-
-	if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
-		timestamps.nInitTryTimeout = nTime + INITIALIZATION_TIMEOUT;
-
-		LinkUpPacket packet;
-		packet.nLength = strlen(pName) + sizeof(LinkUpLogic) + sizeof(LinkUpNameRequest);
-		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
-
-		LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
-		LinkUpNameRequest* nameRequest = (LinkUpNameRequest*)logic->pInnerHeader;
-
-		logic->nLogicType = LinkUpLogicType::NameRequest;
-		nameRequest->nLabelType = type;
-		memcpy(nameRequest->pName, pName, strlen(pName));
-
-		pConnector->send(packet);
-	}
-}
-
-bool LinkUpLabel::receivedPropertySetRequest(uint16_t nIdentifier, uint8_t* pValue, LinkUpRaw* pConnector)
-{
-	if (this->nIdentifier == nIdentifier)
-	{
-		LinkUpPacket packet;
-		packet.nLength = nSize + sizeof(LinkUpLogic) + sizeof(LinkUpPropertySetResponse);
-		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
-
-		LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
-		LinkUpPropertySetResponse* setResponse = (LinkUpPropertySetResponse*)logic->pInnerHeader;
-
-		logic->nLogicType = LinkUpLogicType::PropertySetResponse;
-		setResponse->nIdentifier = nIdentifier;
-
-		memcpy(this->pValue, pValue, nSize);
-
-		pConnector->send(packet);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool LinkUpLabel::receivedNameResponse(const char* pName, LinkUpLabelType type, uint16_t nIdentifier) {
-	if (strcmp(this->pName, pName) == 0 && this->type == type)
-	{
-		isInitialized = true;
-		this->nIdentifier = nIdentifier;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-char* LinkUpLabel::getName() {
-	return pName;
-}
-
-bool LinkUpLabel::receivedPropertyGetRequest(uint16_t nIdentifier, LinkUpRaw* pConnector)
-{
-	if (this->nIdentifier == nIdentifier)
-	{
-		LinkUpPacket packet;
-		packet.nLength = nSize + sizeof(LinkUpLogic) + sizeof(LinkUpPropertyGetResponse);
-		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
-
-		LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
-		LinkUpPropertyGetResponse* getResponse = (LinkUpPropertyGetResponse*)logic->pInnerHeader;
-
-		logic->nLogicType = LinkUpLogicType::PropertyGetResponse;
-		getResponse->nIdentifier = nIdentifier;
-		memcpy(getResponse->pData, pValue, nSize);
-
-		pConnector->send(packet);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 }
