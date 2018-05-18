@@ -122,8 +122,6 @@ AvlNode* AvlTree::remove(uint16_t nId, AvlNode* pNode) {
 			pNode = pNode->pRight;
 		else if (pNode->pRight == NULL)
 			pNode = pNode->pLeft;
-		if (pTemp != NULL && pTemp->pData != NULL)
-			free(pTemp->pData);
 		delete pTemp;
 	}
 	if (pNode == NULL)
@@ -135,20 +133,20 @@ AvlNode* AvlTree::remove(uint16_t nId, AvlNode* pNode) {
 	{
 		// right right case
 		if (height(pNode->pLeft->pLeft) - height(pNode->pLeft->pRight) == 1)
-			return singleLeftRotate(pNode);
+			return singleRightRotate(pNode);
 		// right left case
 		else
-			return doubleLeftRotate(pNode);
+			return doubleRightRotate(pNode);
 	}
 	// If right node is deleted, left case
 	else if (height(pNode->pRight) - height(pNode->pLeft) == 2)
 	{
 		// left left case
 		if (height(pNode->pRight->pRight) - height(pNode->pRight->pLeft) == 1)
-			return singleRightRotate(pNode);
+			return singleLeftRotate(pNode);
 		// left right case
 		else
-			return doubleRightRotate(pNode);
+			return doubleLeftRotate(pNode);
 	}
 	return pNode;
 }

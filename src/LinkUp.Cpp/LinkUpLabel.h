@@ -15,13 +15,8 @@ private:
 	char* pName;
 	uint8_t nSize;
 	void* pValue;
-	bool isInitialized;
-	uint16_t nIdentifier;
+	
 	LinkUpLabelType type;
-
-	struct {
-		uint32_t nInitTryTimeout = 0;
-	} timestamps;
 
 	void lock();
 	void unlock();
@@ -31,6 +26,11 @@ private:
 #endif
 
 public:
+	struct {
+		uint32_t nInitTryTimeout = 0;
+	} timestamps;
+	bool isInitialized;
+	uint16_t nIdentifier;
 	void init(const char* pName, LinkUpLabelType type);
 	void set(void* pValue);
 	void* get();

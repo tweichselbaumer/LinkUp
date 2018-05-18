@@ -50,12 +50,28 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 	while (connector.hasNext() && nMax > i) {
 		i++;
 		LinkUpPacket packet = connector.next();
-		receivedPacket(packet);
+		receivedPacket(packet, nTime);
+	}
+
+	if (nTime > timestamps.nPingTimeout && isInitialized) {
+		isInitialized = false;
+		AvlTreeIterator iterator(pAvlTree);
+		AvlNode* pNode;
+		while ((pNode = iterator.next()) != NULL)
+		{
+			if (pNode->pData != NULL)
+			{
+				((LinkUpLabel*)pNode->pData)->isInitialized = false;
+				((LinkUpLabel*)pNode->pData)->timestamps.nInitTryTimeout = 0;
+				pList->insert(((LinkUpLabel*)pNode->pData));
+				pAvlTree->remove(((LinkUpLabel*)pNode->pData)->nIdentifier);
+			}
+		}	
 	}
 
 	if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
 		timestamps.nInitTryTimeout = nTime + initialization_timeout;
-
+		timestamps.nPingTimeout = nTime + ping_timeout;
 		LinkUpPacket packet;
 		packet.nLength = strlen(pName) + sizeof(LinkUpLogic) + sizeof(LinkUpNameRequest);
 		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
@@ -88,7 +104,7 @@ void LinkUpNode::init(const char* pName)
 	strcpy(this->pName, pName);
 }
 
-void LinkUpNode::receivedPacket(LinkUpPacket packet)
+void LinkUpNode::receivedPacket(LinkUpPacket packet, uint32_t nTime)
 {
 	if (packet.nLength > 0 && packet.pData != NULL) {
 		LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
@@ -113,7 +129,7 @@ void LinkUpNode::receivedPacket(LinkUpPacket packet)
 			receivedPropertySetResponse(packet, (LinkUpPropertySetResponse*)logic->pInnerHeader);
 			break;
 		case LinkUpLogicType::PingRequest:
-			receivedPingRequest(packet);
+			receivedPingRequest(packet,nTime);
 			break;
 		default:
 			break;
@@ -196,7 +212,7 @@ void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertyS
 void LinkUpNode::receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse) {
 }
 
-void LinkUpNode::receivedPingRequest(LinkUpPacket packet)
+void LinkUpNode::receivedPingRequest(LinkUpPacket packet, uint32_t nTime)
 {
 	LinkUpPacket response;
 	response.nLength = sizeof(LinkUpLogic);
@@ -206,6 +222,8 @@ void LinkUpNode::receivedPingRequest(LinkUpPacket packet)
 	LinkUpPropertyGetResponse* getResponse = (LinkUpPropertyGetResponse*)logic->pInnerHeader;
 
 	logic->nLogicType = LinkUpLogicType::PingResponse;
+
+	timestamps.nPingTimeout = nTime + ping_timeout;
 
 	connector.send(response);
 }

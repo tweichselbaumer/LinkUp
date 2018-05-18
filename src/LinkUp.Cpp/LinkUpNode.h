@@ -13,13 +13,15 @@ class LinkUpNode
 {
 private:
 	enum {
-		initialization_timeout = 1000 * 1000 * 1000
+		initialization_timeout = 1000 * 1000 * 10,
+		ping_timeout = 1000 * 1000 * 5
 	};
 	bool isInitialized = false;
 	uint16_t nIdentifier = 0;
 	LinkUpRaw connector = {};
 	struct {
 		uint32_t nInitTryTimeout;
+		uint32_t nPingTimeout;
 	} timestamps;
 
 	char* pName = 0;
@@ -27,14 +29,14 @@ private:
 	LinkedList *pList = new LinkedList();
 
 	AvlTree *pAvlTree = new AvlTree();
-	void receivedPacket(LinkUpPacket packet);
+	void receivedPacket(LinkUpPacket packet,uint32_t nTime);
 	void receivedNameRequest(LinkUpPacket packet, LinkUpNameRequest* pNameRequest);
 	void receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* pNameResponse);
 	void receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyGetRequest* pPropertyGetRequest);
 	void receivedPropertyGetResponse(LinkUpPacket packet, LinkUpPropertyGetResponse* pPropertyGetResponse);
 	void receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest);
 	void receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse);
-	void receivedPingRequest(LinkUpPacket packet);
+	void receivedPingRequest(LinkUpPacket packet,uint32_t nTime);
 
 	void lock();
 	void unlock();
