@@ -83,7 +83,8 @@ void LinkUpLabel::progress(LinkUpRaw* pConnector) {
 
 		logic->nLogicType = LinkUpLogicType::NameRequest;
 		nameRequest->nLabelType = type;
-		memcpy(nameRequest->pName, pName, strlen(pName));
+		nameRequest->nNameLength = strlen(pName);
+		memcpy(nameRequest->pName, pName, nameRequest->nNameLength);
 
 		pConnector->send(packet);
 	}

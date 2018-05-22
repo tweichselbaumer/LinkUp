@@ -53,12 +53,13 @@ namespace LinkUp.Node
         {
             LabelType = (LinkUpLabelType)data[1];
             Identifier = BitConverter.ToUInt16(data, 2);
-            Name = Encoding.UTF8.GetString(data, 4, data.Length - 4);
+            UInt16 stringLength = BitConverter.ToUInt16(data, 4);
+            Name = Encoding.UTF8.GetString(data, 6, stringLength);
         }
 
         protected override byte[] ToRaw()
         {
-            return new byte[] { (byte)LinkUpLogicType.NameResponse, (byte)LabelType }.Concat(BitConverter.GetBytes(Identifier)).Concat(Encoding.UTF8.GetBytes(Name)).ToArray();
+            return new byte[] { (byte)LinkUpLogicType.NameResponse, (byte)LabelType }.Concat(BitConverter.GetBytes(Identifier)).Concat(BitConverter.GetBytes(((UInt16)Name.Length))).Concat(Encoding.UTF8.GetBytes(Name)).ToArray();
         }
     }
 }

@@ -34,45 +34,55 @@ enum LinkUpLabelType : uint8_t
 	Binary = 15
 };
 
-struct PACKED LinkUpLogic
+PACK(
+struct LinkUpLogic
 {
 	LinkUpLogicType nLogicType;
 	uint8_t pInnerHeader[];
-};
+});
 
-struct PACKED LinkUpNameRequest
+
+PACK(
+struct LinkUpNameRequest
 {
 	LinkUpLabelType nLabelType;
+	uint16_t nNameLength;
 	char pName[];
-};
+});
 
-struct PACKED LinkUpNameResponse
+PACK(
+struct LinkUpNameResponse
 {
 	LinkUpLabelType nLabelType;
 	uint16_t nIdentifier;
+	uint16_t nNameLength;
 	char pName[];
-};
+});
 
-struct PACKED LinkUpPropertyGetRequest
+PACK(
+struct LinkUpPropertyGetRequest
 {
 	uint16_t nIdentifier;
-};
+});
 
-struct PACKED LinkUpPropertyGetResponse
+PACK(
+struct LinkUpPropertyGetResponse
 {
 	uint16_t nIdentifier;
 	uint8_t pData[];
-};
+});
 
-struct PACKED LinkUpPropertySetRequest
+PACK(
+struct LinkUpPropertySetRequest
 {
 	uint16_t nIdentifier;
 	uint8_t pData[];
-};
+});
 
-struct PACKED LinkUpPropertySetResponse
+PACK(
+struct LinkUpPropertySetResponse
 {
 	uint16_t nIdentifier;
-};
+});
 
 #endif

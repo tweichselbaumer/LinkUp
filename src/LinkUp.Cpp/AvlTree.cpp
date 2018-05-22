@@ -91,9 +91,9 @@ AvlNode* AvlTree::find(uint16_t nId, AvlNode* pNode) {
 	else if (nId == pNode->nId)
 		return pNode;
 	else if (nId < pNode->nId)
-		find(nId, pNode->pLeft);
+		return find(nId, pNode->pLeft);
 	else if (nId > pNode->nId)
-		find(nId, pNode->pRight);
+		return find(nId, pNode->pRight);
 }
 
 AvlNode* AvlTree::remove(uint16_t nId, AvlNode* pNode) {

@@ -73,7 +73,7 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 		timestamps.nInitTryTimeout = nTime + initialization_timeout;
 		timestamps.nPingTimeout = nTime + ping_timeout;
 		LinkUpPacket packet;
-		packet.nLength = strlen(pName) + sizeof(LinkUpLogic) + sizeof(LinkUpNameRequest);
+		packet.nLength = strlen(pName) + (uint16_t)sizeof(LinkUpLogic) + (uint16_t)sizeof(LinkUpNameRequest);
 		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
 
 		LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
@@ -81,7 +81,8 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 
 		logic->nLogicType = LinkUpLogicType::NameRequest;
 		nameRequest->nLabelType = LinkUpLabelType::Node;
-		memcpy(nameRequest->pName, pName, strlen(pName));
+		nameRequest->nNameLength = strlen(pName);
+		memcpy(nameRequest->pName, pName, nameRequest->nNameLength);
 
 		connector.send(packet);
 	}
@@ -147,7 +148,7 @@ void LinkUpNode::receivedNameRequest(LinkUpPacket packet, LinkUpNameRequest* pNa
 
 void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* pNameResponse) {
 	char *pResponseName;
-	uint32_t nLength = packet.nLength - sizeof(LinkUpLogic) - sizeof(LinkUpNameResponse);
+	uint32_t nLength = pNameResponse->nNameLength;
 
 	pResponseName = (char*)calloc(nLength + 1, sizeof(uint8_t));
 	memcpy(pResponseName, pNameResponse->pName, nLength);
