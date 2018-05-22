@@ -84,8 +84,8 @@ namespace Testing.dotnet
             slave.MasterConnector = slaveToMaster;
             slave.Name = "slave";
 
-            LinkUpPrimitiveLabel<int> value2 = master.AddLabel<LinkUpPrimitiveLabel<int>>("value2");
-            LinkUpPrimitiveLabel<int> value1 = slave.AddLabel<LinkUpPrimitiveLabel<int>>("value1");
+            LinkUpPropertyLabel<int> value2 = master.AddLabel<LinkUpPropertyLabel<int>>("value2");
+            LinkUpPropertyLabel<int> value1 = slave.AddLabel<LinkUpPropertyLabel<int>>("value1");
 
             value1.Value = 10;
             value2.Value = 1011;
@@ -93,7 +93,7 @@ namespace Testing.dotnet
             Console.WriteLine("Continue after init!");
             Console.ReadLine();
 
-            LinkUpPrimitiveLabel<int> value1Ref = (LinkUpPrimitiveLabel<int>)master.Labels.FirstOrDefault(c => c.Name == "master/slave/value1");
+            LinkUpPropertyLabel<int> value1Ref = (LinkUpPropertyLabel<int>)master.Labels.FirstOrDefault(c => c.Name == "master/slave/value1");
             Console.WriteLine("value1Ref: " + value1Ref.Value);
 
             value1Ref.Value = 123;
@@ -101,7 +101,7 @@ namespace Testing.dotnet
             value1Ref.Value = 10;
             Console.WriteLine("value1: " + value1.Value);
 
-            LinkUpPrimitiveLabel<int> value1RefSuper = (LinkUpPrimitiveLabel<int>)super.Labels.FirstOrDefault(c => c.Name == "super/master/slave/value1");
+            LinkUpPropertyLabel<int> value1RefSuper = (LinkUpPropertyLabel<int>)super.Labels.FirstOrDefault(c => c.Name == "super/master/slave/value1");
             Console.WriteLine("value1RefSuper: " + value1RefSuper.Value);
 
             value1RefSuper.Value = 123;
@@ -109,7 +109,7 @@ namespace Testing.dotnet
             value1RefSuper.Value = 10;
             Console.WriteLine("value1: " + value1.Value);
 
-            LinkUpPrimitiveLabel<int> value2RefSuper = (LinkUpPrimitiveLabel<int>)super.Labels.FirstOrDefault(c => c.Name == "super/master/value2");
+            LinkUpPropertyLabel<int> value2RefSuper = (LinkUpPropertyLabel<int>)super.Labels.FirstOrDefault(c => c.Name == "super/master/value2");
             Console.WriteLine("value2RefSuper: " + value2RefSuper.Value);
 
             value2RefSuper.Value = 1245;

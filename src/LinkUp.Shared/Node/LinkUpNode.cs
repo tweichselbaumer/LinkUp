@@ -169,7 +169,7 @@ namespace LinkUp.Node
         internal LinkUpLabel AddSubLabel(string name, LinkUpLabelType type, byte[] options)
         {
             LinkUpLabel label = LinkUpLabel.CreateNew(type, options);
-            label.Name = string.Format("{0}/{1}", Name, name);
+           label.Name = string.Format("{0}/{1}", Name, name);
             lock (_Labels)
             {
                 if (_Labels.Any(c => c.Name == label.Name))
@@ -245,10 +245,10 @@ namespace LinkUp.Node
                     LinkUpPropertyGetRequest propertyGetRequest = (LinkUpPropertyGetRequest)logic;
                     LinkUpPropertyGetResponse propertyGetResponse = new LinkUpPropertyGetResponse();
                     LinkUpLabel label = _Labels.FirstOrDefault(c => c.ParentIdentifier == propertyGetRequest.Identifier);
-                    if (label != null && label is LinkUpPrimitiveBaseLabel)
+                    if (label != null && label is LinkUpPropertyLabelBase)
                     {
                         propertyGetResponse.Identifier = label.ParentIdentifier;
-                        propertyGetResponse.Data = (label as LinkUpPrimitiveBaseLabel).Data;
+                        propertyGetResponse.Data = (label as LinkUpPropertyLabelBase).Data;
                         connector.SendPacket(propertyGetResponse.ToPacket());
                     }
                     else
@@ -261,9 +261,9 @@ namespace LinkUp.Node
                     LinkUpPropertySetRequest propertySetRequest = (LinkUpPropertySetRequest)logic;
                     LinkUpPropertySetResponse propertyGetResponse = new LinkUpPropertySetResponse();
                     LinkUpLabel label = _Labels.FirstOrDefault(c => c.ParentIdentifier == propertySetRequest.Identifier);
-                    if (label != null && label is LinkUpPrimitiveBaseLabel)
+                    if (label != null && label is LinkUpPropertyLabelBase)
                     {
-                        (label as LinkUpPrimitiveBaseLabel).Data = propertySetRequest.Data;
+                        (label as LinkUpPropertyLabelBase).Data = propertySetRequest.Data;
                         propertyGetResponse.Identifier = label.ParentIdentifier;
                         connector.SendPacket(propertyGetResponse.ToPacket());
                     }

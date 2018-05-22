@@ -75,27 +75,18 @@ namespace LinkUp.Node
             Connector?.Dispose();
         }
 
-        internal void GetLabel<T>(LinkUpPrimitiveLabel<T> linkUpPrimitiveLabel)
-#if NET45
-where T : IConvertible, new()
-#else
-where T : new()
-#endif
+        internal void GetLabel(LinkUpPropertyLabelBase linkUpPrimitiveBaseLabel)
         {
             LinkUpPropertyGetRequest propertyGetRequest = new LinkUpPropertyGetRequest();
-            propertyGetRequest.Identifier = linkUpPrimitiveLabel.ChildIdentifier;
+            propertyGetRequest.Identifier = linkUpPrimitiveBaseLabel.ChildIdentifier;
             _Connector?.SendPacket(propertyGetRequest.ToPacket());
         }
 
-        internal void SetLabel<T>(LinkUpPrimitiveLabel<T> linkUpPrimitiveLabel, byte[] data)
-#if NET45
-where T : IConvertible, new()
-#else
-where T : new()
-#endif
+        internal void SetLabel(LinkUpPropertyLabelBase linkUpPrimitiveBaseLabel, byte[] data)
+
         {
             LinkUpPropertySetRequest propertySetRequest = new LinkUpPropertySetRequest();
-            propertySetRequest.Identifier = linkUpPrimitiveLabel.ChildIdentifier;
+            propertySetRequest.Identifier = linkUpPrimitiveBaseLabel.ChildIdentifier;
             propertySetRequest.Data = data;
             _Connector?.SendPacket(propertySetRequest.ToPacket());
         }
@@ -156,9 +147,9 @@ where T : new()
                     LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == propertyGetResponse.Identifier);
                     if (label != null)
                     {
-                        if (label is LinkUpPrimitiveBaseLabel)
+                        if (label is LinkUpPropertyLabelBase)
                         {
-                            (label as LinkUpPrimitiveBaseLabel).GetDone(propertyGetResponse.Data);
+                            (label as LinkUpPropertyLabelBase).GetDone(propertyGetResponse.Data);
                         }
                     }
                 }
@@ -168,9 +159,9 @@ where T : new()
                     LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == propertySetResponse.Identifier);
                     if (label != null)
                     {
-                        if (label is LinkUpPrimitiveBaseLabel)
+                        if (label is LinkUpPropertyLabelBase)
                         {
-                            (label as LinkUpPrimitiveBaseLabel).SetDone();
+                            (label as LinkUpPropertyLabelBase).SetDone();
                         }
                     }
                 }

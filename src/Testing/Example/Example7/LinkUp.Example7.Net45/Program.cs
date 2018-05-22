@@ -51,7 +51,7 @@ namespace LinkUp.Example7.Net45
                 Console.WriteLine("ENTER FOR GET");
                 Console.ReadLine();
 
-                foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
+                foreach (LinkUpPropertyLabel<int> value in node.Labels.Where(c => c is LinkUpPropertyLabel<int>))
                 {
                     try
                     {
@@ -63,7 +63,7 @@ namespace LinkUp.Example7.Net45
                 Console.WriteLine("ENTER FOR SET");
                 Console.ReadLine();
 
-                foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
+                foreach (LinkUpPropertyLabel<int> value in node.Labels.Where(c => c is LinkUpPropertyLabel<int>))
                 {
                     try
                     {

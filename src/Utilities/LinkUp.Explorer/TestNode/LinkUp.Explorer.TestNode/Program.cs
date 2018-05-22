@@ -26,8 +26,8 @@ namespace LinkUp.Explorer.TestNode
             node.MasterConnector = slaveToMaster;
             masterNode.AddSubNode(masterToSlave);
 
-            node.AddLabel<LinkUpPrimitiveLabel<int>>("val1");
-            node.AddLabel<LinkUpPrimitiveLabel<int>>("val2");
+            node.AddLabel<LinkUpPropertyLabel<int>>("val1");
+            node.AddLabel<LinkUpPropertyLabel<int>>("val2");
 
             return node;
         }
@@ -41,7 +41,7 @@ namespace LinkUp.Explorer.TestNode
 
             masterNode.Name = "master";
             masterNode.MasterConnector = apiConnector;
-            masterNode.AddLabel<LinkUpPrimitiveLabel<int>>("val1");
+            masterNode.AddLabel<LinkUpPropertyLabel<int>>("val1");
 
             LinkUpNode slave1 = CreateNode(masterNode, "slave1");
             LinkUpNode slave2 = CreateNode(masterNode, "slave2");
@@ -77,7 +77,7 @@ namespace LinkUp.Explorer.TestNode
 
         private static void T_Elapsed(object sender, ElapsedEventArgs e)
         {
-            foreach (LinkUpPrimitiveLabel<int> label in masterNode.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
+            foreach (LinkUpPropertyLabel<int> label in masterNode.Labels.Where(c => c is LinkUpPropertyLabel<int>))
             {
                 label.Value = new Random((int)DateTime.Now.Ticks).Next(1, 100);
             }

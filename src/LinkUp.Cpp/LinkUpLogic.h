@@ -26,8 +26,8 @@ enum LinkUpLabelType : uint8_t
 enum LinkUpPropertyType : uint8_t
 {
 	Boolean = 1,
-	SByte = 2,
-	Byte = 3,
+	Int8 = 2,
+	UInt8 = 3,
 	Int16 = 4,
 	UInt16 = 5,
 	Int32 = 6,

@@ -26,11 +26,19 @@ int main(int argc, char* argv[])
 	{
 		LinkUpNode* pLinkUpNode = new LinkUpNode("test");
 
-		for (int i = 1; i <= 100; i++) {
-			char str[25];
-			sprintf(str, "label%d", i);
+		for (int i = 1; i <= 5; i++) {
+			char str[25] = { 0 };
+			sprintf(str, "label_int_%d", i);
 			LinkUpPropertyLabel_Int32* pLabel = new  LinkUpPropertyLabel_Int32(str);
 			pLabel->setValue(12);
+			pLinkUpNode->addLabel(pLabel);
+		}
+
+		for (int i = 1; i <= 5; i++) {
+			char str[25] = { 0 };
+			sprintf(str, "label_bin_%d", i);
+			LinkUpPropertyLabel_Binary* pLabel = new  LinkUpPropertyLabel_Binary(str, 25);
+			pLabel->setValue((uint8_t*)str);
 			pLinkUpNode->addLabel(pLabel);
 		}
 		boost::shared_ptr< boost::asio::io_service::work > work(

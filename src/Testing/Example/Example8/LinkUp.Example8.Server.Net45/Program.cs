@@ -19,7 +19,7 @@ namespace LinkUp.Example8.Server.Net45
             node.Name = "root";
             node.AddSubNode(serverToClient);
             while (node.Labels.Count < 1) { }
-            LinkUpPrimitiveLabel<int> val1 = node.Labels[0] as LinkUpPrimitiveLabel<int>;
+            LinkUpPropertyLabel<int> val1 = node.Labels[0] as LinkUpPropertyLabel<int>;
             for (int i = 0; i < 100; i++)
             {
                 watch.Restart();

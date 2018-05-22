@@ -80,7 +80,7 @@ namespace LinkUp.Example3.Net45
 
             while (true)
             {
-                foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
+                foreach (LinkUpPropertyLabel<int> value in node.Labels.Where(c => c is LinkUpPropertyLabel<int>))
                 {
                     try
                     {
@@ -89,7 +89,7 @@ namespace LinkUp.Example3.Net45
                     catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
                 }
 
-                foreach (LinkUpPrimitiveLabel<int> value in node.Labels.Where(c => c is LinkUpPrimitiveLabel<int>))
+                foreach (LinkUpPropertyLabel<int> value in node.Labels.Where(c => c is LinkUpPropertyLabel<int>))
                 {
                     try
                     {

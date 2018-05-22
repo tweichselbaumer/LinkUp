@@ -23,7 +23,7 @@ namespace LinkUp.Testing.Tcp
             //    }
             //    else
             //    {
-                    Console.WriteLine("- Reveived:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+            Console.WriteLine("- Reveived:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
             //    }
             //    Console.ResetColor();
             //}
@@ -41,7 +41,7 @@ namespace LinkUp.Testing.Tcp
             //{
             //    if (packet.Data.Length > 2 && packet.Data[0] == 0x02 && packet.Data[1] == 0x9)
             //    {
-                    Console.WriteLine("- Sent: {0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+            Console.WriteLine("- Sent: {0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
             //    }
             //}
         }
@@ -65,19 +65,18 @@ namespace LinkUp.Testing.Tcp
                     {
                         try
                         {
-                            if (node.Labels.Count == 100)
+                            if (node.Labels.Count == 10)
                             {
                                 Console.WriteLine("done");
                                 foreach (LinkUpLabel lab in node.Labels)
                                 {
-                                    if (lab is LinkUpPrimitiveLabel<Int32>)
+                                    if (lab is LinkUpPropertyLabel<Int32>)
                                     {
-                                        lock (Console.Out)
-                                        {
-                                            int value = (lab as LinkUpPrimitiveLabel<Int32>).Value;
-                                            Console.ResetColor();
-                                            //Console.WriteLine("{0}: {1}", lab.Name, value);
-                                        }
+                                        int value = (lab as LinkUpPropertyLabel<Int32>).Value;
+                                    }
+                                    else if (lab is LinkUpPropertyLabel_Binary)
+                                    {
+                                        byte[] value = (lab as LinkUpPropertyLabel_Binary).Value;
                                     }
                                 }
                                 Thread.Sleep(5000);
@@ -97,7 +96,7 @@ namespace LinkUp.Testing.Tcp
                     }
                 });
 
-               Console.Read();
+                Console.Read();
                 running = false;
                 connector.Dispose();
             }

@@ -110,7 +110,7 @@ namespace LinkUp.Node
                 case LinkUpLabelType.Function:
                     return null;
                 case LinkUpLabelType.Property:
-                    return LinkUpPrimitiveBaseLabel.CreateNew(options);
+                    return LinkUpPropertyLabelBase.CreateNew(options);
                 default:
                     return null;
             }

@@ -23,7 +23,7 @@ namespace LinkUp.Example8.Client.Net45
             LinkUpNode node = new LinkUpNode();
             node.Name = "leaf";
             node.MasterConnector = clientToServer;
-            LinkUpPrimitiveLabel<int> val1 = node.AddLabel<LinkUpPrimitiveLabel<int>>("val1");
+            LinkUpPropertyLabel<int> val1 = node.AddLabel<LinkUpPropertyLabel<int>>("val1");
             val1.Value = 1213;
 
             Console.Read();
