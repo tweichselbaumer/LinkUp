@@ -166,9 +166,9 @@ namespace LinkUp.Node
             _Labels.RemoveAll(c => Regex.Match(c.Name, pattern).Success);
         }
 
-        internal LinkUpLabel AddSubLabel(string name, LinkUpLabelType type)
+        internal LinkUpLabel AddSubLabel(string name, LinkUpLabelType type, byte[] options)
         {
-            LinkUpLabel label = LinkUpLabel.CreateNew(type);
+            LinkUpLabel label = LinkUpLabel.CreateNew(type, options);
             label.Name = string.Format("{0}/{1}", Name, name);
             lock (_Labels)
             {

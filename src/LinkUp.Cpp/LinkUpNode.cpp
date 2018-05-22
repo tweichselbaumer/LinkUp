@@ -99,7 +99,7 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 	unlock();
 }
 
-void LinkUpNode::init(const char* pName)
+LinkUpNode::LinkUpNode(const char* pName)
 {
 	this->pName = (char*)calloc(strlen(pName) + 1, sizeof(uint8_t));
 	strcpy(this->pName, pName);
@@ -181,9 +181,13 @@ void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyG
 		AvlNode* pNode = pAvlTree->find(pPropertyGetRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
 			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
-			if (!label->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
-				//TODO: error??
+//TODO: CAST CHECK
+			if (label->nType == LinkUpLabelType::Property) {
+				if (!((LinkUpPropertyLabel*)label)->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
+					//TODO: error??
+				}
 			}
+			
 		}
 		else {
 			//TODO: error??
@@ -200,8 +204,10 @@ void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertyS
 		AvlNode* pNode = pAvlTree->find(pPropertySetRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
 			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
-			if (!label->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector)) {
-				//TODO: error??
+			if (typeid(*label) == typeid(LinkUpPropertyLabel)) {
+				if (!((LinkUpPropertyLabel*)label)->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector)) {
+					//TODO: error??
+				}
 			}
 		}
 		else {
@@ -229,14 +235,9 @@ void LinkUpNode::receivedPingRequest(LinkUpPacket packet, uint32_t nTime)
 	connector.send(response);
 }
 
-LinkUpLabel* LinkUpNode::addLabel(const char* pName, LinkUpLabelType type)
+void LinkUpNode::addLabel(LinkUpLabel* pLabel)
 {
 	lock();
-
-	LinkUpLabel* pLabel = new LinkUpLabel();
 	pList->insert(pLabel);
-	pLabel->init(pName, type);
-
 	unlock();
-	return pLabel;
 }

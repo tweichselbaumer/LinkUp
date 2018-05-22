@@ -19,6 +19,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)LinkedList.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinkUpLabel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinkUpNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LinkUpPropertyLabel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinkUpRaw.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Platform.cpp" />
   </ItemGroup>
@@ -29,6 +30,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpLabel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpLogic.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpNode.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpPropertyLabel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpRaw.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Platform.h" />
   </ItemGroup>

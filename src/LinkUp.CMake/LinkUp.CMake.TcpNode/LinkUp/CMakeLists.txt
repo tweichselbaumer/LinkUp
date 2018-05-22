@@ -15,6 +15,8 @@ IF (WIN32)
 #  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpLogic.h"
 #  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkedList.h"
 #  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkedList.cpp"
+#  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpPropertyLabel.h"
+#  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpPropertyLabel.cpp"
 #)
 #
 #file( COPY ${linkup_SOURCE_FILES1} DESTINATION "${PROJECT_SOURCE_DIR}/LinkUp/src" NO_SOURCE_PERMISSIONS )
@@ -35,6 +37,8 @@ set(linkup_SOURCE_FILES
   "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpLogic.h"
   "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkedList.h"
   "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkedList.cpp"
+  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpPropertyLabel.h"
+  "${PROJECT_SOURCE_DIR}/../../LinkUp.Cpp/LinkUpPropertyLabel.cpp"
 )
 
 add_library(LinkUp ${linkup_SOURCE_FILES})
@@ -62,6 +66,8 @@ ELSE()
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpLogic.h"
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkedList.h"
 #  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkedList.cpp"
+#  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpPropertyLabel.h"
+#  "${PROJECT_SOURCE_DIR}/LinkUp/src/LinkUpPropertyLabel.cpp"
 #)
 #
 #add_library(LinkUp ${linkup_SOURCE_FILES})

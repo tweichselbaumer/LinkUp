@@ -12,11 +12,8 @@ private:
 	enum {
 		initialization_timeout = 1000 * 1000 * 1000
 	};
-	char* pName;
-	uint8_t nSize;
-	void* pValue;
-	
-	LinkUpLabelType type;
+
+
 
 	void lock();
 	void unlock();
@@ -25,20 +22,20 @@ private:
 	boost::mutex mtx;
 #endif
 
+protected:
+	virtual uint8_t* getOptions(uint8_t* pSize) = 0;
+	void init(const char* pName, LinkUpLabelType type);
 public:
+	void progress(LinkUpRaw* pConnector);
 	struct {
 		uint32_t nInitTryTimeout = 0;
 	} timestamps;
-	bool isInitialized;
-	uint16_t nIdentifier;
-	void init(const char* pName, LinkUpLabelType type);
-	void set(void* pValue);
-	void* get();
-	void progress(LinkUpRaw* pConnector);
+	LinkUpLabelType nType;
+	char* pName = 0;
+	bool isInitialized = false;
+	uint16_t nIdentifier = 0;
+
 	bool receivedNameResponse(const char* pName, LinkUpLabelType type, uint16_t nIdentifier);
-	bool receivedPropertyGetRequest(uint16_t nIdentifier, LinkUpRaw* pConnector);
-	bool receivedPropertySetRequest(uint16_t nIdentifier, uint8_t* value, LinkUpRaw* pConnector);
-	char* getName();
 };
 
 #endif

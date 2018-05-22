@@ -128,7 +128,7 @@ where T : new()
                     }
                     if (nameRequest.LabelType != LinkUpLabelType.Node)
                     {
-                        LinkUpLabel label = _Master.AddSubLabel(nameRequest.Name, nameRequest.LabelType);
+                        LinkUpLabel label = _Master.AddSubLabel(nameRequest.Name, nameRequest.LabelType, nameRequest.Options);
                         if (label.ChildIdentifier == 0)
                         {
                             label.ChildIdentifier = GetNextIdentifier();

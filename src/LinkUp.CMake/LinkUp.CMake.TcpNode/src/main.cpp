@@ -24,19 +24,20 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		LinkUpNode linkUpNode = {};
-		linkUpNode.init("test");
+		LinkUpNode* pLinkUpNode = new LinkUpNode("test");
+
 		for (int i = 1; i <= 100; i++) {
 			char str[25];
 			sprintf(str, "label%d", i);
-			LinkUpLabel* label = linkUpNode.addLabel(str, LinkUpLabelType::Int32);
-			*((int32_t*)(label->get())) = 12;
+			LinkUpPropertyLabel_Int32* pLabel = new  LinkUpPropertyLabel_Int32(str);
+			pLabel->setValue(12);
+			pLinkUpNode->addLabel(pLabel);
 		}
 		boost::shared_ptr< boost::asio::io_service::work > work(
 			new boost::asio::io_service::work(io_service)
 		);
 
-		tcp_server server(io_service, 3000, &linkUpNode, 1);
+		tcp_server server(io_service, 3000, pLinkUpNode, 1);
 
 		std::cout << "Press [return] to exit." << std::endl;
 

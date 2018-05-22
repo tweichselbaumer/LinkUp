@@ -18,32 +18,36 @@ enum LinkUpLogicType : uint8_t
 enum LinkUpLabelType : uint8_t
 {
 	Node = 1,
-	Event = 2,
-	Function = 3,
-	Boolean = 4,
-	SByte = 5,
-	Byte = 6,
-	Int16 = 7,
-	UInt16 = 8,
-	Int32 = 9,
-	UInt32 = 10,
-	Int64 = 11,
-	UInt64 = 12,
-	Single = 13,
-	Double = 14,
-	Binary = 15
+	Property = 2,
+	Event = 3,
+	Function = 4,
+};
+
+enum LinkUpPropertyType : uint8_t
+{
+	Boolean = 1,
+	SByte = 2,
+	Byte = 3,
+	Int16 = 4,
+	UInt16 = 5,
+	Int32 = 6,
+	UInt32 = 7,
+	Int64 = 8,
+	UInt64 = 9,
+	Single = 10,
+	Double = 11,
+	Binary = 12
 };
 
 PACK(
-struct LinkUpLogic
+	struct LinkUpLogic
 {
 	LinkUpLogicType nLogicType;
 	uint8_t pInnerHeader[];
 });
 
-
 PACK(
-struct LinkUpNameRequest
+	struct LinkUpNameRequest
 {
 	LinkUpLabelType nLabelType;
 	uint16_t nNameLength;
@@ -51,7 +55,7 @@ struct LinkUpNameRequest
 });
 
 PACK(
-struct LinkUpNameResponse
+	struct LinkUpNameResponse
 {
 	LinkUpLabelType nLabelType;
 	uint16_t nIdentifier;
@@ -60,27 +64,27 @@ struct LinkUpNameResponse
 });
 
 PACK(
-struct LinkUpPropertyGetRequest
+	struct LinkUpPropertyGetRequest
 {
 	uint16_t nIdentifier;
 });
 
 PACK(
-struct LinkUpPropertyGetResponse
-{
-	uint16_t nIdentifier;
-	uint8_t pData[];
-});
-
-PACK(
-struct LinkUpPropertySetRequest
+	struct LinkUpPropertyGetResponse
 {
 	uint16_t nIdentifier;
 	uint8_t pData[];
 });
 
 PACK(
-struct LinkUpPropertySetResponse
+	struct LinkUpPropertySetRequest
+{
+	uint16_t nIdentifier;
+	uint8_t pData[];
+});
+
+PACK(
+	struct LinkUpPropertySetResponse
 {
 	uint16_t nIdentifier;
 });

@@ -11,6 +11,56 @@ namespace LinkUp.Node
         internal abstract void GetDone(byte[] data);
 
         internal abstract void SetDone();
+
+        public static LinkUpPrimitiveBaseLabel CreateNew(byte[] options)
+        {
+            if (options.Length > 0)
+            {
+                LinkUpPropertyType type = (LinkUpPropertyType)options[0];
+                switch (type)
+                {
+                    case LinkUpPropertyType.Boolean:
+                        return new LinkUpPrimitiveLabel<bool>();
+
+                    case LinkUpPropertyType.Byte:
+                        return new LinkUpPrimitiveLabel<byte>();
+
+                    case LinkUpPropertyType.Double:
+                        return new LinkUpPrimitiveLabel<double>();
+
+                    case LinkUpPropertyType.Int16:
+                        return new LinkUpPrimitiveLabel<short>();
+
+                    case LinkUpPropertyType.Int32:
+                        return new LinkUpPrimitiveLabel<int>();
+
+                    case LinkUpPropertyType.Int64:
+                        return new LinkUpPrimitiveLabel<long>();
+
+                    case LinkUpPropertyType.SByte:
+                        return new LinkUpPrimitiveLabel<sbyte>();
+
+                    case LinkUpPropertyType.Single:
+                        return new LinkUpPrimitiveLabel<float>();
+
+                    case LinkUpPropertyType.UInt16:
+                        return new LinkUpPrimitiveLabel<ushort>();
+
+                    case LinkUpPropertyType.UInt32:
+                        return new LinkUpPrimitiveLabel<uint>();
+
+                    case LinkUpPropertyType.UInt64:
+                        return new LinkUpPrimitiveLabel<ulong>();
+
+                    case LinkUpPropertyType.Binary:
+                        return null;
+
+                    default:
+                        return null;
+                }
+            }
+            return null;
+        }
     }
 
     public class LinkUpPrimitiveLabel<T> : LinkUpPrimitiveBaseLabel
@@ -112,53 +162,61 @@ where T : new()
         {
             get
             {
-                if (_Value is bool)
-                {
-                    return LinkUpLabelType.Boolean;
-                }
-                if (_Value is sbyte)
-                {
-                    return LinkUpLabelType.SByte;
-                }
-                if (_Value is byte)
-                {
-                    return LinkUpLabelType.Byte;
-                }
-                if (_Value is short)
-                {
-                    return LinkUpLabelType.Int16;
-                }
-                if (_Value is ushort)
-                {
-                    return LinkUpLabelType.UInt16;
-                }
-                if (_Value is int)
-                {
-                    return LinkUpLabelType.Int32;
-                }
-                if (_Value is uint)
-                {
-                    return LinkUpLabelType.UInt32;
-                }
-                if (_Value is long)
-                {
-                    return LinkUpLabelType.Int64;
-                }
-                if (_Value is ulong)
-                {
-                    return LinkUpLabelType.UInt64;
-                }
-                if (_Value is float)
-                {
-                    return LinkUpLabelType.Single;
-                }
-                if (_Value is double)
-                {
-                    return LinkUpLabelType.Double;
-                }
-                throw new Exception("Unknow type for LinkUpLabel.");
+                return LinkUpLabelType.Property;
             }
         }
+
+        //internal override LinkUpPropertyType LabelType
+        //{
+        //    get
+        //    {
+        //        if (_Value is bool)
+        //        {
+        //            return LinkUpPropertyType.Boolean;
+        //        }
+        //        if (_Value is sbyte)
+        //        {
+        //            return LinkUpPropertyType.SByte;
+        //        }
+        //        if (_Value is byte)
+        //        {
+        //            return LinkUpPropertyType.Byte;
+        //        }
+        //        if (_Value is short)
+        //        {
+        //            return LinkUpPropertyType.Int16;
+        //        }
+        //        if (_Value is ushort)
+        //        {
+        //            return LinkUpPropertyType.UInt16;
+        //        }
+        //        if (_Value is int)
+        //        {
+        //            return LinkUpPropertyType.Int32;
+        //        }
+        //        if (_Value is uint)
+        //        {
+        //            return LinkUpPropertyType.UInt32;
+        //        }
+        //        if (_Value is long)
+        //        {
+        //            return LinkUpPropertyType.Int64;
+        //        }
+        //        if (_Value is ulong)
+        //        {
+        //            return LinkUpPropertyType.UInt64;
+        //        }
+        //        if (_Value is float)
+        //        {
+        //            return LinkUpPropertyType.Single;
+        //        }
+        //        if (_Value is double)
+        //        {
+        //            return LinkUpPropertyType.Double;
+        //        }
+        //        throw new Exception("Unknow type for LinkUpLabel.");
+        //    }
+        //}
 
         public override void Dispose()
         {

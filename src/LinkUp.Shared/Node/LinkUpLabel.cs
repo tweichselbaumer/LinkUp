@@ -101,43 +101,16 @@ namespace LinkUp.Node
 
         public abstract void Dispose();
 
-        internal static LinkUpLabel CreateNew(LinkUpLabelType type)
+        internal static LinkUpLabel CreateNew(LinkUpLabelType type, byte[] options)
         {
             switch (type)
             {
-                case LinkUpLabelType.Boolean:
-                    return new LinkUpPrimitiveLabel<bool>();
-
-                case LinkUpLabelType.Byte:
-                    return new LinkUpPrimitiveLabel<byte>();
-
-                case LinkUpLabelType.Double:
-                    return new LinkUpPrimitiveLabel<double>();
-
-                case LinkUpLabelType.Int16:
-                    return new LinkUpPrimitiveLabel<short>();
-
-                case LinkUpLabelType.Int32:
-                    return new LinkUpPrimitiveLabel<int>();
-
-                case LinkUpLabelType.Int64:
-                    return new LinkUpPrimitiveLabel<long>();
-
-                case LinkUpLabelType.SByte:
-                    return new LinkUpPrimitiveLabel<sbyte>();
-
-                case LinkUpLabelType.Single:
-                    return new LinkUpPrimitiveLabel<float>();
-
-                case LinkUpLabelType.UInt16:
-                    return new LinkUpPrimitiveLabel<ushort>();
-
-                case LinkUpLabelType.UInt32:
-                    return new LinkUpPrimitiveLabel<uint>();
-
-                case LinkUpLabelType.UInt64:
-                    return new LinkUpPrimitiveLabel<ulong>();
-
+                case LinkUpLabelType.Node:
+                    return null;
+                case LinkUpLabelType.Function:
+                    return null;
+                case LinkUpLabelType.Property:
+                    return LinkUpPrimitiveBaseLabel.CreateNew(options);
                 default:
                     return null;
             }
