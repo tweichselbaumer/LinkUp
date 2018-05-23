@@ -4,11 +4,15 @@
 #include "Platform.h"
 
 #include "LinkUpRaw.h"
-#include "LinkUpLabel.h"
 #include "LinkUpLogic.h"
 #include "LinkedList.h"
 #include "AVLTree.h"
+
+#include "LinkUpLabel.h"
 #include "LinkUpPropertyLabel.h"
+#include "LinkUpEventLabel.h"
+
+class LinkUpLabel;
 
 class LinkUpNode
 {
@@ -28,6 +32,7 @@ private:
 	char* pName = 0;
 
 	LinkedList *pList = new LinkedList();
+	LinkedList *pEventList = new LinkedList();
 
 	AvlTree *pAvlTree = new AvlTree();
 	void receivedPacket(LinkUpPacket packet, uint32_t nTime);
@@ -38,7 +43,9 @@ private:
 	void receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest);
 	void receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse);
 	void receivedPingRequest(LinkUpPacket packet, uint32_t nTime);
-
+	void receivedEventFireResponse(LinkUpPacket packet, LinkUpEventFireResponse* pEventFireResponse);
+	void receivedEventSubscribeRequest(LinkUpPacket packet, LinkUpEventSubscribeRequest* pEventSubscribeRequest);
+	void receivedEventUnsubscribeRequest(LinkUpPacket packet, LinkUpEventUnsubscribeRequest* pEventUnsubscribeRequest);
 	void lock();
 	void unlock();
 
@@ -49,7 +56,7 @@ public:
 	void progress(uint8_t* pData, uint16_t nCount, uint16_t nMax);
 	uint16_t getRaw(uint8_t* pData, uint16_t nMax);
 	LinkUpNode(const char* pName);
-	void LinkUpNode::addLabel(LinkUpLabel* pLabel);
+	void addLabel(LinkUpLabel* pLabel);
 };
 
 #endif

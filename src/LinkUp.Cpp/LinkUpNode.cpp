@@ -66,7 +66,7 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 				pList->insert(((LinkUpLabel*)pNode->pData));
 				pAvlTree->remove(((LinkUpLabel*)pNode->pData)->nIdentifier);
 			}
-		}	
+		}
 	}
 
 	if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
@@ -92,6 +92,13 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 		LinkUpLabel* pLabel;
 
 		while ((pLabel = (LinkUpLabel*)iterator.next()) != NULL)
+		{
+			pLabel->progress(&connector);
+		}
+
+		LinkedListIterator eventIterator(pEventList);
+
+		while ((pLabel = (LinkUpLabel*)eventIterator.next()) != NULL)
 		{
 			pLabel->progress(&connector);
 		}
@@ -130,7 +137,16 @@ void LinkUpNode::receivedPacket(LinkUpPacket packet, uint32_t nTime)
 			receivedPropertySetResponse(packet, (LinkUpPropertySetResponse*)logic->pInnerHeader);
 			break;
 		case LinkUpLogicType::PingRequest:
-			receivedPingRequest(packet,nTime);
+			receivedPingRequest(packet, nTime);
+			break;
+		case LinkUpLogicType::EventFireResponse:
+			receivedEventFireResponse(packet, (LinkUpEventFireResponse*)logic->pInnerHeader);
+			break;
+		case LinkUpLogicType::EventSubscribeRequest:
+			receivedEventSubscribeRequest(packet, (LinkUpEventSubscribeRequest*)logic->pInnerHeader);
+			break;
+		case LinkUpLogicType::EventUnsubscribeRequest:
+			receivedEventUnsubscribeRequest(packet, (LinkUpEventUnsubscribeRequest*)logic->pInnerHeader);
 			break;
 		default:
 			break;
@@ -181,16 +197,48 @@ void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyG
 		AvlNode* pNode = pAvlTree->find(pPropertyGetRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
 			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
-//TODO: CAST CHECK
+			//TODO: CAST CHECK
 			if (label->nType == LinkUpLabelType::Property) {
 				if (!((LinkUpPropertyLabel*)label)->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
 					//TODO: error??
 				}
 			}
-			
 		}
 		else {
 			//TODO: error??
+		}
+	}
+}
+
+void LinkUpNode::receivedEventFireResponse(LinkUpPacket packet, LinkUpEventFireResponse* pEventFireResponse)
+{
+	//TODO:
+}
+
+void LinkUpNode::receivedEventSubscribeRequest(LinkUpPacket packet, LinkUpEventSubscribeRequest* pEventSubscribeRequest)
+{
+	if (pAvlTree != NULL && pEventSubscribeRequest != NULL) {
+		AvlNode* pNode = pAvlTree->find(pEventSubscribeRequest->nIdentifier);
+		if (pNode != NULL && pNode->pData != NULL) {
+			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
+			if (label->nType == LinkUpLabelType::Event) {
+				((LinkUpEventLabel*)label)->subscribed(&connector);
+				pEventList->insert(label);
+			}
+		}
+	}
+}
+
+void LinkUpNode::receivedEventUnsubscribeRequest(LinkUpPacket packet, LinkUpEventUnsubscribeRequest* pEventUnsubscribeRequest)
+{
+	if (pAvlTree != NULL && pEventUnsubscribeRequest != NULL) {
+		AvlNode* pNode = pAvlTree->find(pEventUnsubscribeRequest->nIdentifier);
+		if (pNode != NULL && pNode->pData != NULL) {
+			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
+			if (label->nType == LinkUpLabelType::Event) {
+				((LinkUpEventLabel*)label)->unsubscribed(&connector);
+				pEventList->remove(label);
+			}
 		}
 	}
 }

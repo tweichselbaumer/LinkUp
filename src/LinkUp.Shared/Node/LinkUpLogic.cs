@@ -43,6 +43,30 @@ namespace LinkUp.Node
                 case LinkUpLogicType.PingResponse:
                     logic = new LinkUpPingResponse();
                     break;
+
+                case LinkUpLogicType.EventFireRequest:
+                    logic = new LinkUpEventFireRequest();
+                    break;
+
+                case LinkUpLogicType.EventFireResponse:
+                    logic = new LinkUpEventFireResponse();
+                    break;
+
+                case LinkUpLogicType.EventSubscribeRequest:
+                    logic = new LinkUpEventSubscribeRequest();
+                    break;
+
+                case LinkUpLogicType.EventSubscribeResponse:
+                    logic = new LinkUpEventSubscribeResponse();
+                    break;
+
+                case LinkUpLogicType.EventUnsubscribeRequest:
+                    logic = new LinkUpEventUnsubscribeRequest();
+                    break;
+
+                case LinkUpLogicType.EventUnsubscribeResponse:
+                    logic = new LinkUpEventUnsubscribeResponse();
+                    break;
             }
 
             logic?.ParseFromRaw(packet.Data);

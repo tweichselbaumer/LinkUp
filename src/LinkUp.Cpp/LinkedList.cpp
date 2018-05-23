@@ -67,5 +67,7 @@ void* LinkedListIterator::next() {
 }
 
 LinkedListIterator::LinkedListIterator(LinkedList* pList) {
-	pNext = pList->clone()->pRoot;
+	LinkedList* pClone = pList->clone();
+	pNext = pClone->pRoot;
+	free(pClone);
 }

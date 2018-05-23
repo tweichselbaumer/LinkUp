@@ -17,6 +17,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)AvlTree.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CRC16.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinkedList.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LinkUpEventLabel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinkUpLabel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinkUpNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinkUpPropertyLabel.cpp" />
@@ -27,6 +28,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AVLTree.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CRC16.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkedList.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpEventLabel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpLabel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpLogic.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkUpNode.h" />

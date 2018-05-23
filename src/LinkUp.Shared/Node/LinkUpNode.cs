@@ -169,7 +169,7 @@ namespace LinkUp.Node
         internal LinkUpLabel AddSubLabel(string name, LinkUpLabelType type, byte[] options)
         {
             LinkUpLabel label = LinkUpLabel.CreateNew(type, options);
-           label.Name = string.Format("{0}/{1}", Name, name);
+            label.Name = string.Format("{0}/{1}", Name, name);
             lock (_Labels)
             {
                 if (_Labels.Any(c => c.Name == label.Name))
@@ -276,6 +276,18 @@ namespace LinkUp.Node
                 {
                     connector.SendPacket(new LinkUpPingResponse().ToPacket());
                     _LostPings = 0;
+                }
+                else if (logic is LinkUpEventFireResponse)
+                {
+                    //TODO:
+                }
+                else if (logic is LinkUpEventSubscribeRequest)
+                {
+                    //TODO:
+                }
+                else if (logic is LinkUpEventUnsubscribeRequest)
+                {
+                    //TODO:
                 }
             }
             catch (Exception)

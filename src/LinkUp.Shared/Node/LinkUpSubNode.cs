@@ -3,7 +3,9 @@ using System;
 using System.Linq;
 
 #if NET45 || NETCOREAPP2_0
+
 using System.Timers;
+
 #endif
 
 namespace LinkUp.Node
@@ -33,7 +35,22 @@ namespace LinkUp.Node
 #endif
         }
 
+        internal void SubscribeEvent(LinkUpEventLabel linkUpEventLabel)
+        {
+            LinkUpEventSubscribeRequest eventSubscribeRequest = new LinkUpEventSubscribeRequest();
+            eventSubscribeRequest.Identifier = linkUpEventLabel.ChildIdentifier;
+            _Connector?.SendPacket(eventSubscribeRequest.ToPacket());
+        }
+
+        internal void UnsubscribeEvent(LinkUpEventLabel linkUpEventLabel)
+        {
+            LinkUpEventUnsubscribeRequest eventUnsubscribeRequest = new LinkUpEventUnsubscribeRequest();
+            eventUnsubscribeRequest.Identifier = linkUpEventLabel.ChildIdentifier;
+            _Connector?.SendPacket(eventUnsubscribeRequest.ToPacket());
+        }
+
 #if NET45 || NETCOREAPP2_0
+
         private void _PingTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (_IsInitialized)
@@ -48,6 +65,7 @@ namespace LinkUp.Node
                 _IsInitialized = false;
             }
         }
+
 #endif
 
         private ushort GetNextIdentifier()
@@ -56,7 +74,6 @@ namespace LinkUp.Node
             {
                 return _NextIdentifier++;
             }
-
         }
 
         internal LinkUpConnector Connector
@@ -75,15 +92,14 @@ namespace LinkUp.Node
             Connector?.Dispose();
         }
 
-        internal void GetLabel(LinkUpPropertyLabelBase linkUpPrimitiveBaseLabel)
+        internal void GetProperty(LinkUpPropertyLabelBase linkUpPrimitiveBaseLabel)
         {
             LinkUpPropertyGetRequest propertyGetRequest = new LinkUpPropertyGetRequest();
             propertyGetRequest.Identifier = linkUpPrimitiveBaseLabel.ChildIdentifier;
             _Connector?.SendPacket(propertyGetRequest.ToPacket());
         }
 
-        internal void SetLabel(LinkUpPropertyLabelBase linkUpPrimitiveBaseLabel, byte[] data)
-
+        internal void SetProperty(LinkUpPropertyLabelBase linkUpPrimitiveBaseLabel, byte[] data)
         {
             LinkUpPropertySetRequest propertySetRequest = new LinkUpPropertySetRequest();
             propertySetRequest.Identifier = linkUpPrimitiveBaseLabel.ChildIdentifier;
@@ -99,12 +115,7 @@ namespace LinkUp.Node
                 if (logic is LinkUpNameRequest)
                 {
                     LinkUpNameRequest nameRequest = logic as LinkUpNameRequest;
-                    //if (!_IsInitialized && nameRequest.LabelType != LinkUpLabelType.Node)
-                    //{
-                    //    //TODO:ERROR??
-                    //}
-                    //else
-                    //{
+
                     if (nameRequest.LabelType == LinkUpLabelType.Node)
                     {
                         _IsInitialized = true;
@@ -133,13 +144,44 @@ namespace LinkUp.Node
                         nameResponse.LabelType = nameRequest.LabelType;
 
                         _Connector.SendPacket(nameResponse.ToPacket());
-
                     }
-                    //}
+
                 }
-                else if (logic is LinkUpNameResponse)
+                else if (logic is LinkUpEventFireRequest)
                 {
-                    //TODO:ERROR??
+                    LinkUpEventFireRequest eventFireRequest = (LinkUpEventFireRequest)logic;
+                    LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == eventFireRequest.Identifier);
+                    if (label != null)
+                    {
+                        if (label is LinkUpEventLabel)
+                        {
+                            (label as LinkUpEventLabel).DoEvent(eventFireRequest.Data);
+                        }
+                    }
+                }
+                else if (logic is LinkUpEventSubscribeResponse)
+                {
+                    LinkUpEventSubscribeResponse eventSubscribeResponse = (LinkUpEventSubscribeResponse)logic;
+                    LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == eventSubscribeResponse.Identifier);
+                    if (label != null)
+                    {
+                        if (label is LinkUpEventLabel)
+                        {
+                            (label as LinkUpEventLabel).SubscribeDone();
+                        }
+                    }
+                }
+                else if (logic is LinkUpEventUnsubscribeResponse)
+                {
+                    LinkUpEventUnsubscribeResponse eventUnsubscribeResponse = (LinkUpEventUnsubscribeResponse)logic;
+                    LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == eventUnsubscribeResponse.Identifier);
+                    if (label != null)
+                    {
+                        if (label is LinkUpEventLabel)
+                        {
+                            (label as LinkUpEventLabel).UnsubscribeDone();
+                        }
+                    }
                 }
                 else if (logic is LinkUpPropertyGetResponse)
                 {

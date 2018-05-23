@@ -117,13 +117,7 @@ namespace LinkUp.Raw
                         receiver.BeginInvoke(this, packet, null, null);
                     }
                 }
-
-                //ReveivedPacket?.Invoke(this, packet);
             }
-            //Task.Run(() =>
-            //{
-           // Console.WriteLine("PTotal Received Packets: {0} Total Failed Packets: {1} Total Send Packets: {2} Bytes In: {3} Bytes Out: {4}", TotalReceivedPackets, TotalFailedPackets, TotalSendPackets, TotalReceivedBytes, TotalSendBytes);
-            //});
         }
 
         protected abstract void SendData(byte[] data);

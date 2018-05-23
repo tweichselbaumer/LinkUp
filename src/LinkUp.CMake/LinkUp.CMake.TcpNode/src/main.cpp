@@ -14,11 +14,24 @@ using namespace std;
 
 boost::asio::io_service io_service;
 
+LinkUpEventLabel* pEvent;
+
+bool running = true;
+
 void doWork()
 {
 	io_service.run();
 }
 
+void doWork2()
+{
+	char str[25] = { 0 };
+	sprintf(str, "testtest");
+	while (running) {
+		pEvent->fireEvent((uint8_t*)str,strlen(str));
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(2000));
+	}
+}
 
 int main(int argc, char* argv[])
 {
@@ -26,21 +39,22 @@ int main(int argc, char* argv[])
 	{
 		LinkUpNode* pLinkUpNode = new LinkUpNode("test");
 
-		for (int i = 1; i <= 5; i++) {
+		/*for (int i = 1; i <= 5; i++) {
 			char str[25] = { 0 };
 			sprintf(str, "label_int_%d", i);
-			LinkUpPropertyLabel_Int32* pLabel = new  LinkUpPropertyLabel_Int32(str);
+			LinkUpPropertyLabel_Int32* pLabel = new  LinkUpPropertyLabel_Int32(str, pLinkUpNode);
 			pLabel->setValue(12);
-			pLinkUpNode->addLabel(pLabel);
 		}
 
 		for (int i = 1; i <= 5; i++) {
 			char str[25] = { 0 };
 			sprintf(str, "label_bin_%d", i);
-			LinkUpPropertyLabel_Binary* pLabel = new  LinkUpPropertyLabel_Binary(str, 25);
+			LinkUpPropertyLabel_Binary* pLabel = new  LinkUpPropertyLabel_Binary(str, 25, pLinkUpNode);
 			pLabel->setValue((uint8_t*)str);
-			pLinkUpNode->addLabel(pLabel);
-		}
+		}*/
+
+		pEvent = new  LinkUpEventLabel("label_event", pLinkUpNode);
+
 		boost::shared_ptr< boost::asio::io_service::work > work(
 			new boost::asio::io_service::work(io_service)
 		);
@@ -51,15 +65,16 @@ int main(int argc, char* argv[])
 
 		boost::thread_group worker_threads;
 		worker_threads.create_thread(doWork);
+		worker_threads.create_thread(doWork2);
 
 		std::cin.get();
 
+		running = false;
 		io_service.stop();
 
 		worker_threads.join_all();
 
 		return 0;
-
 	}
 	catch (std::exception& e)
 	{

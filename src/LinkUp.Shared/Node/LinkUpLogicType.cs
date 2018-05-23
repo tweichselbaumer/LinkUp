@@ -9,6 +9,12 @@
         PropertySetRequest = 5,
         PropertySetResponse = 6,
         PingRequest = 7,
-        PingResponse = 8
+        PingResponse = 8,
+        EventFireRequest = 9,
+        EventFireResponse = 10,
+        EventSubscribeRequest = 11,
+        EventSubscribeResponse = 12,
+        EventUnsubscribeRequest = 13,
+        EventUnsubscribeResponse = 14
     }
 }

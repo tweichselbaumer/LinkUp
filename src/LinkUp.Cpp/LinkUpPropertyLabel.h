@@ -6,6 +6,10 @@
 #include "LinkUpRaw.h"
 #include "LinkUpLogic.h"
 #include "LinkUpLabel.h"
+#include "LinkUpNode.h"
+
+class LinkUpLabel;
+class LinkUpNode;
 
 class LinkUpPropertyLabel :public LinkUpLabel
 {
@@ -15,7 +19,8 @@ private:
 protected:
 	uint16_t nSize;
 	virtual uint8_t * getRaw() = 0;
-	void init(const char* pName, LinkUpPropertyType nType, uint16_t nSize);
+	void init(const char* pName, LinkUpPropertyType nType, uint16_t nSize, LinkUpNode* pParent);
+	void progressAdv(LinkUpRaw* pConnector);
 public:
 	bool receivedPropertyGetRequest(uint16_t nIdentifier, LinkUpRaw* pConnector);
 	bool receivedPropertySetRequest(uint16_t nIdentifier, uint8_t* pValue, LinkUpRaw* pConnector);
@@ -30,7 +35,7 @@ protected:
 public:
 	bool getValue();
 	void setValue(bool nNewValue);
-	LinkUpPropertyLabel_Boolean(const char* pName);
+	LinkUpPropertyLabel_Boolean(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_Int8 :public LinkUpPropertyLabel
@@ -42,7 +47,7 @@ protected:
 public:
 	int8_t getValue();
 	void setValue(int8_t nNewValue);
-	LinkUpPropertyLabel_Int8(const char* pName);
+	LinkUpPropertyLabel_Int8(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_UInt8 :public LinkUpPropertyLabel
@@ -54,7 +59,7 @@ protected:
 public:
 	uint8_t getValue();
 	void setValue(uint8_t nNewValue);
-	LinkUpPropertyLabel_UInt8(const char* pName);
+	LinkUpPropertyLabel_UInt8(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_Int16 :public LinkUpPropertyLabel
@@ -66,7 +71,7 @@ protected:
 public:
 	int16_t getValue();
 	void setValue(int16_t nNewValue);
-	LinkUpPropertyLabel_Int16(const char* pName);
+	LinkUpPropertyLabel_Int16(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_UInt16 :public LinkUpPropertyLabel
@@ -78,7 +83,7 @@ protected:
 public:
 	uint16_t getValue();
 	void setValue(uint16_t nNewValue);
-	LinkUpPropertyLabel_UInt16(const char* pName);
+	LinkUpPropertyLabel_UInt16(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_Int32 :public LinkUpPropertyLabel
@@ -90,7 +95,7 @@ protected:
 public:
 	int32_t getValue();
 	void setValue(int32_t nNewValue);
-	LinkUpPropertyLabel_Int32(const char* pName);
+	LinkUpPropertyLabel_Int32(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_UInt32 :public LinkUpPropertyLabel
@@ -102,7 +107,7 @@ protected:
 public:
 	uint32_t getValue();
 	void setValue(uint32_t nNewValue);
-	LinkUpPropertyLabel_UInt32(const char* pName);
+	LinkUpPropertyLabel_UInt32(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_Int64 :public LinkUpPropertyLabel
@@ -114,7 +119,7 @@ protected:
 public:
 	int64_t getValue();
 	void setValue(int64_t nNewValue);
-	LinkUpPropertyLabel_Int64(const char* pName);
+	LinkUpPropertyLabel_Int64(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_UInt64 :public LinkUpPropertyLabel
@@ -126,7 +131,7 @@ protected:
 public:
 	uint64_t getValue();
 	void setValue(uint64_t nNewValue);
-	LinkUpPropertyLabel_UInt64(const char* pName);
+	LinkUpPropertyLabel_UInt64(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_Single :public LinkUpPropertyLabel
@@ -138,7 +143,7 @@ protected:
 public:
 	float_t getValue();
 	void setValue(float_t nNewValue);
-	LinkUpPropertyLabel_Single(const char* pName);
+	LinkUpPropertyLabel_Single(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_Double :public LinkUpPropertyLabel
@@ -150,7 +155,7 @@ protected:
 public:
 	double_t getValue();
 	void setValue(double_t nNewValue);
-	LinkUpPropertyLabel_Double(const char* pName);
+	LinkUpPropertyLabel_Double(const char* pName, LinkUpNode* pParent);
 };
 
 class LinkUpPropertyLabel_Binary :public LinkUpPropertyLabel
@@ -162,7 +167,7 @@ protected:
 public:
 	uint8_t * getValue();
 	void setValue(uint8_t* pNewValue);
-	LinkUpPropertyLabel_Binary(const char* pName, uint16_t nSize);
+	LinkUpPropertyLabel_Binary(const char* pName, uint16_t nSize, LinkUpNode* pParent);
 	~LinkUpPropertyLabel_Binary();
 };
 

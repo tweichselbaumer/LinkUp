@@ -18,7 +18,10 @@ namespace LinkUp.Explorer.WebService.Repositories
             LinkUpLabel linkUpLabel = _Node.Labels.FirstOrDefault(c => c.Name.Equals(name));
             Label label = new Label();
             label.Name = linkUpLabel.Name;
-            label.Value = linkUpLabel.ValueObject;
+            if (label is LinkUpPropertyLabelBase)
+            {
+                label.Value = (linkUpLabel as LinkUpPropertyLabelBase).ValueObject;
+            }
             return label;
         }
     }

@@ -9,6 +9,11 @@
     <Import_RootNamespace>LinkUp</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpEventFireRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpEventFireResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpEventLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpEventSubscribeRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpEventUnsubscribeResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpLabelType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpLogic.cs" />
@@ -25,6 +30,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpPropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpSubNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpLogicType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpEventSubscribeResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node\LinkUpEventUnsubscribeRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Raw\LinkUpMemoryConnector.cs" />

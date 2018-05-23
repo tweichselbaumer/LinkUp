@@ -28,13 +28,16 @@ void LinkUpLabel::progress(LinkUpRaw* pConnector) {
 		}
 		pConnector->send(packet);
 	}
+	progressAdv(pConnector);
 }
 
-void LinkUpLabel::init(const char* pName, LinkUpLabelType type)
+void LinkUpLabel::init(const char* pName, LinkUpLabelType type, LinkUpNode* pParent)
 {
+	this->pParent = pParent;
 	this->pName = (char*)calloc(strlen(pName) + 1, sizeof(uint8_t));
 	strcpy(this->pName, pName);
 	this->nType = type;
+	pParent->addLabel(this);
 }
 
 bool LinkUpLabel::receivedNameResponse(const char* pName, LinkUpLabelType type, uint16_t nIdentifier) {

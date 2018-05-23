@@ -22,12 +22,17 @@ namespace LinkUp.Node
             _SetAutoResetEvent.Set();
         }
 
+        public abstract object ValueObject
+        {
+            get;
+        }
+
         protected abstract byte[] ConvertToBytes(object value);
 
         protected void RequestValue()
         {
             _GetAutoResetEvent.Reset();
-            Owner.GetLabel(this);
+            Owner.GetProperty(this);
             if (!_GetAutoResetEvent.WaitOne(GET_REQUEST_TIMEOUT))
                 throw new Exception(string.Format("Unable to get label: {0}.", Name));
         }
@@ -35,7 +40,7 @@ namespace LinkUp.Node
         protected void SetValue(object value)
         {
             _SetAutoResetEvent.Reset();
-            Owner.SetLabel(this, ConvertToBytes(value));
+            Owner.SetProperty(this, ConvertToBytes(value));
             if (!_SetAutoResetEvent.WaitOne(SET_REQUEST_TIMEOUT))
                 throw new Exception(string.Format("Unable to set label: {0}.", Name));
         }

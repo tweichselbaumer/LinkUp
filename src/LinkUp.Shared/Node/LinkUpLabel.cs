@@ -81,11 +81,6 @@ namespace LinkUp.Node
             }
         }
 
-        public abstract object ValueObject
-        {
-            get;
-        }
-
         internal ushort ParentIdentifier
         {
             get
@@ -109,6 +104,8 @@ namespace LinkUp.Node
                     return null;
                 case LinkUpLabelType.Function:
                     return null;
+                case LinkUpLabelType.Event:
+                    return LinkUpEventLabel.CreateNew(options);
                 case LinkUpLabelType.Property:
                     return LinkUpPropertyLabelBase.CreateNew(options);
                 default:

@@ -58,6 +58,7 @@ namespace LinkUp.Testing.Tcp
                 node.AddSubNode(connector);
 
                 bool running = true;
+                bool ifFirst = true;
 
                 Task.Run(() =>
                 {
@@ -65,7 +66,7 @@ namespace LinkUp.Testing.Tcp
                     {
                         try
                         {
-                            if (node.Labels.Count == 10)
+                            if (node.Labels.Count == 1)
                             {
                                 Console.WriteLine("done");
                                 foreach (LinkUpLabel lab in node.Labels)
@@ -78,7 +79,16 @@ namespace LinkUp.Testing.Tcp
                                     {
                                         byte[] value = (lab as LinkUpPropertyLabel_Binary).Value;
                                     }
+                                    else if(lab is LinkUpEventLabel)
+                                    {
+                                        if(ifFirst)
+                                        {
+                                            (lab as LinkUpEventLabel).Subscribe();
+                                            (lab as LinkUpEventLabel).Fired += Program_Fired;
+                                        }
+                                    }
                                 }
+                                ifFirst = false;
                                 Thread.Sleep(5000);
                             }
                         }
@@ -100,6 +110,11 @@ namespace LinkUp.Testing.Tcp
                 running = false;
                 connector.Dispose();
             }
+        }
+
+        private static void Program_Fired(LinkUpEventLabel label, byte[] data)
+        {
+            Console.WriteLine("- EVENT ({0}): {1}", label.Name, string.Join(" ", data.Select(b => string.Format("{0:X2} ", b))));
         }
     }
 }

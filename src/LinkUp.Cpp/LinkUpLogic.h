@@ -12,7 +12,13 @@ enum LinkUpLogicType : uint8_t
 	PropertySetRequest = 5,
 	PropertySetResponse = 6,
 	PingRequest = 7,
-	PingResponse = 8
+	PingResponse = 8,
+	EventFireRequest = 9,
+	EventFireResponse = 10,
+	EventSubscribeRequest = 11,
+	EventSubscribeResponse = 12,
+	EventUnsubscribeRequest = 13,
+	EventUnsubscribeResponse = 14
 };
 
 enum LinkUpLabelType : uint8_t
@@ -85,6 +91,43 @@ PACK(
 
 PACK(
 	struct LinkUpPropertySetResponse
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	struct LinkUpEventFireRequest
+{
+	uint16_t nIdentifier;
+	uint8_t pData[];
+});
+
+PACK(
+	struct LinkUpEventFireResponse
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	struct LinkUpEventSubscribeRequest
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	struct LinkUpEventSubscribeResponse
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	struct LinkUpEventUnsubscribeRequest
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	struct LinkUpEventUnsubscribeResponse
 {
 	uint16_t nIdentifier;
 });
