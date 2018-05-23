@@ -15,6 +15,7 @@ using namespace std;
 boost::asio::io_service io_service;
 
 LinkUpEventLabel* pEvent;
+LinkUpNode* pLinkUpNode;
 
 bool running = true;
 
@@ -25,11 +26,18 @@ void doWork()
 
 void doWork2()
 {
-	char str[25] = { 0 };
-	sprintf(str, "testtest");
+	uint8_t* pData = (uint8_t*)calloc(1024 * 512, sizeof(uint8_t));
 	while (running) {
-		pEvent->fireEvent((uint8_t*)str,strlen(str));
-		boost::this_thread::sleep_for(boost::chrono::milliseconds(2000));
+		pEvent->fireEvent((uint8_t*)pData, 1024 * 512);
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+	}
+}
+
+void doWork3()
+{
+	while (running) {
+		pLinkUpNode->progress(0, 0, 100000);
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 	}
 }
 
@@ -37,7 +45,7 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		LinkUpNode* pLinkUpNode = new LinkUpNode("test");
+		pLinkUpNode = new LinkUpNode("test");
 
 		/*for (int i = 1; i <= 5; i++) {
 			char str[25] = { 0 };
@@ -66,6 +74,7 @@ int main(int argc, char* argv[])
 		boost::thread_group worker_threads;
 		worker_threads.create_thread(doWork);
 		worker_threads.create_thread(doWork2);
+		worker_threads.create_thread(doWork3);
 
 		std::cin.get();
 

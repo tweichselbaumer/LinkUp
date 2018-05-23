@@ -15,7 +15,7 @@ namespace LinkUp.Raw
         private TcpClient _TcpClient;
         private Task _Task;
         private bool _IsRunning = true;
-        byte[] data = new byte[4096];
+        byte[] data = new byte[1024];
 
         public LinkUpTcpClientConnector(IPAddress destinationAddress, int destinationPort)
         {
@@ -102,7 +102,7 @@ namespace LinkUp.Raw
             }
             else
             {
-                throw new Exception("Not connected.");
+               throw new Exception("Not connected.");
             }
 
 #endif

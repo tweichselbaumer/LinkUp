@@ -9,7 +9,7 @@
 #include "LinkUpNode.h"
 
 struct LinkUpEventData {
-	uint16_t nSize;
+	uint32_t nSize;
 	uint8_t pData[];
 };
 
@@ -20,13 +20,13 @@ class LinkUpEventLabel :public LinkUpLabel
 private:
 	uint8_t * getOptions(uint8_t* pSize);
 	LinkedList* pList = new LinkedList();
-	bool isSubscribed;
+	bool isSubscribed = false;
 protected:
 	void progressAdv(LinkUpRaw* pConnector);
 public:
 	void subscribed(LinkUpRaw* pConnector);
 	void unsubscribed(LinkUpRaw* pConnector);
-	void fireEvent(uint8_t * pData, uint16_t nSize);
+	void fireEvent(uint8_t * pData, uint32_t nSize);
 	LinkUpEventLabel(const char* pName, LinkUpNode* pParent);
 };
 

@@ -47,7 +47,6 @@ void session::start()
 			read();
 		}
 
-		node_->progress(dataIn_, 0, 100000);
 		length = node_->getRaw(dataOut_, max_length);
 
 		totalsend += length;

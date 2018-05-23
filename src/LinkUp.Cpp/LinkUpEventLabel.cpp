@@ -5,8 +5,9 @@ uint8_t * LinkUpEventLabel::getOptions(uint8_t* pSize)
 	return NULL;
 }
 
-void LinkUpEventLabel::fireEvent(uint8_t *pData, uint16_t nSize)
+void LinkUpEventLabel::fireEvent(uint8_t *pData, uint32_t nSize)
 {
+	lock();
 	if (isSubscribed)
 	{
 		LinkUpEventData* pEventData = (LinkUpEventData*)calloc(1, sizeof(LinkUpEventData) + nSize);
@@ -16,6 +17,7 @@ void LinkUpEventLabel::fireEvent(uint8_t *pData, uint16_t nSize)
 		}
 		pList->insert(pEventData);
 	}
+	unlock();
 }
 
 LinkUpEventLabel::LinkUpEventLabel(const char* pName, LinkUpNode* pParent)
@@ -25,6 +27,7 @@ LinkUpEventLabel::LinkUpEventLabel(const char* pName, LinkUpNode* pParent)
 
 void LinkUpEventLabel::progressAdv(LinkUpRaw* pConnector)
 {
+	lock();
 	LinkedListIterator iterator(pList);
 	LinkUpEventData* pData;
 
@@ -33,7 +36,7 @@ void LinkUpEventLabel::progressAdv(LinkUpRaw* pConnector)
 		pList->remove(pData);
 
 		LinkUpPacket packet;
-		packet.nLength = (uint16_t)sizeof(LinkUpLogic) + (uint16_t)sizeof(LinkUpEventFireRequest) + pData->nSize;
+		packet.nLength = sizeof(LinkUpLogic) + sizeof(LinkUpEventFireRequest) + pData->nSize;
 		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
 
 		LinkUpLogic* pLogic = (LinkUpLogic*)packet.pData;
@@ -47,10 +50,13 @@ void LinkUpEventLabel::progressAdv(LinkUpRaw* pConnector)
 
 		free(pData);
 	}
+	unlock();
 }
 
 void LinkUpEventLabel::subscribed(LinkUpRaw* pConnector) {
+	lock();
 	isSubscribed = true;
+	unlock();
 
 	LinkUpPacket packet;
 	packet.nLength = (uint16_t)sizeof(LinkUpLogic) + (uint16_t)sizeof(LinkUpEventSubscribeResponse);
@@ -63,9 +69,11 @@ void LinkUpEventLabel::subscribed(LinkUpRaw* pConnector) {
 	pSubscribeResponse->nIdentifier = nIdentifier;
 
 	pConnector->send(packet);
+
 }
 
 void LinkUpEventLabel::unsubscribed(LinkUpRaw* pConnector) {
+	lock();
 	isSubscribed = false;
 	LinkedListIterator iterator(pList);
 
@@ -76,6 +84,7 @@ void LinkUpEventLabel::unsubscribed(LinkUpRaw* pConnector) {
 		pList->remove(pData);
 		free(pData);
 	}
+	unlock();
 
 	LinkUpPacket packet;
 	packet.nLength = (uint16_t)sizeof(LinkUpLogic) + (uint16_t)sizeof(LinkUpEventSubscribeResponse);

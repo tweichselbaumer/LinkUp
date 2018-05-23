@@ -23,7 +23,7 @@ namespace LinkUp.Testing.Tcp
             //    }
             //    else
             //    {
-            Console.WriteLine("- Reveived:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+            //Console.WriteLine("- Reveived:\n\t{0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
             //    }
             //    Console.ResetColor();
             //}
@@ -41,7 +41,7 @@ namespace LinkUp.Testing.Tcp
             //{
             //    if (packet.Data.Length > 2 && packet.Data[0] == 0x02 && packet.Data[1] == 0x9)
             //    {
-            Console.WriteLine("- Sent: {0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+            //Console.WriteLine("- Sent: {0}", string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
             //    }
             //}
         }
@@ -114,7 +114,7 @@ namespace LinkUp.Testing.Tcp
 
         private static void Program_Fired(LinkUpEventLabel label, byte[] data)
         {
-            Console.WriteLine("- EVENT ({0}): {1}", label.Name, string.Join(" ", data.Select(b => string.Format("{0:X2} ", b))));
+            Console.WriteLine("- EVENT ({0}): {1}", label.Name, data.Length/*string.Join(" ", data.Select(b => string.Format("{0:X2} ", b)))*/);
         }
     }
 }

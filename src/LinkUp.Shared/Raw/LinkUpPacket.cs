@@ -9,7 +9,7 @@ namespace LinkUp.Raw
         private byte[] _Data;
         private bool _IsValid;
 
-        public ushort Crc
+        public UInt16 Crc
         {
             get
             {
@@ -30,11 +30,11 @@ namespace LinkUp.Raw
             }
         }
 
-        public ushort Length
+        public int Length
         {
             get
             {
-                return _Data == null ? (ushort)0 : Convert.ToUInt16(_Data.Length);
+                return _Data == null ? 0 : _Data.Length;
             }
         }
 
@@ -53,9 +53,9 @@ namespace LinkUp.Raw
             try
             {
                 data = RemoveEscaping(data);
-                ushort length = BitConverter.ToUInt16(data.ToArray(), 1);
-                result.Data = data.Skip(3).Take(length).ToArray();
-                ushort crc = BitConverter.ToUInt16(data.ToArray(), 3 + length);
+                int length = BitConverter.ToInt32(data.ToArray(), 1);
+                result.Data = data.Skip(5).Take(length).ToArray();
+                ushort crc = BitConverter.ToUInt16(data.ToArray(), 5 + length);
                 if (crc != result.Crc || data[0] != Constant.Preamble || data[data.Count - 1] != Constant.EndOfPacket)
                 {
                     result._IsValid = false;

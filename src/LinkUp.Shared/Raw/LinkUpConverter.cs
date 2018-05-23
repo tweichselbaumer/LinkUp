@@ -76,22 +76,17 @@ namespace LinkUp.Raw
                     _TotalFailedPackets++;
                 }
                 _Buffer = _Buffer.Skip(indexOfPreamble).ToList();
-
-                if (indexOfPreamble != 0)
-                {
-                    string b = "";
-                }
             }
             else
             {
-                string b = "";
+                return result;
             }
             if (indexOfEndOfPacket != -1)
             {
                 _Buffer = _Buffer.Skip(indexOfEndOfPacket + 1).ToList();
             }
 
-            if (_Buffer.Contains(Constant.EndOfPacket))
+            if (indexOfPreamble != -1)
             {
                 result.AddRange(ParseBuffer());
             }
