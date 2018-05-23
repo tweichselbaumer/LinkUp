@@ -9,6 +9,7 @@
 
 LinkUpPacket LinkUpRaw::next()
 {
+	lock();
 	LinkUpPacketList *pPacketList;
 	LinkUpPacket packet;
 	pPacketList = pHeadIn;
@@ -17,7 +18,22 @@ LinkUpPacket LinkUpRaw::next()
 		packet = pPacketList->packet;
 		free(pPacketList);
 	}
+	unlock();
 	return packet;
+}
+
+void LinkUpRaw::lock()
+{
+#ifdef LINKUP_BOOST_THREADSAFE
+	mtx.lock();
+#endif
+}
+
+void LinkUpRaw::unlock()
+{
+#ifdef LINKUP_BOOST_THREADSAFE
+	mtx.unlock();
+#endif
 }
 
 bool LinkUpRaw::hasNext()
@@ -25,7 +41,7 @@ bool LinkUpRaw::hasNext()
 	return pHeadIn != NULL;
 }
 
-bool LinkUpRaw::checkForError(uint16_t nByte)
+bool LinkUpRaw::checkForError(uint8_t nByte)
 {
 	if (nByte == LINKUP_RAW_EOP || nByte == LINKUP_RAW_PREAMBLE)
 	{
@@ -52,13 +68,15 @@ bool LinkUpRaw::checkForError(uint16_t nByte)
 				free(pProgressingIn);
 			}
 		}
+		stateIn = LinkUpState::ReceivePreamble;
 		return true;
-	}
+	}	
 	return false;
 }
 
 void LinkUpRaw::send(LinkUpPacket packet)
 {
+	lock();
 	if (packet.nLength)
 	{
 		LinkUpPacketList* pPacketList = (LinkUpPacketList*)calloc(1, sizeof(LinkUpPacketList));
@@ -76,10 +94,12 @@ void LinkUpRaw::send(LinkUpPacket packet)
 			pHeadOut = pTailOut = pPacketList;
 		}
 	}
+	unlock();
 }
 
 uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint32_t nMax)
 {
+	lock();
 	uint32_t nBytesSend = 0;
 	uint8_t nNextByte = 0;
 	do
@@ -283,12 +303,13 @@ uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint32_t nMax)
 		nTotalSendBytes += nBytesSend;
 		//std::cout << "p rec " << nTotalReceivedPackets << " p f: " << nTotalFailedPackets << " p sen: " << nTotalSendPackets << " brec: " << nTotalReceivedBytes << " bsen: " << nTotalSendBytes << std::endl;
 	}
-
+	unlock();
 	return nBytesSend;
 }
 
 void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 {
+	lock();
 	uint32_t i = 0;
 	uint8_t nNextByte;
 
@@ -486,6 +507,7 @@ void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 								free(pProgressingIn->packet.pData);
 							free(pProgressingIn);
 						}
+						stateIn = LinkUpState::ReceivePreamble;
 					}
 				}
 			}
@@ -525,4 +547,5 @@ void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 	if (nCount > 0) {
 		//std::cout << "p rec " << nTotalReceivedPackets << " p f: " << nTotalFailedPackets << " p sen: " << nTotalSendPackets << " brec: " << nTotalReceivedBytes << " bsen: " << nTotalSendBytes << std::endl;
 	}
+	unlock();
 }

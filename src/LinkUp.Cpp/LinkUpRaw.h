@@ -79,7 +79,12 @@ private:
 	LinkUpPacketList* pTailOut = 0;
 	LinkUpPacketList* pProgressingIn = 0;
 	LinkUpPacketList* pProgressingOut = 0;
-	bool checkForError(uint16_t nByte);
+	bool checkForError(uint8_t nByte);
+#ifdef LINKUP_BOOST_THREADSAFE
+	boost::mutex mtx;
+#endif
+	void lock();
+	void unlock();
 public:
 	void progress(uint8_t* pData, uint32_t nCount);
 	void send(LinkUpPacket packet);

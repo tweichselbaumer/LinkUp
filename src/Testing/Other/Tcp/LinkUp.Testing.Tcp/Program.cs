@@ -10,7 +10,7 @@ namespace LinkUp.Testing.Tcp
 {
     internal class Program
     {
-        //private static int count = 0;
+        private static int count = 0;
 
         private static void ClientToServer_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
@@ -114,7 +114,11 @@ namespace LinkUp.Testing.Tcp
 
         private static void Program_Fired(LinkUpEventLabel label, byte[] data)
         {
-            Console.WriteLine("- EVENT ({0}): {1}", label.Name, data.Length/*string.Join(" ", data.Select(b => string.Format("{0:X2} ", b)))*/);
+            //count++;
+            //if (count % 100 == 0)
+            //{
+                Console.WriteLine("- EVENT ({0}): {1}", label.Name, data.Length/*string.Join(" ", data.Select(b => string.Format("{0:X2} ", b)))*/);
+            //}
         }
     }
 }

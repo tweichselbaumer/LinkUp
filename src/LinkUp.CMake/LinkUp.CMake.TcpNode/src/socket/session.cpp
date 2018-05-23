@@ -60,7 +60,7 @@ void session::start()
 			//		std::cout << " ";
 			//	}
 			//	std::cout << std::endl;
-			boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+			//boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 		}
 		else {
 			//std::cout << "out: " << length << std::endl;

@@ -6,7 +6,7 @@ namespace LinkUp.Raw
 {
     public class LinkUpConverter
     {
-        private List<byte> _Buffer;
+        private byte[] _Buffer;
         private int _TotalFailedPackets;
         private int _TotalReceivedPackets;
 
@@ -38,9 +38,12 @@ namespace LinkUp.Raw
             {
                 if (_Buffer == null)
                 {
-                    _Buffer = new List<byte>();
+                    _Buffer = data;
                 }
-                _Buffer.AddRange(data.ToList());
+                else
+                {
+                    _Buffer = _Buffer.Concat(data).ToArray();
+                }
             }
 
             return ParseBuffer();
@@ -54,16 +57,22 @@ namespace LinkUp.Raw
         private List<LinkUpPacket> ParseBuffer()
         {
             List<LinkUpPacket> result = new List<LinkUpPacket>();
-            int indexOfPreamble = _Buffer.IndexOf(Constant.Preamble);
-            int indexOfEndOfPacket = _Buffer.IndexOf(Constant.EndOfPacket);
+            int indexOfPreamble = Array.IndexOf(_Buffer, Constant.Preamble);
+            int indexOfEndOfPacket = Array.IndexOf(_Buffer, Constant.EndOfPacket);
 
             if (indexOfPreamble != -1 && indexOfEndOfPacket != -1 && indexOfPreamble < indexOfEndOfPacket)
             {
-                while (_Buffer.Skip(indexOfPreamble + 1).Take(indexOfEndOfPacket - indexOfPreamble).Contains(Constant.Preamble))
+                int indexOfPreambleNext = Array.IndexOf(_Buffer, Constant.Preamble, indexOfPreamble + 1);
+                while (indexOfPreambleNext < indexOfEndOfPacket && indexOfPreambleNext != -1)
                 {
                     indexOfPreamble += _Buffer.Skip(indexOfPreamble + 1).Take(indexOfEndOfPacket - indexOfPreamble).ToList().IndexOf(Constant.Preamble) + 1;
+                    indexOfPreambleNext = Array.IndexOf(_Buffer, Constant.Preamble, indexOfPreamble + 1);
                 }
-                List<byte> packetRaw = _Buffer.Skip(indexOfPreamble).Take(indexOfEndOfPacket - indexOfPreamble + 1).ToList();
+
+                //List<byte> packetRaw = _Buffer.Skip(indexOfPreamble).Take(indexOfEndOfPacket - indexOfPreamble + 1).ToList();
+
+                byte[] packetRaw = new byte[indexOfEndOfPacket - indexOfPreamble + 1];
+                Array.Copy(_Buffer, indexOfPreamble, packetRaw, 0, indexOfEndOfPacket - indexOfPreamble + 1);
 
                 LinkUpPacket packet = LinkUpPacket.ParseFromRaw(packetRaw);
                 if (packet.IsValid)
@@ -75,7 +84,7 @@ namespace LinkUp.Raw
                 {
                     _TotalFailedPackets++;
                 }
-                _Buffer = _Buffer.Skip(indexOfPreamble).ToList();
+                _Buffer = _Buffer.Skip(indexOfPreamble).ToArray();
             }
             else
             {
@@ -83,7 +92,7 @@ namespace LinkUp.Raw
             }
             if (indexOfEndOfPacket != -1)
             {
-                _Buffer = _Buffer.Skip(indexOfEndOfPacket + 1).ToList();
+                _Buffer = _Buffer.Skip(indexOfEndOfPacket + 1).ToArray();
             }
 
             if (indexOfPreamble != -1)

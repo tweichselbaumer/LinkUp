@@ -23,24 +23,9 @@ void LinkUpNode::unlock()
 #endif
 }
 
-void LinkUpLabel::lock()
-{
-#ifdef LINKUP_BOOST_THREADSAFE
-	mtx.lock();
-#endif
-}
-
-void LinkUpLabel::unlock()
-{
-#ifdef LINKUP_BOOST_THREADSAFE
-	mtx.unlock();
-#endif
-}
-
 void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 {
 	lock();
-
 	uint32_t nTime = getSystemTime();
 
 	connector.progress(pData, nCount);

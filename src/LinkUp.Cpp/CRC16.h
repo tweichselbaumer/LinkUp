@@ -9,6 +9,9 @@
 #define _CRC16_h
 
 #include "Platform.h"
+#ifdef LINKUP_BOOST_CRC16
+#include <boost/crc.hpp>
+#endif
 
 class CRC16
 {

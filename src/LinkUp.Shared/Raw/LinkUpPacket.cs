@@ -46,17 +46,18 @@ namespace LinkUp.Raw
             }
         }
 
-        internal static LinkUpPacket ParseFromRaw(List<byte> data)
+        internal static LinkUpPacket ParseFromRaw(byte[] data)
         {
             LinkUpPacket result = new LinkUpPacket();
-
+            int length = 0;
             try
             {
                 data = RemoveEscaping(data);
-                int length = BitConverter.ToInt32(data.ToArray(), 1);
-                result.Data = data.Skip(5).Take(length).ToArray();
-                ushort crc = BitConverter.ToUInt16(data.ToArray(), 5 + length);
-                if (crc != result.Crc || data[0] != Constant.Preamble || data[data.Count - 1] != Constant.EndOfPacket)
+                length = BitConverter.ToInt32(data, 1);
+                result.Data = new byte[length];
+                Array.Copy(data, 5, result.Data, 0, length);
+                ushort crc = BitConverter.ToUInt16(data, 5 + length);
+                if (crc != result.Crc || data[0] != Constant.Preamble || data[data.Length - 1] != Constant.EndOfPacket)
                 {
                     result._IsValid = false;
                 }
@@ -114,11 +115,11 @@ namespace LinkUp.Raw
             return crc;
         }
 
-        private static List<byte> RemoveEscaping(List<byte> data)
+        private static byte[] RemoveEscaping(byte[] data)
         {
             List<byte> result = new List<byte>();
 
-            for (int i = 0; i < data.Count; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 if (data[i] == Constant.SkipPattern)
                 {
@@ -130,7 +131,7 @@ namespace LinkUp.Raw
                     result.Add(data[i]);
                 }
             }
-            return result;
+            return result.ToArray();
         }
 
         private List<byte> AddEscaping(List<byte> data)

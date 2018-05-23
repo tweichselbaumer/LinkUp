@@ -9,6 +9,11 @@
 
 uint16_t CRC16::calc(uint8_t *pData, uint32_t nCount)
 {
+#ifdef LINKUP_BOOST_CRC16
+	boost::crc_optimal<16, 0x1021, 0x0000, 0, false, false>  crc_ccitt2;
+	crc_ccitt2 = std::for_each(pData, pData + nCount, crc_ccitt2);
+	return crc_ccitt2();
+#else
 	uint16_t  crc;
 	uint8_t i;
 
@@ -27,4 +32,5 @@ uint16_t CRC16::calc(uint8_t *pData, uint32_t nCount)
 		} while (--i);
 	}
 	return (crc);
+#endif // BOOST_CRC16
 }

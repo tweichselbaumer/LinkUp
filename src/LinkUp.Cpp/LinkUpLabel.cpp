@@ -52,3 +52,17 @@ bool LinkUpLabel::receivedNameResponse(const char* pName, LinkUpLabelType type, 
 		return false;
 	}
 }
+
+void LinkUpLabel::lock()
+{
+#ifdef LINKUP_BOOST_THREADSAFE
+	mtx.lock();
+#endif
+}
+
+void LinkUpLabel::unlock()
+{
+#ifdef LINKUP_BOOST_THREADSAFE
+	mtx.unlock();
+#endif
+}

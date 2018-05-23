@@ -6,6 +6,8 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace LinkUp.Raw
 {
@@ -15,7 +17,10 @@ namespace LinkUp.Raw
         private TcpClient _TcpClient;
         private Task _Task;
         private bool _IsRunning = true;
-        byte[] data = new byte[1024];
+        private const int maxRead = 1024;
+        byte[] data = new byte[maxRead];
+
+        private BlockingCollection<byte[]> _Queue = new BlockingCollection<byte[]>();
 
         public LinkUpTcpClientConnector(IPAddress destinationAddress, int destinationPort)
         {
@@ -26,6 +31,26 @@ namespace LinkUp.Raw
                 {
                     try
                     {
+                        byte[] data;
+                        byte[] buffer = new byte[maxRead * 50];
+
+                        int size = 0;
+                        int count = 0;
+                    
+                        while (_Queue.TryTake(out data) && count < 50)
+                        {
+                            Array.Copy(data, 0, buffer, size, data.Length);
+                            size += data.Length;
+                            count++;
+                        }
+
+                        if(size > 0)
+                        {
+                            data = new byte[size];
+                            Array.Copy(buffer, data, size);
+                            OnDataReceived(data);
+                        }
+
                         if (_TcpClient == null)
                         {
                             _TcpClient = new TcpClient();
@@ -33,7 +58,7 @@ namespace LinkUp.Raw
                             BeginRead();
                         }
 
-                        Thread.Sleep(1000);
+                        Thread.Sleep(0);
                     }
                     catch (Exception ex)
                     {
@@ -60,7 +85,7 @@ namespace LinkUp.Raw
 
                 byte[] data = new byte[bytesAvailable];
                 Array.Copy(buffer, data, bytesAvailable);
-                OnDataReceived(data);
+                _Queue.Add(data);
                 BeginRead();
             }
             catch (Exception ex)
@@ -102,7 +127,7 @@ namespace LinkUp.Raw
             }
             else
             {
-               throw new Exception("Not connected.");
+                throw new Exception("Not connected.");
             }
 
 #endif

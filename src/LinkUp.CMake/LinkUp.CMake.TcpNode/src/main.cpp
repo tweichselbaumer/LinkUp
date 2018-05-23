@@ -37,7 +37,7 @@ void doWork3()
 {
 	while (running) {
 		pLinkUpNode->progress(0, 0, 100000);
-		boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(0));
 	}
 }
 
