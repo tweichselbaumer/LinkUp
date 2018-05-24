@@ -21,7 +21,7 @@ void session::read()
 		if (ec == 0)
 		{
 			//cout << "in: " << length << endl;
-			node_->progress(dataIn_, length, 100000, true);
+			node_->progress(dataIn_, length, 1000, true);
 			read_done = true;
 		}
 		else {
@@ -60,7 +60,7 @@ void session::start()
 			//		std::cout << " ";
 			//	}
 			//	std::cout << std::endl;
-			//boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+			boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 		}
 		else {
 			//std::cout << "out: " << length << std::endl;
@@ -71,7 +71,7 @@ void session::start()
 		{
 			if (ec == 0)
 			{
-				boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+				boost::this_thread::sleep_for(boost::chrono::milliseconds(0));
 				start();
 			}
 			else {

@@ -28,15 +28,15 @@ void doWork2()
 {
 	uint8_t* pData = (uint8_t*)calloc(1024 * 1024, sizeof(uint8_t));
 	while (running) {
-		pEvent->fireEvent((uint8_t*)pData, 1024 * 2);
-		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000/30));
+		pEvent->fireEvent((uint8_t*)pData, 1024 * 256);
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000 / 50));
 	}
 }
 
 void doWork3()
 {
 	while (running) {
-		pLinkUpNode->progress(0, 0, 100000, false);
+		pLinkUpNode->progress(0, 0, 1000, false);
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 	}
 }

@@ -17,7 +17,7 @@ namespace LinkUp.Raw
         private TcpClient _TcpClient;
         private Task _Task;
         private bool _IsRunning = true;
-        private const int maxRead = 1024*100;
+        private const int maxRead = 1024;
         byte[] data = new byte[maxRead];
 
         private BlockingCollection<byte[]> _Queue = new BlockingCollection<byte[]>();
