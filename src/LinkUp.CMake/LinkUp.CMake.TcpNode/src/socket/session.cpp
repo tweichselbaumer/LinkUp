@@ -71,6 +71,7 @@ void session::start()
 		{
 			if (ec == 0)
 			{
+				boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 				start();
 			}
 			else {

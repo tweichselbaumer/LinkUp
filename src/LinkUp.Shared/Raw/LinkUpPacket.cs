@@ -117,21 +117,46 @@ namespace LinkUp.Raw
 
         private static byte[] RemoveEscaping(byte[] data)
         {
-            List<byte> result = new List<byte>();
+            //List<byte> result = new List<byte>();
+
+            //for (int i = 0; i < data.Length; i++)
+            //{
+            //    if (data[i] == Constant.SkipPattern)
+            //    {
+            //        i++;
+            //        result.Add((byte)(data[i] ^ Constant.XorValue));
+            //    }
+            //    else
+            //    {
+            //        result.Add(data[i]);
+            //    }
+            //}
+            //return result.ToArray();
+            byte[] result = new byte[data.Length];
+            int j = 0;
 
             for (int i = 0; i < data.Length; i++)
             {
                 if (data[i] == Constant.SkipPattern)
                 {
                     i++;
-                    result.Add((byte)(data[i] ^ Constant.XorValue));
+                    result[j] = (byte)(data[i] ^ Constant.XorValue);
                 }
                 else
                 {
-                    result.Add(data[i]);
+                    result[j] = data[i];
                 }
+                j++;
             }
-            return result.ToArray();
+
+            if(j < data.Length - 1)
+            {
+                byte[] temp = new byte[j];
+                Array.Copy(result, temp, j);
+                result = temp;
+            }
+
+            return result;
         }
 
         private List<byte> AddEscaping(List<byte> data)

@@ -42,7 +42,9 @@ namespace LinkUp.Raw
                 }
                 else
                 {
-                    _Buffer = _Buffer.Concat(data).ToArray();
+                    Array.Resize(ref _Buffer, _Buffer.Length + data.Length);
+                    Array.Copy(data, 0, _Buffer, _Buffer.Length - data.Length, data.Length);
+                    //_Buffer = _Buffer.Concat(data).ToArray();
                 }
             }
 
@@ -84,7 +86,10 @@ namespace LinkUp.Raw
                 {
                     _TotalFailedPackets++;
                 }
-                _Buffer = _Buffer.Skip(indexOfPreamble).ToArray();
+                if (indexOfPreamble > 0)
+                {
+                    _Buffer = _Buffer.Skip(indexOfPreamble).ToArray();
+                }
             }
             else
             {
@@ -92,7 +97,18 @@ namespace LinkUp.Raw
             }
             if (indexOfEndOfPacket != -1)
             {
-                _Buffer = _Buffer.Skip(indexOfEndOfPacket + 1).ToArray();
+                if (_Buffer.Length > indexOfEndOfPacket + 1)
+                {
+                    byte[] temp = new byte[_Buffer.Length - (indexOfEndOfPacket + 1)];
+                    Array.Copy(_Buffer, indexOfEndOfPacket + 1, temp, 0, _Buffer.Length - (indexOfEndOfPacket + 1));
+                    _Buffer = temp;
+                    //_Buffer = _Buffer.Skip(indexOfEndOfPacket + 1).ToArray();
+                }
+                else
+                {
+                    //byte[] t = _Buffer.Skip(indexOfEndOfPacket + 1).ToArray();
+                    _Buffer = new byte[0];
+                }
             }
 
             if (indexOfPreamble != -1)
