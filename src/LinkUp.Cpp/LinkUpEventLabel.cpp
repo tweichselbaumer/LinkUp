@@ -29,11 +29,14 @@ void LinkUpEventLabel::progressAdv(LinkUpRaw* pConnector)
 {
 	lock();
 	LinkedListIterator iterator(pList);
+	unlock();
 	LinkUpEventData* pData;
 
 	while ((pData = (LinkUpEventData*)iterator.next()) != NULL)
 	{
+		lock();
 		pList->remove(pData);
+		unlock();
 
 		LinkUpPacket packet;
 		packet.nLength = sizeof(LinkUpLogic) + sizeof(LinkUpEventFireRequest) + pData->nSize;
@@ -50,7 +53,6 @@ void LinkUpEventLabel::progressAdv(LinkUpRaw* pConnector)
 
 		free(pData);
 	}
-	unlock();
 }
 
 void LinkUpEventLabel::subscribed(LinkUpRaw* pConnector) {

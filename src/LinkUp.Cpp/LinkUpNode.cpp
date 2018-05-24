@@ -3,9 +3,7 @@
 uint16_t LinkUpNode::getRaw(uint8_t* pData, uint16_t nMax)
 {
 	uint16_t nResult;
-	lock();
 	nResult = connector.getRaw(pData, nMax);
-	unlock();
 	return nResult;
 }
 

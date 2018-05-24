@@ -4,12 +4,16 @@
 #include <utility>
 
 #include <boost/asio.hpp>
+#include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
 #include "socket/tcp_server.h"
 
 #include "AVLTree.h"
+#include "Platform.h"
 
 using boost::asio::ip::tcp;
+
+using namespace boost::timer;
 using namespace std;
 
 boost::asio::io_service io_service;
@@ -28,7 +32,7 @@ void doWork2()
 {
 	uint8_t* pData = (uint8_t*)calloc(1024 * 1024, sizeof(uint8_t));
 	while (running) {
-		pEvent->fireEvent((uint8_t*)pData, 1024 * 256);
+		pEvent->fireEvent((uint8_t*)pData, 1024 * 512);
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000 / 50));
 	}
 }

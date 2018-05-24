@@ -309,7 +309,6 @@ uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint32_t nMax)
 
 void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 {
-	lock();
 	uint32_t i = 0;
 	uint8_t nNextByte;
 
@@ -547,5 +546,4 @@ void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 	if (nCount > 0) {
 		//std::cout << "p rec " << nTotalReceivedPackets << " p f: " << nTotalFailedPackets << " p sen: " << nTotalSendPackets << " brec: " << nTotalReceivedBytes << " bsen: " << nTotalSendBytes << std::endl;
 	}
-	unlock();
 }
