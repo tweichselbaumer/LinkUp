@@ -36,15 +36,19 @@ namespace LinkUp.Raw
 
                         int size = 0;
                         int count = 0;
-                    
-                        while (_Queue.TryTake(out data) && count < 50)
+
+                        while (_Queue.TryTake(out data))
                         {
                             Array.Copy(data, 0, buffer, size, data.Length);
                             size += data.Length;
                             count++;
+                            if (count >= 50)
+                            {
+                                break;
+                            }
                         }
 
-                        if(size > 0)
+                        if (size > 0)
                         {
                             data = new byte[size];
                             Array.Copy(buffer, data, size);

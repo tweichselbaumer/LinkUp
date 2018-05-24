@@ -21,7 +21,7 @@ void session::read()
 		if (ec == 0)
 		{
 			//cout << "in: " << length << endl;
-			node_->progress(dataIn_, length, 100000);
+			node_->progress(dataIn_, length, 100000, true);
 			read_done = true;
 		}
 		else {

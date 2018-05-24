@@ -23,7 +23,7 @@ void LinkUpNode::unlock()
 #endif
 }
 
-void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
+void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool fast)
 {
 	lock();
 	uint32_t nTime = getSystemTime();
@@ -81,11 +81,14 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax)
 			pLabel->progress(&connector);
 		}
 
-		LinkedListIterator eventIterator(pEventList);
-
-		while ((pLabel = (LinkUpLabel*)eventIterator.next()) != NULL)
+		if (!fast)
 		{
-			pLabel->progress(&connector);
+			LinkedListIterator eventIterator(pEventList);
+
+			while ((pLabel = (LinkUpLabel*)eventIterator.next()) != NULL)
+			{
+				pLabel->progress(&connector);
+			}
 		}
 	}
 	unlock();
