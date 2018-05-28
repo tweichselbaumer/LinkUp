@@ -81,13 +81,17 @@ private:
 	LinkUpPacketList* pProgressingOut = 0;
 	bool checkForError(uint8_t nByte);
 #ifdef LINKUP_BOOST_THREADSAFE
-	boost::mutex mtx;
+	boost::mutex mtx_queue;
+	boost::mutex mtx_progressing;
 #endif
-	void lock();
-	void unlock();
+	void lock_queue();
+	void unlock_queue();
+	void lock_progressing();
+	void unlock_progressing();
 public:
 	void progress(uint8_t* pData, uint32_t nCount);
 	void send(LinkUpPacket packet);
+	void send(LinkUpPacket packet, bool bWithCrc);
 	uint16_t getRaw(uint8_t* pData, uint32_t nMax);
 	bool hasNext();
 	LinkUpPacket next();

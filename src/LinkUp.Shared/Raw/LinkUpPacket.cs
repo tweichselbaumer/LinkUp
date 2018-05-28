@@ -57,7 +57,7 @@ namespace LinkUp.Raw
                 result.Data = new byte[length];
                 Array.Copy(data, 5, result.Data, 0, length);
                 ushort crc = BitConverter.ToUInt16(data, 5 + length);
-                if (crc != result.Crc || data[0] != Constant.Preamble || data[data.Length - 1] != Constant.EndOfPacket)
+                if (!(crc == 0 || crc == result.Crc) || data[0] != Constant.Preamble || data[data.Length - 1] != Constant.EndOfPacket)
                 {
                     result._IsValid = false;
                 }
@@ -149,7 +149,7 @@ namespace LinkUp.Raw
                 j++;
             }
 
-            if(j < data.Length - 1)
+            if (j < data.Length - 1)
             {
                 byte[] temp = new byte[j];
                 Array.Copy(result, temp, j);
