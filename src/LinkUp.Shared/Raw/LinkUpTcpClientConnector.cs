@@ -62,6 +62,7 @@ namespace LinkUp.Raw
                         {
                             _TcpClient = new TcpClient();
                             _TcpClient.Connect(new IPEndPoint(destinationAddress, destinationPort));
+                            OnConnected();
                             BeginRead();
                         }
                     }
@@ -69,6 +70,7 @@ namespace LinkUp.Raw
                     {
                         _TcpClient.Close();
                         _TcpClient = null;
+                        OnDisconnected();
                     }
                 }
             }, TaskCreationOptions.LongRunning);
@@ -97,6 +99,7 @@ namespace LinkUp.Raw
             {
                 _TcpClient.Close();
                 _TcpClient = null;
+                OnDisconnected();
             }
         }
 
@@ -132,7 +135,9 @@ namespace LinkUp.Raw
             }
             else
             {
-                throw new Exception("Not connected.");
+                _TcpClient.Close();
+                _TcpClient = null;
+                OnDisconnected();
             }
 
 #endif

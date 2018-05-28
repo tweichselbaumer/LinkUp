@@ -61,7 +61,7 @@ namespace LinkUp.Node
             if (_LostPings > 10)
             {
                 if (_IsInitialized)
-                    _Master.RemoveLabels(_Name);
+                    //_Master.RemoveLabels(_Name);
                 _IsInitialized = false;
             }
         }
@@ -125,12 +125,12 @@ namespace LinkUp.Node
                         nameResponse.Name = nameRequest.Name;
                         nameResponse.Identifier = 0;
                         nameResponse.LabelType = LinkUpLabelType.Node;
-                        _Master.RemoveLabels(_Name);
+                        //_Master.RemoveLabels(_Name);
                         _Connector.SendPacket(nameResponse.ToPacket());
                     }
                     if (nameRequest.LabelType != LinkUpLabelType.Node)
                     {
-                        LinkUpLabel label = _Master.AddSubLabel(nameRequest.Name, nameRequest.LabelType, nameRequest.Options);
+                        LinkUpLabel label = _Master.AddSubLabel(string.Format("{0}/{1}", _Name, nameRequest.Name), nameRequest.LabelType, nameRequest.Options);
                         if (label.ChildIdentifier == 0)
                         {
                             label.ChildIdentifier = GetNextIdentifier();
@@ -144,6 +144,11 @@ namespace LinkUp.Node
                         nameResponse.LabelType = nameRequest.LabelType;
 
                         _Connector.SendPacket(nameResponse.ToPacket());
+
+                        if (label.LabelType == LinkUpLabelType.Event)
+                        {
+                            (label as LinkUpEventLabel).Resubscribe();
+                        }
                     }
 
                 }

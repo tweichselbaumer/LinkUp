@@ -11,12 +11,29 @@ namespace LinkUp.Node
         private const int UNSUBSCRIBE_REQUEST_TIMEOUT = 4000;
         private AutoResetEvent _SubscribeAutoResetEvent = new AutoResetEvent(false);
         private AutoResetEvent _UnsubscribeAutoResetEvent = new AutoResetEvent(false);
+        private bool _IsSubscribed;
 
         internal override LinkUpLabelType LabelType
         {
             get
             {
                 return LinkUpLabelType.Event;
+            }
+        }
+
+        public bool IsSubscribed
+        {
+            get
+            {
+                return _IsSubscribed;
+            }
+        }
+
+        internal void Resubscribe()
+        {
+            if (IsSubscribed)
+            {
+                Subscribe();
             }
         }
 
@@ -27,10 +44,14 @@ namespace LinkUp.Node
 
         public void Subscribe()
         {
-            _SubscribeAutoResetEvent.Reset();
-            Owner.SubscribeEvent(this);
-            if (!_SubscribeAutoResetEvent.WaitOne(SUBSCRIBE_REQUEST_TIMEOUT))
-                throw new Exception(string.Format("Unable to subscribe event: {0}.", Name));
+            if (Owner != null)
+            {
+                _SubscribeAutoResetEvent.Reset();
+                Owner.SubscribeEvent(this);
+                if (!_SubscribeAutoResetEvent.WaitOne(SUBSCRIBE_REQUEST_TIMEOUT))
+                    throw new Exception(string.Format("Unable to subscribe event: {0}.", Name));
+            }
+            _IsSubscribed = true;
         }
 
         public void Unsubscribe()
@@ -39,6 +60,7 @@ namespace LinkUp.Node
             Owner.UnsubscribeEvent(this);
             if (!_UnsubscribeAutoResetEvent.WaitOne(UNSUBSCRIBE_REQUEST_TIMEOUT))
                 throw new Exception(string.Format("Unable to unsubscribe event: {0}.", Name));
+            _IsSubscribed = false;
         }
 
         internal void SubscribeDone()

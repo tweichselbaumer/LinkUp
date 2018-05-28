@@ -40,33 +40,22 @@ void session::start()
 
 	try
 	{
-
-		size_t length = 0;
 		if (read_done) {
 			read_done = false;
 			read();
 		}
 
-		length = node_->getRaw(dataOut_, max_length);
+		mtx.lock();
 
-		totalsend += length;
-		//std::cout << totalsend << std::endl;
-		if (length == 0) {
-			//	for (uint16_t i = 0; i < length; i++)
-			//	{
-			//		std::cout << "0x";
-			//		cout.setf(ios::hex, ios::basefield);
-			//		std::cout << (int)data_[i];
-			//		std::cout << " ";
-			//	}
-			//	std::cout << std::endl;
+		length2_ = length1_;
+		memcpy(dataOut2_, dataOut1_, length1_);
+
+		if (length2_ == 0)
+		{
 			boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 		}
-		else {
-			//std::cout << "out: " << length << std::endl;
-		}
 
-		boost::asio::async_write(socket_, boost::asio::buffer(dataOut_, length),
+		boost::asio::async_write(socket_, boost::asio::buffer(dataOut2_, length2_),
 			[this, self](boost::system::error_code ec, std::size_t /*length*/)
 		{
 			if (ec == 0)
@@ -81,7 +70,9 @@ void session::start()
 			}
 		});
 
+		length1_ = node_->getRaw(dataOut1_, max_length);
 
+		mtx.unlock();
 	}
 	catch (std::exception& e)
 	{

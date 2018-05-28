@@ -9,6 +9,14 @@ namespace LinkUp.Raw
 
     public delegate void SentPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
 
+    public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityType connectivity);
+
+    public enum LinkUpConnectivityType
+    {
+        Connected,
+        Disconnected
+    }
+
     public abstract class LinkUpConnector : IDisposable
     {
         private LinkUpConverter _Converter = new LinkUpConverter();
@@ -21,6 +29,8 @@ namespace LinkUp.Raw
         public event ReveicedPacketEventHandler ReveivedPacket;
 
         public event SentPacketEventHandler SentPacket;
+
+        public event ConnectivityChangedEventHandler ConnectivityChanged;
 
         public bool IsDisposed
         {
@@ -101,6 +111,30 @@ namespace LinkUp.Raw
             _TotalSendPackets++;
             _TotalSendBytes += data.Length;
             //Console.WriteLine("PTotal Received Packets: {0} Total Failed Packets: {1} Total Send Packets: {2} Bytes In: {3} Bytes Out: {4}", TotalReceivedPackets, TotalFailedPackets, TotalSendPackets, TotalReceivedBytes, TotalSendBytes);
+        }
+
+        protected void OnConnected()
+        {
+            if (ConnectivityChanged != null)
+            {
+                var receivers = ConnectivityChanged.GetInvocationList();
+                foreach (ConnectivityChangedEventHandler receiver in receivers)
+                {
+                    receiver.BeginInvoke(this, LinkUpConnectivityType.Connected, null, null);
+                }
+            }
+        }
+
+        protected void OnDisconnected()
+        {
+            if (ConnectivityChanged != null)
+            {
+                var receivers = ConnectivityChanged.GetInvocationList();
+                foreach (ConnectivityChangedEventHandler receiver in receivers)
+                {
+                    receiver.BeginInvoke(this, LinkUpConnectivityType.Disconnected, null, null);
+                }
+            }
         }
 
         protected void OnDataReceived(byte[] data)

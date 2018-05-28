@@ -44,12 +44,23 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool f
 		{
 			if (pNode->pData != NULL)
 			{
-				((LinkUpLabel*)pNode->pData)->isInitialized = false;
-				((LinkUpLabel*)pNode->pData)->timestamps.nInitTryTimeout = 0;
-				pList->insert(((LinkUpLabel*)pNode->pData));
-				pAvlTree->remove(((LinkUpLabel*)pNode->pData)->nIdentifier);
+				LinkUpLabel* pLabel = ((LinkUpLabel*)pNode->pData);
+				pLabel->isInitialized = false;
+				pLabel->timestamps.nInitTryTimeout = 0;
+				pList->insert(pLabel);
+				pAvlTree->remove(pLabel->nIdentifier);
+				if (pLabel->nType == LinkUpLabelType::Event)
+				{
+					((LinkUpEventLabel*)pLabel)->unsubscribed(NULL);
+					pEventList->remove(pLabel);
+				}
 			}
 		}
+
+		uint8_t* pBuffer = new uint8_t[1024];
+		while (getRaw(pBuffer,1024) > 0)
+		{
+		}			
 	}
 
 	if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {

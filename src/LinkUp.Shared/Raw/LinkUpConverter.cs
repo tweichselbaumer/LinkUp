@@ -86,15 +86,8 @@ namespace LinkUp.Raw
                 {
                     _TotalFailedPackets++;
                 }
-                if (indexOfPreamble > 0)
-                {
-                    _Buffer = _Buffer.Skip(indexOfPreamble).ToArray();
-                }
             }
-            else
-            {
-                return result;
-            }
+
             if (indexOfEndOfPacket != -1)
             {
                 if (_Buffer.Length > indexOfEndOfPacket + 1)
@@ -111,7 +104,7 @@ namespace LinkUp.Raw
                 }
             }
 
-            if (indexOfPreamble != -1)
+            if (indexOfPreamble != -1 && indexOfEndOfPacket != -1)
             {
                 result.AddRange(ParseBuffer());
             }

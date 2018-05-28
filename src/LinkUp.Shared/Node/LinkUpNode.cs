@@ -47,6 +47,7 @@ namespace LinkUp.Node
         }
 
 #if NET45 || NETCOREAPP2_0
+
         private void _PingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (_IsInitialized)
@@ -65,6 +66,7 @@ namespace LinkUp.Node
                 }
             }
         }
+
 #endif
 
         public List<LinkUpLabel> Labels
@@ -103,6 +105,33 @@ namespace LinkUp.Node
                     label.IsInitialized = false;
                 }
                 _Event.Set();
+            }
+        }
+
+        public T GetLabelByName<T>(string name) where T : LinkUpLabel, new()
+        {
+            lock (_Labels)
+            {
+                LinkUpLabel label = _Labels.FirstOrDefault(c => c.Name.Equals(name) && c is T);
+                if (label != null)
+                {
+                    return (T)label;
+                }
+                else
+                {
+                    if (_Labels.Any(c => c.Name.Equals(name)))
+                    {
+                        throw new Exception(string.Format("Label {0} has wrong type.", name));
+                    }
+                    else
+                    {
+                        label = new T();
+                        label.Name = name;
+                        _Labels.Add(label);
+
+                        return (T)label;
+                    }
+                }
             }
         }
 
@@ -168,18 +197,25 @@ namespace LinkUp.Node
 
         internal LinkUpLabel AddSubLabel(string name, LinkUpLabelType type, byte[] options)
         {
-            LinkUpLabel label = LinkUpLabel.CreateNew(type, options);
-            label.Name = string.Format("{0}/{1}", Name, name);
+            LinkUpLabel label;
+            string labelName = string.Format("{0}/{1}", Name, name);
             lock (_Labels)
             {
-                if (_Labels.Any(c => c.Name == label.Name))
+                if (_Labels.Any(c => c.Name == labelName))
                 {
-
-                    label = _Labels.FirstOrDefault(c => c.Name == label.Name);
+                    label = _Labels.FirstOrDefault(c => c.Name == labelName);
+                    if (label.LabelType != type)
+                    {
+                        _Labels.Remove(label);
+                        label = LinkUpLabel.CreateNew(type, options);
+                        label.Name = labelName;
+                        _Labels.Add(label);
+                    }
                 }
                 else
                 {
-
+                    label = LinkUpLabel.CreateNew(type, options);
+                    label.Name = labelName;
                     _Labels.Add(label);
                 }
             }

@@ -55,64 +55,24 @@ namespace LinkUp.Testing.Tcp
             {
                 connector.ReveivedPacket += ClientToServer_ReveivedPacket;
                 connector.SentPacket += ClientToServer_SentPacket;
+                connector.ConnectivityChanged += Connector_ConnectivityChanged;
 
                 LinkUpNode node = new LinkUpNode();
                 node.Name = "leaf";
                 node.AddSubNode(connector);
 
-                bool running = true;
-                bool ifFirst = true;
-
-                Task.Run(() =>
-                {
-                    while (running)
-                    {
-                        try
-                        {
-                            if (node.Labels.Count == 1)
-                            {
-                                Console.WriteLine("done");
-                                foreach (LinkUpLabel lab in node.Labels)
-                                {
-                                    if (lab is LinkUpPropertyLabel<Int32>)
-                                    {
-                                        int value = (lab as LinkUpPropertyLabel<Int32>).Value;
-                                    }
-                                    else if (lab is LinkUpPropertyLabel_Binary)
-                                    {
-                                        byte[] value = (lab as LinkUpPropertyLabel_Binary).Value;
-                                    }
-                                    else if (lab is LinkUpEventLabel)
-                                    {
-                                        if (ifFirst)
-                                        {
-                                            (lab as LinkUpEventLabel).Subscribe();
-                                            (lab as LinkUpEventLabel).Fired += Program_Fired;
-                                        }
-                                    }
-                                }
-                                ifFirst = false;
-                                Thread.Sleep(5000);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            lock (Console.Out)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine(e.Message);
-                                Console.ResetColor();
-                            }
-                        }
-
-                        Thread.Sleep(100);
-                    }
-                });
+                LinkUpEventLabel eventLabel = node.GetLabelByName<LinkUpEventLabel>("leaf/test/label_event");
+                eventLabel.Subscribe();
+                eventLabel.Fired += Program_Fired;
 
                 Console.Read();
-                running = false;
                 connector.Dispose();
             }
+        }
+
+        private static void Connector_ConnectivityChanged(LinkUpConnector connector, LinkUpConnectivityType connectivity)
+        {
+            Console.WriteLine(connectivity);
         }
 
         private static void Program_Fired(LinkUpEventLabel label, byte[] data)
