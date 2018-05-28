@@ -76,7 +76,6 @@ bool LinkUpRaw::checkForError(uint8_t nByte)
 
 void LinkUpRaw::send(LinkUpPacket packet)
 {
-	lock();
 	if (packet.nLength)
 	{
 		LinkUpPacketList* pPacketList = (LinkUpPacketList*)calloc(1, sizeof(LinkUpPacketList));
@@ -84,6 +83,7 @@ void LinkUpRaw::send(LinkUpPacket packet)
 
 		pPacketList->packet.nCrc = CRC16::calc(pPacketList->packet.pData, pPacketList->packet.nLength);
 
+		lock();
 		if (pHeadOut != NULL)
 		{
 			pTailOut->next = pPacketList;
@@ -93,8 +93,8 @@ void LinkUpRaw::send(LinkUpPacket packet)
 		{
 			pHeadOut = pTailOut = pPacketList;
 		}
+		unlock();
 	}
-	unlock();
 }
 
 uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint32_t nMax)
