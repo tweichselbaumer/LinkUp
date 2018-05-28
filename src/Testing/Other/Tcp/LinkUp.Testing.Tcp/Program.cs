@@ -70,7 +70,7 @@ namespace LinkUp.Testing.Tcp
             }
         }
 
-        private static void Connector_ConnectivityChanged(LinkUpConnector connector, LinkUpConnectivityType connectivity)
+        private static void Connector_ConnectivityChanged(LinkUpConnector connector, LinkUpConnectivityState connectivity)
         {
             Console.WriteLine(connectivity);
         }

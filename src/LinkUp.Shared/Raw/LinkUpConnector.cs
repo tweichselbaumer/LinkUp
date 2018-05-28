@@ -9,9 +9,9 @@ namespace LinkUp.Raw
 
     public delegate void SentPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
 
-    public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityType connectivity);
+    public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityState connectivity);
 
-    public enum LinkUpConnectivityType
+    public enum LinkUpConnectivityState
     {
         Connected,
         Disconnected
@@ -120,7 +120,7 @@ namespace LinkUp.Raw
                 var receivers = ConnectivityChanged.GetInvocationList();
                 foreach (ConnectivityChangedEventHandler receiver in receivers)
                 {
-                    receiver.BeginInvoke(this, LinkUpConnectivityType.Connected, null, null);
+                    receiver.BeginInvoke(this, LinkUpConnectivityState.Connected, null, null);
                 }
             }
         }
@@ -132,7 +132,7 @@ namespace LinkUp.Raw
                 var receivers = ConnectivityChanged.GetInvocationList();
                 foreach (ConnectivityChangedEventHandler receiver in receivers)
                 {
-                    receiver.BeginInvoke(this, LinkUpConnectivityType.Disconnected, null, null);
+                    receiver.BeginInvoke(this, LinkUpConnectivityState.Disconnected, null, null);
                 }
             }
         }
