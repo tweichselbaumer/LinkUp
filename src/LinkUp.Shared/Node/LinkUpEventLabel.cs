@@ -35,6 +35,10 @@ namespace LinkUp.Node
             {
                 Subscribe();
             }
+            else
+            {
+                Unsubscribe();  
+            }
         }
 
         public static LinkUpEventLabel CreateNew(byte[] options)
@@ -56,10 +60,13 @@ namespace LinkUp.Node
 
         public void Unsubscribe()
         {
-            _UnsubscribeAutoResetEvent.Reset();
-            Owner.UnsubscribeEvent(this);
-            if (!_UnsubscribeAutoResetEvent.WaitOne(UNSUBSCRIBE_REQUEST_TIMEOUT))
-                throw new Exception(string.Format("Unable to unsubscribe event: {0}.", Name));
+            if (Owner != null)
+            {
+                _UnsubscribeAutoResetEvent.Reset();
+                Owner.UnsubscribeEvent(this);
+                if (!_UnsubscribeAutoResetEvent.WaitOne(UNSUBSCRIBE_REQUEST_TIMEOUT))
+                    throw new Exception(string.Format("Unable to unsubscribe event: {0}.", Name));
+            }
             _IsSubscribed = false;
         }
 

@@ -32,7 +32,7 @@ void doWork2()
 {
 	uint8_t* pData = (uint8_t*)calloc(1024 * 1024 * 10, sizeof(uint8_t));
 	while (running) {
-		pEvent->fireEvent((uint8_t*)pData, 1024 * 1024);
+		pEvent->fireEvent((uint8_t*)pData, 1024 * 512);
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000 / 50));
 	}
 }

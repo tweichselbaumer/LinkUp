@@ -20,10 +20,10 @@ class LinkUpEventLabel :public LinkUpLabel
 private:
 	uint8_t * getOptions(uint8_t* pSize);
 	LinkedList* pList = new LinkedList();
-	bool isSubscribed = false;
 protected:
 	void progressAdv(LinkUpRaw* pConnector);
 public:
+	bool isSubscribed = false;
 	void subscribed(LinkUpRaw* pConnector);
 	void unsubscribed(LinkUpRaw* pConnector);
 	void fireEvent(uint8_t * pData, uint32_t nSize);

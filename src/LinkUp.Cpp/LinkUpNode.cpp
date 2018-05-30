@@ -249,7 +249,7 @@ void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertyS
 		AvlNode* pNode = pAvlTree->find(pPropertySetRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
 			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
-			if (typeid(*label) == typeid(LinkUpPropertyLabel)) {
+			if (label->nType == LinkUpLabelType::Property) {
 				if (!((LinkUpPropertyLabel*)label)->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector)) {
 					//TODO: error??
 				}
