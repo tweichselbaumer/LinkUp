@@ -16,7 +16,6 @@ namespace LinkUp.Raw
             {
                 return _TotalFailedPackets;
             }
-
         }
 
         public int TotalReceivedPackets
@@ -25,7 +24,6 @@ namespace LinkUp.Raw
             {
                 return _TotalReceivedPackets;
             }
-
         }
 
         public List<LinkUpPacket> ConvertFromReceived(byte[] data)

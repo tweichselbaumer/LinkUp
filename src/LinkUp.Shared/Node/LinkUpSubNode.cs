@@ -1,4 +1,5 @@
-﻿using LinkUp.Raw;
+﻿using LinkUp.Node.Logic;
+using LinkUp.Raw;
 using System;
 using System.Linq;
 
@@ -35,6 +36,14 @@ namespace LinkUp.Node
 #endif
         }
 
+        internal void CallFunction(LinkUpFunctionLabel linkUpFunctionLabel, byte[] data)
+        {
+            LinkUpFunctionCallRequest functionCallRequest = new LinkUpFunctionCallRequest();
+            functionCallRequest.Identifier = linkUpFunctionLabel.ChildIdentifier;
+            functionCallRequest.Data = data;
+            _Connector?.SendPacket(functionCallRequest.ToPacket());
+        }
+
         internal void SubscribeEvent(LinkUpEventLabel linkUpEventLabel)
         {
             LinkUpEventSubscribeRequest eventSubscribeRequest = new LinkUpEventSubscribeRequest();
@@ -62,7 +71,7 @@ namespace LinkUp.Node
             {
                 if (_IsInitialized)
                     //_Master.RemoveLabels(_Name);
-                _IsInitialized = false;
+                    _IsInitialized = false;
             }
         }
 
@@ -150,7 +159,6 @@ namespace LinkUp.Node
                             (label as LinkUpEventLabel).Resubscribe();
                         }
                     }
-
                 }
                 else if (logic is LinkUpEventFireRequest)
                 {
@@ -209,6 +217,18 @@ namespace LinkUp.Node
                         if (label is LinkUpPropertyLabelBase)
                         {
                             (label as LinkUpPropertyLabelBase).SetDone();
+                        }
+                    }
+                }
+                else if (logic is LinkUpFunctionCallResponse)
+                {
+                    LinkUpFunctionCallResponse functionCallResponse = (LinkUpFunctionCallResponse)logic;
+                    LinkUpLabel label = _Master.Labels.FirstOrDefault(c => c.ChildIdentifier == functionCallResponse.Identifier);
+                    if (label != null)
+                    {
+                        if (label is LinkUpFunctionLabel)
+                        {
+                            (label as LinkUpFunctionLabel).DoEvent(functionCallResponse.Data);
                         }
                     }
                 }

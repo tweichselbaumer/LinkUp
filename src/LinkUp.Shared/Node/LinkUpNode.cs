@@ -1,4 +1,5 @@
-﻿using LinkUp.Raw;
+﻿using LinkUp.Node.Logic;
+using LinkUp.Raw;
 using System;
 using System.Collections.Generic;
 using System.Linq;

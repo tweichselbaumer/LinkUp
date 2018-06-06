@@ -32,7 +32,7 @@ void doWork2()
 {
 	uint8_t* pData = (uint8_t*)calloc(1024 * 1024 * 10, sizeof(uint8_t));
 	while (running) {
-		pEvent->fireEvent((uint8_t*)pData, 1024 * 512);
+		pEvent->fireEvent((uint8_t*)pData, 1024 * 1024);
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000 / 50));
 	}
 }
@@ -43,6 +43,14 @@ void doWork3()
 		pLinkUpNode->progress(0, 0, 1000, false);
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 	}
+}
+
+uint8_t * myFunc(uint8_t* pDataIn, uint32_t nSizeIn, uint32_t* pSizeOut)
+{
+	*pSizeOut = nSizeIn;
+	uint8_t* pDataOut = (uint8_t*)calloc(nSizeIn, sizeof(uint8_t));
+	memcpy(pDataOut, pDataIn, *pSizeOut);
+	return pDataOut;
 }
 
 int main(int argc, char* argv[])
@@ -66,6 +74,7 @@ int main(int argc, char* argv[])
 		}*/
 
 		pEvent = new  LinkUpEventLabel("label_event", pLinkUpNode);
+		new LinkUpFunctionLabel("label_function", pLinkUpNode, &myFunc);
 
 		boost::shared_ptr< boost::asio::io_service::work > work(
 			new boost::asio::io_service::work(io_service)

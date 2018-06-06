@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 
-namespace LinkUp.Node
+namespace LinkUp.Node.Logic
 {
-    internal class LinkUpEventUnsubscribeResponse : LinkUpLogic
+    internal class LinkUpEventSubscribeResponse : LinkUpLogic
     {
         private ushort _Identifier;
 
@@ -27,7 +27,7 @@ namespace LinkUp.Node
 
         protected override byte[] ToRaw()
         {
-            return new byte[] { (byte)LinkUpLogicType.EventUnsubscribeResponse }.Concat(BitConverter.GetBytes(Identifier)).ToArray();
+            return new byte[] { (byte)LinkUpLogicType.EventSubscribeResponse }.Concat(BitConverter.GetBytes(Identifier)).ToArray();
         }
     }
 }

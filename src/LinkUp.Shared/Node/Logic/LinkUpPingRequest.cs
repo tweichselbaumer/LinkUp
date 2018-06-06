@@ -1,4 +1,4 @@
-﻿namespace LinkUp.Node
+﻿namespace LinkUp.Node.Logic
 {
     internal class LinkUpPingRequest : LinkUpLogic
     {

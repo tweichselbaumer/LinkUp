@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace LinkUp.Node
+namespace LinkUp.Node.Logic
 {
     internal class LinkUpNameRequest : LinkUpLogic
     {
@@ -22,8 +22,6 @@ namespace LinkUp.Node
                 _LabelType = value;
             }
         }
-
-
 
         public string Name
         {
@@ -56,7 +54,7 @@ namespace LinkUp.Node
             LabelType = (LinkUpLabelType)data[1];
             UInt16 stringLength = BitConverter.ToUInt16(data, 2);
             Name = Encoding.UTF8.GetString(data, 4, stringLength);
-            if(data.Length - 4 - stringLength > 0)
+            if (data.Length - 4 - stringLength > 0)
             {
                 _Options = new byte[data.Length - 4 - stringLength];
                 Array.Copy(data, 4 + stringLength, _Options, 0, data.Length - 4 - stringLength);

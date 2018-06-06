@@ -1,4 +1,4 @@
-﻿namespace LinkUp.Node
+﻿namespace LinkUp.Node.Logic
 {
     public enum LinkUpLogicType : byte
     {
@@ -15,6 +15,8 @@
         EventSubscribeRequest = 11,
         EventSubscribeResponse = 12,
         EventUnsubscribeRequest = 13,
-        EventUnsubscribeResponse = 14
+        EventUnsubscribeResponse = 14,
+        FunctionCallRequest = 15,
+        FunctionCallResponse = 16
     }
 }

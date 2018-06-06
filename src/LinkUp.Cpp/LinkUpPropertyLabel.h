@@ -22,8 +22,8 @@ protected:
 	void init(const char* pName, LinkUpPropertyType nType, uint16_t nSize, LinkUpNode* pParent);
 	void progressAdv(LinkUpRaw* pConnector);
 public:
-	bool receivedPropertyGetRequest(uint16_t nIdentifier, LinkUpRaw* pConnector);
-	bool receivedPropertySetRequest(uint16_t nIdentifier, uint8_t* pValue, LinkUpRaw* pConnector);
+	void receivedPropertyGetRequest(LinkUpRaw* pConnector);
+	void receivedPropertySetRequest(uint8_t* pValue, uint32_t nSize, LinkUpRaw* pConnector);
 };
 
 class LinkUpPropertyLabel_Boolean :public LinkUpPropertyLabel

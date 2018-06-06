@@ -34,7 +34,7 @@ namespace LinkUp.Raw
                             _SerialPort.DataReceived += _SerialPort_DataReceived;
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         _SerialPort = null;
                     }

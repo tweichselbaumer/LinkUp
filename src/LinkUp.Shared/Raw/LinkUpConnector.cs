@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace LinkUp.Raw
 {
+    public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityState connectivity);
+
     public delegate void ReveicedPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
 
     public delegate void SentPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
 
-    public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityState connectivity);
+    public delegate void MetricUpdateEventHandler(LinkUpConnector connector, double bytesSentPerSecond, double bytesReceivedPerSecond);
 
     public enum LinkUpConnectivityState
     {
@@ -22,15 +22,32 @@ namespace LinkUp.Raw
         private LinkUpConverter _Converter = new LinkUpConverter();
         private bool _IsDisposed;
         private string _Name;
-        private int _TotalSendPackets;
-        private long _TotalSendBytes;
+        private LinkUpBytesPerSecondCounter _ReceiveCounter = new LinkUpBytesPerSecondCounter();
+        private LinkUpBytesPerSecondCounter _SentCounter = new LinkUpBytesPerSecondCounter();
         private long _TotalReceivedBytes;
+        private long _TotalSentBytes;
+        private int _TotalSentPackets;
+
+#if NET45 || NETCOREAPP2_0
+        private System.Timers.Timer _Timer;
+#endif
+
+        public LinkUpConnector()
+        {
+#if NET45 || NETCOREAPP2_0
+            _Timer = new System.Timers.Timer(1000);
+            _Timer.Elapsed += _Timer_Elapsed;
+            _Timer.Start();
+#endif
+        }
+
+        public event ConnectivityChangedEventHandler ConnectivityChanged;
 
         public event ReveicedPacketEventHandler ReveivedPacket;
 
         public event SentPacketEventHandler SentPacket;
 
-        public event ConnectivityChangedEventHandler ConnectivityChanged;
+        public event MetricUpdateEventHandler MetricUpdate;
 
         public bool IsDisposed
         {
@@ -57,11 +74,19 @@ namespace LinkUp.Raw
             }
         }
 
-        public int TotalSendPackets
+        public double ReceivedBytesPerSecond
         {
             get
             {
-                return _TotalSendPackets;
+                return _ReceiveCounter.BytesPerSecond;
+            }
+        }
+
+        public double SentBytesPerSecond
+        {
+            get
+            {
+                return _SentCounter.BytesPerSecond;
             }
         }
 
@@ -71,16 +96,6 @@ namespace LinkUp.Raw
             {
                 return _Converter.TotalFailedPackets;
             }
-
-        }
-
-        public long TotalSendBytes
-        {
-            get
-            {
-                return _TotalSendBytes;
-            }
-
         }
 
         public long TotalReceivedBytes
@@ -89,7 +104,6 @@ namespace LinkUp.Raw
             {
                 return _TotalReceivedBytes;
             }
-
         }
 
         public int TotalReceivedPackets
@@ -98,7 +112,22 @@ namespace LinkUp.Raw
             {
                 return _Converter.TotalReceivedPackets;
             }
+        }
 
+        public int TotalSendPackets
+        {
+            get
+            {
+                return _TotalSentPackets;
+            }
+        }
+
+        public long TotalSentBytes
+        {
+            get
+            {
+                return _TotalSentBytes;
+            }
         }
 
         public abstract void Dispose();
@@ -108,9 +137,9 @@ namespace LinkUp.Raw
             byte[] data = _Converter.ConvertToSend(packet);
             SendData(data);
             SentPacket?.Invoke(this, packet);
-            _TotalSendPackets++;
-            _TotalSendBytes += data.Length;
-            //Console.WriteLine("PTotal Received Packets: {0} Total Failed Packets: {1} Total Send Packets: {2} Bytes In: {3} Bytes Out: {4}", TotalReceivedPackets, TotalFailedPackets, TotalSendPackets, TotalReceivedBytes, TotalSendBytes);
+            _TotalSentPackets++;
+            _TotalSentBytes += data.Length;
+            _SentCounter.AddBytes(data.Length);
         }
 
         protected void OnConnected()
@@ -121,6 +150,24 @@ namespace LinkUp.Raw
                 foreach (ConnectivityChangedEventHandler receiver in receivers)
                 {
                     receiver.BeginInvoke(this, LinkUpConnectivityState.Connected, null, null);
+                }
+            }
+        }
+
+        protected void OnDataReceived(byte[] data)
+        {
+            _TotalReceivedBytes += data.Length;
+            _ReceiveCounter.AddBytes(data.Length);
+            List<LinkUpPacket> list = _Converter.ConvertFromReceived(data);
+            foreach (LinkUpPacket packet in list)
+            {
+                if (ReveivedPacket != null)
+                {
+                    var receivers = ReveivedPacket.GetInvocationList();
+                    foreach (ReveicedPacketEventHandler receiver in receivers)
+                    {
+                        receiver.BeginInvoke(this, packet, null, null);
+                    }
                 }
             }
         }
@@ -137,24 +184,15 @@ namespace LinkUp.Raw
             }
         }
 
-        protected void OnDataReceived(byte[] data)
+        protected abstract void SendData(byte[] data);
+
+#if NET45 || NETCOREAPP2_0
+
+        private void _Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            _TotalReceivedBytes += data.Length;
-            List<LinkUpPacket> list = _Converter.ConvertFromReceived(data);
-            //Console.WriteLine(list.Count);
-            foreach (LinkUpPacket packet in list)
-            {
-                if (ReveivedPacket != null)
-                {
-                    var receivers = ReveivedPacket.GetInvocationList();
-                    foreach (ReveicedPacketEventHandler receiver in receivers)
-                    {
-                        receiver.BeginInvoke(this, packet, null, null);
-                    }
-                }
-            }
+            MetricUpdate?.Invoke(this, SentBytesPerSecond,ReceivedBytesPerSecond);
         }
 
-        protected abstract void SendData(byte[] data);
+#endif
     }
 }

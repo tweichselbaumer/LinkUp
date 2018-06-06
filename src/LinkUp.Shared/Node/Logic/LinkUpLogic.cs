@@ -1,6 +1,6 @@
 ﻿using LinkUp.Raw;
 
-namespace LinkUp.Node
+namespace LinkUp.Node.Logic
 {
     abstract internal class LinkUpLogic
     {
@@ -66,6 +66,14 @@ namespace LinkUp.Node
 
                 case LinkUpLogicType.EventUnsubscribeResponse:
                     logic = new LinkUpEventUnsubscribeResponse();
+                    break;
+
+                case LinkUpLogicType.FunctionCallRequest:
+                    logic = new LinkUpFunctionCallRequest();
+                    break;
+
+                case LinkUpLogicType.FunctionCallResponse:
+                    logic = new LinkUpFunctionCallResponse();
                     break;
             }
 

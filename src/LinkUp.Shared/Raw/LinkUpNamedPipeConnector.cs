@@ -63,7 +63,7 @@ namespace LinkUp.Raw
                                         }
                                     }
                                 }
-                                catch (Exception ex) { }
+                                catch (Exception) { }
                             });
 
                             if (!(_Stream as NamedPipeServerStream).IsConnected)
@@ -74,7 +74,7 @@ namespace LinkUp.Raw
                             }
                             localReadTask.Wait();
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                         }
                     }
@@ -109,7 +109,7 @@ namespace LinkUp.Raw
                                 });
                             }
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                         }
                     }

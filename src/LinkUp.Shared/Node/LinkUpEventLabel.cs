@@ -9,17 +9,11 @@ namespace LinkUp.Node
     {
         private const int SUBSCRIBE_REQUEST_TIMEOUT = 4000;
         private const int UNSUBSCRIBE_REQUEST_TIMEOUT = 4000;
+        private bool _IsSubscribed;
         private AutoResetEvent _SubscribeAutoResetEvent = new AutoResetEvent(false);
         private AutoResetEvent _UnsubscribeAutoResetEvent = new AutoResetEvent(false);
-        private bool _IsSubscribed;
 
-        internal override LinkUpLabelType LabelType
-        {
-            get
-            {
-                return LinkUpLabelType.Event;
-            }
-        }
+        public event FireEventLabelEventHandler Fired;
 
         public bool IsSubscribed
         {
@@ -29,21 +23,21 @@ namespace LinkUp.Node
             }
         }
 
-        internal void Resubscribe()
+        internal override LinkUpLabelType LabelType
         {
-            if (IsSubscribed)
+            get
             {
-                Subscribe();
-            }
-            else
-            {
-                Unsubscribe();  
+                return LinkUpLabelType.Event;
             }
         }
 
         public static LinkUpEventLabel CreateNew(byte[] options)
         {
             return new LinkUpEventLabel();
+        }
+
+        public override void Dispose()
+        {
         }
 
         public void Subscribe()
@@ -70,18 +64,6 @@ namespace LinkUp.Node
             _IsSubscribed = false;
         }
 
-        internal void SubscribeDone()
-        {
-            _SubscribeAutoResetEvent.Set();
-        }
-
-        internal void UnsubscribeDone()
-        {
-            _UnsubscribeAutoResetEvent.Set();
-        }
-
-        public event FireEventLabelEventHandler Fired;
-
         internal void DoEvent(byte[] data)
         {
             if (Fired != null)
@@ -94,8 +76,26 @@ namespace LinkUp.Node
             }
         }
 
-        public override void Dispose()
+        internal void Resubscribe()
         {
+            if (IsSubscribed)
+            {
+                Subscribe();
+            }
+            else
+            {
+                Unsubscribe();
+            }
+        }
+
+        internal void SubscribeDone()
+        {
+            _SubscribeAutoResetEvent.Set();
+        }
+
+        internal void UnsubscribeDone()
+        {
+            _UnsubscribeAutoResetEvent.Set();
         }
     }
 }

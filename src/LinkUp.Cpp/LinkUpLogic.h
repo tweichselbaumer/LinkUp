@@ -18,7 +18,9 @@ enum LinkUpLogicType : uint8_t
 	EventSubscribeRequest = 11,
 	EventSubscribeResponse = 12,
 	EventUnsubscribeRequest = 13,
-	EventUnsubscribeResponse = 14
+	EventUnsubscribeResponse = 14,
+	FunctionCallRequest = 15,
+	FunctionCallResponse = 16
 };
 
 enum LinkUpLabelType : uint8_t
@@ -130,6 +132,20 @@ PACK(
 	struct LinkUpEventUnsubscribeResponse
 {
 	uint16_t nIdentifier;
+});
+
+PACK(
+	struct LinkUpFunctionCallRequest
+{
+	uint16_t nIdentifier;
+	uint8_t pData[];
+});
+
+PACK(
+	struct LinkUpFunctionCallResponse
+{
+	uint16_t nIdentifier;
+	uint8_t pData[];
 });
 
 #endif

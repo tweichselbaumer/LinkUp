@@ -1,25 +1,12 @@
 ﻿using System;
 using System.Linq;
 
-namespace LinkUp.Node
+namespace LinkUp.Node.Logic
 {
-    internal class LinkUpPropertyGetResponse : LinkUpLogic
+    internal class LinkUpFunctionCallResponse : LinkUpLogic
     {
         private byte[] _Data;
         private ushort _Identifier;
-
-        public byte[] Data
-        {
-            get
-            {
-                return _Data;
-            }
-
-            set
-            {
-                _Data = value;
-            }
-        }
 
         public ushort Identifier
         {
@@ -34,6 +21,19 @@ namespace LinkUp.Node
             }
         }
 
+        public byte[] Data
+        {
+            get
+            {
+                return _Data;
+            }
+
+            set
+            {
+                _Data = value;
+            }
+        }
+
         protected override void ParseFromRaw(byte[] data)
         {
             Identifier = BitConverter.ToUInt16(data, 1);
@@ -43,7 +43,7 @@ namespace LinkUp.Node
 
         protected override byte[] ToRaw()
         {
-            return new byte[] { (byte)LinkUpLogicType.PropertyGetResponse }.Concat(BitConverter.GetBytes(Identifier)).Concat(_Data).ToArray();
+            return new byte[] { (byte)LinkUpLogicType.FunctionCallResponse }.Concat(BitConverter.GetBytes(Identifier)).Concat(_Data).ToArray();
         }
     }
 }

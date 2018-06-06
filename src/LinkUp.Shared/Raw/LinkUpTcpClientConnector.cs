@@ -1,5 +1,7 @@
 ﻿#if NET45 || NETCOREAPP2_0
+
 using System.Net.Sockets;
+
 #endif
 
 using System;
@@ -7,7 +9,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace LinkUp.Raw
 {
@@ -17,8 +18,8 @@ namespace LinkUp.Raw
         private TcpClient _TcpClient;
         private Task _Task;
         private bool _IsRunning = true;
-        private const int maxRead = 1024;
-        byte[] data = new byte[maxRead];
+        private const int maxRead = 1024 * 10;
+        private byte[] data = new byte[maxRead];
 
         private BlockingCollection<byte[]> _Queue = new BlockingCollection<byte[]>();
 
@@ -66,7 +67,7 @@ namespace LinkUp.Raw
                             BeginRead();
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         _TcpClient.Close();
                         _TcpClient = null;
@@ -95,7 +96,7 @@ namespace LinkUp.Raw
                 _Queue.Add(data);
                 BeginRead();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _TcpClient.Close();
                 _TcpClient = null;

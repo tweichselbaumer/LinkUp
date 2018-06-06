@@ -11,6 +11,7 @@
 #include "LinkUpLabel.h"
 #include "LinkUpPropertyLabel.h"
 #include "LinkUpEventLabel.h"
+#include "LinkUpFunctionLabel.h"
 
 class LinkUpLabel;
 
@@ -46,6 +47,7 @@ private:
 	void receivedEventFireResponse(LinkUpPacket packet, LinkUpEventFireResponse* pEventFireResponse);
 	void receivedEventSubscribeRequest(LinkUpPacket packet, LinkUpEventSubscribeRequest* pEventSubscribeRequest);
 	void receivedEventUnsubscribeRequest(LinkUpPacket packet, LinkUpEventUnsubscribeRequest* pEventUnsubscribeRequest);
+	void receivedFunctionCallRequest(LinkUpPacket packet, LinkUpFunctionCallRequest* pFunctionCallRequest);
 	void lock();
 	void unlock();
 

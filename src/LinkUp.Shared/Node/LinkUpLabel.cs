@@ -11,19 +11,6 @@ namespace LinkUp.Node
         private LinkUpSubNode _Owner;
         private ushort _ParentIdentifier = 0;
 
-        internal ushort ChildIdentifier
-        {
-            get
-            {
-                return _ChildIdentifier;
-            }
-
-            set
-            {
-                _ChildIdentifier = value;
-            }
-        }
-
         public string Name
         {
             get
@@ -34,6 +21,19 @@ namespace LinkUp.Node
             set
             {
                 _Name = value;
+            }
+        }
+
+        internal ushort ChildIdentifier
+        {
+            get
+            {
+                return _ChildIdentifier;
+            }
+
+            set
+            {
+                _ChildIdentifier = value;
             }
         }
 
@@ -102,12 +102,16 @@ namespace LinkUp.Node
             {
                 case LinkUpLabelType.Node:
                     return null;
+
                 case LinkUpLabelType.Function:
-                    return null;
+                    return LinkUpFunctionLabel.CreateNew(options);
+
                 case LinkUpLabelType.Event:
                     return LinkUpEventLabel.CreateNew(options);
+
                 case LinkUpLabelType.Property:
                     return LinkUpPropertyLabelBase.CreateNew(options);
+
                 default:
                     return null;
             }

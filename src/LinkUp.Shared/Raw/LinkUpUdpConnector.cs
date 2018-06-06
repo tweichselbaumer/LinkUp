@@ -33,7 +33,7 @@ namespace LinkUp.Raw
                         byte[] data = _UdpClient.Receive(ref endPoint);
                         OnDataReceived(data);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         _UdpClient.Close();
                         _UdpClient = null;

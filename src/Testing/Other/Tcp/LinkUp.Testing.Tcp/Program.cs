@@ -14,6 +14,8 @@ namespace LinkUp.Testing.Tcp
         private static Stopwatch stopWatch;
         private static int count = 0;
         private static long bytes;
+        private static LinkUpNode node;
+        private static LinkUpFunctionLabel func;
 
         private static void ClientToServer_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
         {
@@ -55,19 +57,32 @@ namespace LinkUp.Testing.Tcp
             {
                 connector.ReveivedPacket += ClientToServer_ReveivedPacket;
                 connector.SentPacket += ClientToServer_SentPacket;
+                connector.MetricUpdate += Connector_MetricUpdate;
                 connector.ConnectivityChanged += Connector_ConnectivityChanged;
 
-                LinkUpNode node = new LinkUpNode();
+                node = new LinkUpNode();
                 node.Name = "leaf";
                 node.AddSubNode(connector);
 
                 LinkUpEventLabel eventLabel = node.GetLabelByName<LinkUpEventLabel>("leaf/test/label_event");
+                func = node.GetLabelByName<LinkUpFunctionLabel>("leaf/test/label_function");
+                func.Return += Func_Return;
                 eventLabel.Subscribe();
                 eventLabel.Fired += Program_Fired;
 
                 Console.Read();
                 connector.Dispose();
             }
+        }
+
+        private static void Connector_MetricUpdate(LinkUpConnector connector, double bytesSentPerSecond, double bytesReceivedPerSecond)
+        {
+            Console.WriteLine("S: {0:0.0} Mbit/s\t\tR: {1:0.0} MBit/s", bytesSentPerSecond / 1024 / 1024 * 8, bytesReceivedPerSecond / 1024 / 1024 * 8);
+        }
+
+        private static void Func_Return(LinkUpFunctionLabel label, byte[] data)
+        {
+
         }
 
         private static void Connector_ConnectivityChanged(LinkUpConnector connector, LinkUpConnectivityState connectivity)
@@ -84,15 +99,16 @@ namespace LinkUp.Testing.Tcp
             }
             count++;
             bytes += data.Length;
-            if (count % 1000 == 0)
+            if (count % 100 == 0)
             {
                 stopWatch.Restart();
                 count = 0;
                 bytes = 0;
+                func.AsyncCall(new byte[2]);
             }
             else
             {
-                Console.WriteLine("{0:0.0} events/s\t{1:0.0} KB/s\t{2:0.0} MBit/s", ((double)count) / stopWatch.ElapsedMilliseconds * 1000, ((double)bytes) / stopWatch.ElapsedMilliseconds * 1000 / 1024, ((double)bytes) / stopWatch.ElapsedMilliseconds * 1000 / 1024 /1024*8);
+                //Console.WriteLine("{0:0.0} events/s\t{1:0.0} KB/s\t{2:0.0} MBit/s", ((double)count) / stopWatch.ElapsedMilliseconds * 1000, ((double)bytes) / stopWatch.ElapsedMilliseconds * 1000 / 1024, ((double)bytes) / stopWatch.ElapsedMilliseconds * 1000 / 1024 /1024*8);
             }
             //onsole.WriteLine("- EVENT ({0}): {1}", label.Name, data.Length/*string.Join(" ", data.Select(b => string.Format("{0:X2} ", b)))*/);
         }

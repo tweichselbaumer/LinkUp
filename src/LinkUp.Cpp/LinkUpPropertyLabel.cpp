@@ -1,55 +1,41 @@
 #include "LinkUpPropertyLabel.h"
 
-bool LinkUpPropertyLabel::receivedPropertyGetRequest(uint16_t nIdentifier, LinkUpRaw* pConnector)
+void LinkUpPropertyLabel::receivedPropertyGetRequest(LinkUpRaw* pConnector)
 {
-	if (this->nIdentifier == nIdentifier)
-	{
-		LinkUpPacket packet;
-		packet.nLength = nSize + sizeof(LinkUpLogic) + sizeof(LinkUpPropertyGetResponse);
-		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
+	LinkUpPacket packet;
+	packet.nLength = nSize + sizeof(LinkUpLogic) + sizeof(LinkUpPropertyGetResponse);
+	packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
 
-		LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
-		LinkUpPropertyGetResponse* getResponse = (LinkUpPropertyGetResponse*)logic->pInnerHeader;
+	LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
+	LinkUpPropertyGetResponse* getResponse = (LinkUpPropertyGetResponse*)logic->pInnerHeader;
 
-		logic->nLogicType = LinkUpLogicType::PropertyGetResponse;
-		getResponse->nIdentifier = nIdentifier;
-		memcpy(getResponse->pData, getRaw(), nSize);
+	logic->nLogicType = LinkUpLogicType::PropertyGetResponse;
+	getResponse->nIdentifier = nIdentifier;
+	memcpy(getResponse->pData, getRaw(), nSize);
 
-		pConnector->send(packet);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	pConnector->send(packet);
+
 }
 
-bool LinkUpPropertyLabel::receivedPropertySetRequest(uint16_t nIdentifier, uint8_t* pValue, LinkUpRaw* pConnector)
+void LinkUpPropertyLabel::receivedPropertySetRequest(uint8_t* pValue, uint32_t nSize, LinkUpRaw* pConnector)
 {
-	if (this->nIdentifier == nIdentifier)
-	{
-		LinkUpPacket packet;
-		packet.nLength = nSize + sizeof(LinkUpLogic) + sizeof(LinkUpPropertySetResponse);
-		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
+	LinkUpPacket packet;
+	packet.nLength = nSize + sizeof(LinkUpLogic) + sizeof(LinkUpPropertySetResponse);
+	packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
 
-		LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
-		LinkUpPropertySetResponse* setResponse = (LinkUpPropertySetResponse*)logic->pInnerHeader;
+	LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
+	LinkUpPropertySetResponse* setResponse = (LinkUpPropertySetResponse*)logic->pInnerHeader;
 
-		logic->nLogicType = LinkUpLogicType::PropertySetResponse;
-		setResponse->nIdentifier = nIdentifier;
+	logic->nLogicType = LinkUpLogicType::PropertySetResponse;
+	setResponse->nIdentifier = nIdentifier;
 
-		memcpy(getRaw(), pValue, nSize);
+	memcpy(getRaw(), pValue, nSize);
 
-		pConnector->send(packet);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	pConnector->send(packet);
+
 }
 
-void LinkUpPropertyLabel::progressAdv(LinkUpRaw* pConnector) 
+void LinkUpPropertyLabel::progressAdv(LinkUpRaw* pConnector)
 {
 	//TODO:
 }

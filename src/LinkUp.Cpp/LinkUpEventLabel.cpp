@@ -2,6 +2,7 @@
 
 uint8_t * LinkUpEventLabel::getOptions(uint8_t* pSize)
 {
+	*pSize = 0;
 	return NULL;
 }
 

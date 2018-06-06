@@ -58,9 +58,9 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool f
 		}
 
 		uint8_t* pBuffer = new uint8_t[1024];
-		while (getRaw(pBuffer,1024) > 0)
+		while (getRaw(pBuffer, 1024) > 0)
 		{
-		}			
+		}
 	}
 
 	if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
@@ -145,6 +145,9 @@ void LinkUpNode::receivedPacket(LinkUpPacket packet, uint32_t nTime)
 		case LinkUpLogicType::EventUnsubscribeRequest:
 			receivedEventUnsubscribeRequest(packet, (LinkUpEventUnsubscribeRequest*)logic->pInnerHeader);
 			break;
+		case LinkUpLogicType::FunctionCallRequest:
+			receivedFunctionCallRequest(packet, (LinkUpFunctionCallRequest*)logic->pInnerHeader);
+			break;
 		default:
 			break;
 		}
@@ -181,7 +184,6 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 			if (pLabel->receivedNameResponse(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier)) {
 				pAvlTree->insert(pNameResponse->nIdentifier, pLabel);
 				pList->remove(pLabel);
-				//cout << " ID: " << pNameResponse->nIdentifier << " Name: " << pResponseName << endl;
 			}
 		}
 	}
@@ -194,11 +196,8 @@ void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyG
 		AvlNode* pNode = pAvlTree->find(pPropertyGetRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
 			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
-			//TODO: CAST CHECK
 			if (label->nType == LinkUpLabelType::Property) {
-				if (!((LinkUpPropertyLabel*)label)->receivedPropertyGetRequest(pPropertyGetRequest->nIdentifier, &connector)) {
-					//TODO: error??
-				}
+				((LinkUpPropertyLabel*)label)->receivedPropertyGetRequest(&connector);
 			}
 		}
 		else {
@@ -240,7 +239,22 @@ void LinkUpNode::receivedEventUnsubscribeRequest(LinkUpPacket packet, LinkUpEven
 	}
 }
 
-void LinkUpNode::receivedPropertyGetResponse(LinkUpPacket packet, LinkUpPropertyGetResponse* pPropertyGetResponse) {
+void LinkUpNode::receivedPropertyGetResponse(LinkUpPacket packet, LinkUpPropertyGetResponse* pPropertyGetResponse)
+{
+
+}
+
+void LinkUpNode::receivedFunctionCallRequest(LinkUpPacket packet, LinkUpFunctionCallRequest* pFunctionCallRequest)
+{
+	if (pAvlTree != NULL && pFunctionCallRequest != NULL) {
+		AvlNode* pNode = pAvlTree->find(pFunctionCallRequest->nIdentifier);
+		if (pNode != NULL && pNode->pData != NULL) {
+			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
+			if (label->nType == LinkUpLabelType::Function) {
+				((LinkUpFunctionLabel*)label)->receivedFunctionCallRequest(pFunctionCallRequest->pData, packet.nLength - sizeof(LinkUpLogic) - sizeof(LinkUpFunctionCallRequest), &connector);
+			}
+		}
+	}
 }
 
 void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest)
@@ -250,9 +264,7 @@ void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertyS
 		if (pNode != NULL && pNode->pData != NULL) {
 			LinkUpLabel* label = (LinkUpLabel*)pNode->pData;
 			if (label->nType == LinkUpLabelType::Property) {
-				if (!((LinkUpPropertyLabel*)label)->receivedPropertySetRequest(pPropertySetRequest->nIdentifier, pPropertySetRequest->pData, &connector)) {
-					//TODO: error??
-				}
+				((LinkUpPropertyLabel*)label)->receivedPropertySetRequest(pPropertySetRequest->pData, packet.nLength - sizeof(LinkUpLogic) - sizeof(LinkUpPropertySetRequest), &connector);
 			}
 		}
 		else {
@@ -284,5 +296,9 @@ void LinkUpNode::addLabel(LinkUpLabel* pLabel)
 {
 	lock();
 	pList->insert(pLabel);
+	if (pLabel->nType == LinkUpLabelType::Function)
+	{
+		pEventList->insert(pLabel);
+	}
 	unlock();
 }
