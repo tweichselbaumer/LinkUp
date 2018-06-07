@@ -31,6 +31,16 @@ void doWork()
 void doWork2()
 {
 	uint8_t* pData = (uint8_t*)calloc(1024 * 1024 * 10, sizeof(uint8_t));
+	pData[0] = LINKUP_RAW_SKIP;
+	pData[5] = LINKUP_RAW_SKIP;
+	pData[6] = LINKUP_RAW_EOP;
+	pData[7] = LINKUP_RAW_SKIP;
+	pData[8] = LINKUP_RAW_EOP;
+	pData[12] = LINKUP_RAW_SKIP;
+	pData[13] = LINKUP_RAW_EOP;
+	pData[20] = LINKUP_RAW_SKIP;
+	pData[34] = LINKUP_RAW_EOP;
+
 	while (running) {
 		pEvent->fireEvent((uint8_t*)pData, 1024 * 1024);
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000 / 50));

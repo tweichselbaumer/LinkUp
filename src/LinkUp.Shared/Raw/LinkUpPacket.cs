@@ -54,6 +54,10 @@ namespace LinkUp.Raw
             {
                 data = RemoveEscaping(data);
                 length = BitConverter.ToInt32(data, 1);
+                if (length != data.Length - (4 + 2 + 1 + 1))
+                {
+                    throw new Exception("Invalide packet length.");
+                }
                 result.Data = new byte[length];
                 Array.Copy(data, 5, result.Data, 0, length);
                 ushort crc = BitConverter.ToUInt16(data, 5 + length);
@@ -117,25 +121,51 @@ namespace LinkUp.Raw
 
         private static byte[] RemoveEscaping(byte[] data)
         {
-            //List<byte> result = new List<byte>();
+            int indexOfSkipPattern = Array.IndexOf(data, Constant.SkipPattern);
 
-            //for (int i = 0; i < data.Length; i++)
-            //{
-            //    if (data[i] == Constant.SkipPattern)
-            //    {
-            //        i++;
-            //        result.Add((byte)(data[i] ^ Constant.XorValue));
-            //    }
-            //    else
-            //    {
-            //        result.Add(data[i]);
-            //    }
-            //}
-            //return result.ToArray();
+            if (indexOfSkipPattern == -1)
+            {
+                return data;
+            }
+            else
+            {
+                byte[] result = new byte[data.Length];
+                int j = 0;
+                int i = 0;
+                while (indexOfSkipPattern != -1)
+                {
+                    if (indexOfSkipPattern - i - 1 > 0)
+                    {
+                        Array.Copy(data, i, result, j, indexOfSkipPattern - i - 1);
+                        j += indexOfSkipPattern - i - 1;
+                    }
+
+                    i = indexOfSkipPattern + 1;
+                    result[j] = (byte)(data[i] ^ Constant.XorValue);
+                    j++;
+
+                    indexOfSkipPattern = Array.IndexOf(data, Constant.SkipPattern, i);
+                }
+
+                if (data.Length - i > 0)
+                {
+                    Array.Copy(data, i, result, j, data.Length - i);
+                    j += data.Length - i;
+                }
+
+                byte[] temp = new byte[j];
+                Array.Copy(result, temp, j);
+                return temp;
+            }
+        }
+
+        private static byte[] RemoveEscaping2(byte[] data)
+        {
+            int length = data.Length;
             byte[] result = new byte[data.Length];
             int j = 0;
 
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < length; i++)
             {
                 if (data[i] == Constant.SkipPattern)
                 {
