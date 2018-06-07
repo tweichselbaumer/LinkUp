@@ -17,7 +17,7 @@ public:
 	void read();
 
 private:
-	enum { max_length = 1024*100 };
+	enum { max_length = 1024*50 };
 
 	uint8_t dataIn_[max_length];
 	uint8_t dataOut1_[max_length];

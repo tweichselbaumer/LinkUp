@@ -46,23 +46,21 @@ namespace LinkUp.Raw
             }
         }
 
-        internal static LinkUpPacket ParseFromRaw(byte[] data)
+        internal static LinkUpPacket ParseFromRaw(byte[] data, int startIndex, int size)
         {
             LinkUpPacket result = new LinkUpPacket();
             int length = 0;
             try
             {
-                byte[] data2 = RemoveEscaping(data);
-                data = data2;
-                length = BitConverter.ToInt32(data, 1);
-                if (length != data.Length - (4 + 2 + 1 + 1))
-                {
-                    throw new Exception("Invalide packet length.");
-                }
-                result.Data = new byte[length];
-                Array.Copy(data, 5, result.Data, 0, length);
-                ushort crc = BitConverter.ToUInt16(data, 5 + length);
-                if (!(crc == 0 || crc == result.Crc) || data[0] != Constant.Preamble || data[data.Length - 1] != Constant.EndOfPacket)
+                int escaped = 0;
+
+                length = BitConverter.ToInt32(RemoveEscaping(data, startIndex + 1, 5, ref escaped), 0);
+
+                result.Data = RemoveEscaping(data, startIndex + 5 + escaped, length, ref escaped);
+
+                ushort crc = BitConverter.ToUInt16(RemoveEscaping(data, startIndex + 5 + length + escaped, 2, ref escaped), 0);
+
+                if (!(crc == 0 || crc == result.Crc) || data[startIndex] != Constant.Preamble || data[startIndex + size - 1] != Constant.EndOfPacket || length != size - (4 + 2 + 1 + 1 + escaped))
                 {
                     result._IsValid = false;
                 }
@@ -120,20 +118,22 @@ namespace LinkUp.Raw
             return crc;
         }
 
-        private static byte[] RemoveEscaping(byte[] data)
+        private static byte[] RemoveEscaping(byte[] data, int startIndex, int size, ref int escaped)
         {
-            int indexOfSkipPattern = Array.IndexOf(data, Constant.SkipPattern);
+            int indexOfSkipPattern = Array.IndexOf(data, Constant.SkipPattern, startIndex);
 
-            if (indexOfSkipPattern == -1)
+            if (indexOfSkipPattern == -1 || indexOfSkipPattern > size + startIndex)
             {
-                return data;
+                byte[] result = new byte[size];
+                Array.Copy(data, startIndex, result, 0, size);
+                return result;
             }
             else
             {
-                byte[] result = new byte[data.Length];
+                byte[] result = new byte[size];
                 int j = 0;
-                int i = 0;
-                while (indexOfSkipPattern != -1)
+                int i = startIndex;
+                while (indexOfSkipPattern != -1 && indexOfSkipPattern < size + startIndex + escaped)
                 {
                     if (indexOfSkipPattern - i > 0)
                     {
@@ -143,21 +143,19 @@ namespace LinkUp.Raw
 
                     i = indexOfSkipPattern + 1;
                     result[j] = (byte)(data[i] ^ Constant.XorValue);
+                    escaped++;
                     i++;
                     j++;
 
                     indexOfSkipPattern = Array.IndexOf(data, Constant.SkipPattern, i);
                 }
 
-                if (data.Length - i > 0)
+                if (size - j > 0)
                 {
-                    Array.Copy(data, i, result, j, data.Length - i);
-                    j += data.Length - i;
+                    Array.Copy(data, i, result, j, size - j);
                 }
 
-                byte[] temp = new byte[j];
-                Array.Copy(result, temp, j);
-                return temp;
+                return result;
             }
         }
 

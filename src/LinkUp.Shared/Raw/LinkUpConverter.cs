@@ -7,6 +7,7 @@ namespace LinkUp.Raw
     public class LinkUpConverter
     {
         private byte[] _Buffer;
+        private int _BufferSize;
         private int _TotalFailedPackets;
         private int _TotalReceivedPackets;
 
@@ -40,13 +41,29 @@ namespace LinkUp.Raw
                 }
                 else
                 {
-                    Array.Resize(ref _Buffer, _Buffer.Length + data.Length);
-                    Array.Copy(data, 0, _Buffer, _Buffer.Length - data.Length, data.Length);
-                    //_Buffer = _Buffer.Concat(data).ToArray();
+                    if (_Buffer.Length < _BufferSize + data.Length)
+                    {
+                        Array.Resize(ref _Buffer, _BufferSize + data.Length);
+                    }
+                    else if ((_BufferSize + data.Length + 1024) * 10 < _Buffer.Length)
+                    {
+                        Array.Resize(ref _Buffer, (_BufferSize + data.Length) * 2);
+                    }
+                    Array.Copy(data, 0, _Buffer, _BufferSize, data.Length);
+                    _BufferSize += data.Length;
+                    AddBufferEnd();
                 }
             }
 
             return ParseBuffer();
+        }
+
+        private void AddBufferEnd()
+        {
+            if (_BufferSize < _Buffer.Length)
+                _Buffer[_BufferSize] = Constant.Preamble;
+            if (_BufferSize + 1 < _Buffer.Length)
+                _Buffer[_BufferSize + 1] = Constant.EndOfPacket;
         }
 
         public byte[] ConvertToSend(LinkUpPacket packet)
@@ -57,24 +74,20 @@ namespace LinkUp.Raw
         private List<LinkUpPacket> ParseBuffer()
         {
             List<LinkUpPacket> result = new List<LinkUpPacket>();
-            int indexOfPreamble = Array.IndexOf(_Buffer, Constant.Preamble);
-            int indexOfEndOfPacket = Array.IndexOf(_Buffer, Constant.EndOfPacket);
+            int indexOfPreamble = IndexOfInBuffer(0, Constant.Preamble);
+            int indexOfEndOfPacket = IndexOfInBuffer(0, Constant.EndOfPacket);
 
             if (indexOfPreamble != -1 && indexOfEndOfPacket != -1 && indexOfPreamble < indexOfEndOfPacket)
             {
-                int indexOfPreambleNext = Array.IndexOf(_Buffer, Constant.Preamble, indexOfPreamble + 1);
+                int indexOfPreambleNext = IndexOfInBuffer(indexOfPreamble + 1, Constant.Preamble);
+
                 while (indexOfPreambleNext < indexOfEndOfPacket && indexOfPreambleNext != -1)
                 {
                     indexOfPreamble += _Buffer.Skip(indexOfPreamble + 1).Take(indexOfEndOfPacket - indexOfPreamble).ToList().IndexOf(Constant.Preamble) + 1;
-                    indexOfPreambleNext = Array.IndexOf(_Buffer, Constant.Preamble, indexOfPreamble + 1);
+                    indexOfPreambleNext = IndexOfInBuffer(indexOfPreamble + 1, Constant.Preamble);
                 }
 
-                //List<byte> packetRaw = _Buffer.Skip(indexOfPreamble).Take(indexOfEndOfPacket - indexOfPreamble + 1).ToList();
-
-                byte[] packetRaw = new byte[indexOfEndOfPacket - indexOfPreamble + 1];
-                Array.Copy(_Buffer, indexOfPreamble, packetRaw, 0, indexOfEndOfPacket - indexOfPreamble + 1);
-
-                LinkUpPacket packet = LinkUpPacket.ParseFromRaw(packetRaw);
+                LinkUpPacket packet = LinkUpPacket.ParseFromRaw(_Buffer, indexOfPreamble, indexOfEndOfPacket - indexOfPreamble + 1);
                 if (packet.IsValid)
                 {
                     result.Add(packet);
@@ -90,15 +103,15 @@ namespace LinkUp.Raw
             {
                 if (_Buffer.Length > indexOfEndOfPacket + 1)
                 {
-                    byte[] temp = new byte[_Buffer.Length - (indexOfEndOfPacket + 1)];
-                    Array.Copy(_Buffer, indexOfEndOfPacket + 1, temp, 0, _Buffer.Length - (indexOfEndOfPacket + 1));
-                    _Buffer = temp;
-                    //_Buffer = _Buffer.Skip(indexOfEndOfPacket + 1).ToArray();
+                    _BufferSize = _BufferSize - (indexOfEndOfPacket + 1);
+
+                    Array.Copy(_Buffer, indexOfEndOfPacket + 1, _Buffer, 0, _BufferSize);
+                    AddBufferEnd();
                 }
                 else
                 {
-                    //byte[] t = _Buffer.Skip(indexOfEndOfPacket + 1).ToArray();
                     _Buffer = new byte[0];
+                    _BufferSize = 0;
                 }
             }
 
@@ -108,6 +121,16 @@ namespace LinkUp.Raw
             }
 
             return result;
+        }
+
+        private int IndexOfInBuffer(int startIndex, byte value)
+        {
+            int indexOf = Array.IndexOf(_Buffer, value, startIndex);
+            if (indexOf > _BufferSize)
+            {
+                indexOf = -1;
+            }
+            return indexOf;
         }
     }
 
