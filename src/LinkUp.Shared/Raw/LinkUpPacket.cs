@@ -52,7 +52,8 @@ namespace LinkUp.Raw
             int length = 0;
             try
             {
-                data = RemoveEscaping(data);
+                byte[] data2 = RemoveEscaping(data);
+                data = data2;
                 length = BitConverter.ToInt32(data, 1);
                 if (length != data.Length - (4 + 2 + 1 + 1))
                 {
@@ -134,14 +135,15 @@ namespace LinkUp.Raw
                 int i = 0;
                 while (indexOfSkipPattern != -1)
                 {
-                    if (indexOfSkipPattern - i - 1 > 0)
+                    if (indexOfSkipPattern - i > 0)
                     {
-                        Array.Copy(data, i, result, j, indexOfSkipPattern - i - 1);
-                        j += indexOfSkipPattern - i - 1;
+                        Array.Copy(data, i, result, j, indexOfSkipPattern - i);
+                        j += indexOfSkipPattern - i;
                     }
 
                     i = indexOfSkipPattern + 1;
                     result[j] = (byte)(data[i] ^ Constant.XorValue);
+                    i++;
                     j++;
 
                     indexOfSkipPattern = Array.IndexOf(data, Constant.SkipPattern, i);

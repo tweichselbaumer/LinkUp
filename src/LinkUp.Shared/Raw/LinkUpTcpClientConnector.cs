@@ -69,7 +69,8 @@ namespace LinkUp.Raw
                     }
                     catch (Exception)
                     {
-                        _TcpClient.Close();
+                        if (_TcpClient != null)
+                            _TcpClient.Close();
                         _TcpClient = null;
                         OnDisconnected();
                     }
@@ -98,7 +99,8 @@ namespace LinkUp.Raw
             }
             catch (Exception)
             {
-                _TcpClient.Close();
+                if (_TcpClient != null)
+                    _TcpClient.Close();
                 _TcpClient = null;
                 OnDisconnected();
             }
@@ -136,7 +138,8 @@ namespace LinkUp.Raw
             }
             else
             {
-                _TcpClient.Close();
+                if (_TcpClient != null)
+                    _TcpClient.Close();
                 _TcpClient = null;
                 OnDisconnected();
             }
