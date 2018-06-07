@@ -18,7 +18,7 @@ namespace LinkUp.Raw
         private TcpClient _TcpClient;
         private Task _Task;
         private bool _IsRunning = true;
-        private const int maxRead = 1024 * 100;
+        private const int maxRead = 1024 * 10;
         private byte[] data = new byte[maxRead];
 
         private BlockingCollection<byte[]> _Queue = new BlockingCollection<byte[]>();
@@ -42,7 +42,7 @@ namespace LinkUp.Raw
                             Array.Copy(data, 0, buffer, size, data.Length);
                             size += data.Length;
                             count++;
-                            if (count >= 100)
+                            if (count >= 50)
                             {
                                 break;
                             }
@@ -54,10 +54,8 @@ namespace LinkUp.Raw
                             Array.Copy(buffer, data, size);
                             OnDataReceived(data);
                         }
-                        else
-                        {
-                            Thread.Sleep(1);
-                        }
+
+                        Thread.Sleep(1);
 
                         if (_TcpClient == null)
                         {
