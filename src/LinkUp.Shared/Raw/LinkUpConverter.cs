@@ -101,18 +101,18 @@ namespace LinkUp.Raw
 
             if (indexOfEndOfPacket != -1)
             {
-                if (_Buffer.Length > indexOfEndOfPacket + 1)
-                {
-                    _BufferSize = _BufferSize - (indexOfEndOfPacket + 1);
+                //if (_Buffer.Length > indexOfEndOfPacket + 1)
+                //{
+                _BufferSize -= (indexOfEndOfPacket + 1);
 
-                    Array.Copy(_Buffer, indexOfEndOfPacket + 1, _Buffer, 0, _BufferSize);
-                    AddBufferEnd();
-                }
-                else
-                {
-                    _Buffer = new byte[0];
-                    _BufferSize = 0;
-                }
+                Array.Copy(_Buffer, indexOfEndOfPacket + 1, _Buffer, 0, _BufferSize);
+                AddBufferEnd();
+                //}
+                //else
+                //{
+                //    _Buffer = new byte[0];
+                //    _BufferSize = 0;
+                //}
             }
 
             if (indexOfPreamble != -1 && indexOfEndOfPacket != -1)

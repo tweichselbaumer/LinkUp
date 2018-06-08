@@ -101,14 +101,11 @@ namespace LinkUp.Testing.Tcp
             bytes += data.Length;
             if (count % 100 == 0)
             {
+                Console.WriteLine("{0:0.0} events/s\t{1:0.0} KB/s\t{2:0.0} MBit/s", ((double)count) / stopWatch.ElapsedMilliseconds * 1000, ((double)bytes) / stopWatch.ElapsedMilliseconds * 1000 / 1024, ((double)bytes) / stopWatch.ElapsedMilliseconds * 1000 / 1024 / 1024 * 8);
                 stopWatch.Restart();
                 count = 0;
                 bytes = 0;
                 func.AsyncCall(new byte[2]);
-            }
-            else
-            {
-                //Console.WriteLine("{0:0.0} events/s\t{1:0.0} KB/s\t{2:0.0} MBit/s", ((double)count) / stopWatch.ElapsedMilliseconds * 1000, ((double)bytes) / stopWatch.ElapsedMilliseconds * 1000 / 1024, ((double)bytes) / stopWatch.ElapsedMilliseconds * 1000 / 1024 /1024*8);
             }
             //onsole.WriteLine("- EVENT ({0}): {1}", label.Name, data.Length/*string.Join(" ", data.Select(b => string.Format("{0:X2} ", b)))*/);
         }
