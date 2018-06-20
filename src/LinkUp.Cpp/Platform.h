@@ -30,8 +30,8 @@
 #include <fstream>
 #endif
 
-#define min(a,b) (((a)<(b))?(a):(b))
-#define max(a,b) (((a)>(b))?(a):(b))
+#define linkup_min(a,b) (((a)<(b))?(a):(b))
+#define linkup_max(a,b) (((a)>(b))?(a):(b))
 
 #ifdef LINKUP_BOOST_THREADSAFE
 #include <boost/thread.hpp>

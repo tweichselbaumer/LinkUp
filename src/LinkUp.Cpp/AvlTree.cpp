@@ -1,4 +1,4 @@
-#include "AVLTree.h"
+#include "AvlTree.h"
 
 
 using namespace std;
@@ -153,7 +153,7 @@ AvlNode* AvlTree::remove(uint16_t nId, AvlNode* pNode) {
 }
 
 int32_t AvlTree::height(AvlNode* pNode) {
-	return (pNode == NULL ? -1 : max(height(pNode->pLeft), height(pNode->pRight)) + 1);
+	return (pNode == NULL ? -1 : linkup_max(height(pNode->pLeft), height(pNode->pRight)) + 1);
 }
 
 uint32_t AvlTree::getBalance(AvlNode* pNode) {
@@ -171,7 +171,7 @@ AvlTree::AvlTree()
 void AvlTree::insert(uint16_t nId, void* pData)
 {
 	pRoot = insert(nId, pData, pRoot);
-	//AvlTree::printDot();
+
 }
 
 void AvlTree::remove(uint16_t nId)
@@ -221,7 +221,7 @@ AvlNode* AvlTreeIterator::next() {
 	}
 	return pNode;
 }
-
+#ifdef _WINDOWS
 void AvlTree::printDot() {
 	ofstream file;
 	char str[1024];
@@ -256,3 +256,4 @@ void AvlTree::printDot(AvlNode* pNode, std::ofstream& file)
 		}
 	}
 }
+#endif

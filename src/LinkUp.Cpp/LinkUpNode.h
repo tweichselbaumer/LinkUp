@@ -6,7 +6,7 @@
 #include "LinkUpRaw.h"
 #include "LinkUpLogic.h"
 #include "LinkedList.h"
-#include "AVLTree.h"
+#include "AvlTree.h"
 
 #include "LinkUpLabel.h"
 #include "LinkUpPropertyLabel.h"

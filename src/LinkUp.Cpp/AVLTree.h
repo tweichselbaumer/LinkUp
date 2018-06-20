@@ -1,5 +1,5 @@
-#ifndef _AVL_TREE_h
-#define _AVL_TREE_h
+#ifndef _Avl_TREE_h
+#define _Avl_TREE_h
 
 #include "Platform.h"
 
@@ -35,9 +35,11 @@ private:
 	int32_t height(AvlNode* pNode);
 	AvlNode* find(uint16_t nId, AvlNode* pNode);
 	AvlTreeList* getList(AvlNode* pNode, AvlTreeList* pLast);
+#ifdef _WINDOWS
 	int dotPrintId = 0;
 	void printDot();
 	void printDot(AvlNode* pNode, std::ofstream& file);
+#endif
 public:
 	AvlTree();
 	void insert(uint16_t nId, void* pData);

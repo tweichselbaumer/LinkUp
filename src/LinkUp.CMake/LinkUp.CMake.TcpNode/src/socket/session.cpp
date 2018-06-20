@@ -63,7 +63,7 @@ void session::start()
 				start();
 			}
 			else {
-				std::cout << "Closed connection [" << socket_.remote_endpoint().address().to_string() << ":" << socket_.remote_endpoint().port() << "]" << std::endl;
+				//std::cout << "Closed connection [" << socket_.remote_endpoint().address().to_string() << ":" << socket_.remote_endpoint().port() << "]" << std::endl;
 				server_->removeSession(this);
 				return;
 			}

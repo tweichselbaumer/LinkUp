@@ -8,7 +8,7 @@
 #include <boost/thread.hpp>
 #include "socket/tcp_server.h"
 
-#include "AVLTree.h"
+#include "AvlTree.h"
 #include "Platform.h"
 
 using boost::asio::ip::tcp;
@@ -42,7 +42,7 @@ void doWork2()
 	pData[34] = LINKUP_RAW_EOP;
 
 	while (running) {
-		pEvent->fireEvent((uint8_t*)pData, 1024 * 1024);
+		pEvent->fireEvent((uint8_t*)pData, 1024 * 512);
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000 / 50));
 	}
 }
