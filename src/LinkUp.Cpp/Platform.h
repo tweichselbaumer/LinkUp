@@ -3,7 +3,7 @@
 
 #ifdef ARDUINO
 #include <Arduino.h>
-#define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#define PACK( __Declaration__ ) struct __attribute__((__packed__)) __Declaration__ 
 #endif
 
 #ifdef _WINDOWS
@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
-#define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
+#define PACK( __Declaration__ ) __pragma( pack(push, 1) ) struct __Declaration__ __pragma( pack(pop) )
 #include <time.h>
 #include <cstdlib>
 #include <iostream>
@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#define PACK( __Declaration__ ) struct __attribute__((__packed__)) __Declaration__
 #include <time.h>
 #include <cstdlib>
 #include <iostream>
