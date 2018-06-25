@@ -54,7 +54,7 @@ namespace LinkUp.Raw
             {
                 int escaped = 0;
 
-                length = BitConverter.ToInt32(RemoveEscaping(data, startIndex + 1, 5, ref escaped), 0);
+                length = BitConverter.ToInt32(RemoveEscaping(data, startIndex + 1, 4, ref escaped), 0);
 
                 result.Data = RemoveEscaping(data, startIndex + 5 + escaped, length, ref escaped);
 
@@ -69,7 +69,7 @@ namespace LinkUp.Raw
                     result._IsValid = true;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 result._IsValid = false;
             }
@@ -122,6 +122,8 @@ namespace LinkUp.Raw
         {
             int indexOfSkipPattern = Array.IndexOf(data, Constant.SkipPattern, startIndex);
 
+            int localEscaped = 0;
+
             if (indexOfSkipPattern == -1 || indexOfSkipPattern > size + startIndex)
             {
                 byte[] result = new byte[size];
@@ -133,9 +135,9 @@ namespace LinkUp.Raw
                 byte[] result = new byte[size];
                 int j = 0;
                 int i = startIndex;
-                while (indexOfSkipPattern != -1 && indexOfSkipPattern < size + startIndex + escaped)
+                while (indexOfSkipPattern != -1 && indexOfSkipPattern < size + startIndex + localEscaped)
                 {
-                    if (indexOfSkipPattern - i > 0)
+                    if (indexOfSkipPattern - i >= 0)
                     {
                         Array.Copy(data, i, result, j, indexOfSkipPattern - i);
                         j += indexOfSkipPattern - i;
@@ -143,7 +145,7 @@ namespace LinkUp.Raw
 
                     i = indexOfSkipPattern + 1;
                     result[j] = (byte)(data[i] ^ Constant.XorValue);
-                    escaped++;
+                    localEscaped++;
                     i++;
                     j++;
 
@@ -154,6 +156,8 @@ namespace LinkUp.Raw
                 {
                     Array.Copy(data, i, result, j, size - j);
                 }
+
+                escaped += localEscaped;
 
                 return result;
             }

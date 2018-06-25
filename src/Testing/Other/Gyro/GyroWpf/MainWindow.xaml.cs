@@ -26,8 +26,8 @@ namespace GyroWpf
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(List<LinkUpPacket>), typeof(MainWindow), new PropertyMetadata(new List<LinkUpPacket>()));
 
-        private const int DATA_BAUD = 2000000;
-        private const int DEBUG_BAUD = 250000;
+        private const int DATA_BAUD = 921600;
+        private const int DEBUG_BAUD = 921600;
 
         private bool addData = false;
         private LinkUpSerialPortConnector connector;
