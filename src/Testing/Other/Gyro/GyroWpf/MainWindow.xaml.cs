@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Windows;
+using System.Linq;
 
 namespace GyroWpf
 {
@@ -81,7 +82,7 @@ namespace GyroWpf
                         try
                         {
                             BinaryWriter writer = new BinaryWriter(writeStream);
-                            foreach (LinkUpPacket p in Data)
+                            foreach (LinkUpPacket p in Data.OrderBy(d => BitConverter.ToUInt32(d.Data, 4)))
                             {
                                 writer.Write(p.Data);
                             }
