@@ -130,7 +130,12 @@ namespace LinkUp.Raw
             }
         }
 
-        public abstract void Dispose();
+        public virtual void Dispose()
+        {
+#if NET45 || NETCOREAPP2_0
+            _Timer.Dispose();
+#endif
+        }
 
         public void SendPacket(LinkUpPacket packet)
         {
@@ -190,7 +195,7 @@ namespace LinkUp.Raw
 
         private void _Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            MetricUpdate?.Invoke(this, SentBytesPerSecond,ReceivedBytesPerSecond);
+            MetricUpdate?.Invoke(this, SentBytesPerSecond, ReceivedBytesPerSecond);
         }
 
 #endif

@@ -18,9 +18,11 @@ tcp_server::tcp_server(boost::asio::io_service& io_service, short port, LinkUpNo
 	do_accept();
 }
 
-void tcp_server::removeSession(session* session)
+void tcp_server::removeSession(session* pSession)
 {
-	connections_ -= 1;
+	if (connections_ != 0)
+		std::cout << "Closed connection [" << pSession->address_.to_string() << ":" << pSession->port_ << "]" << std::endl;
+	connections_ = 0;
 	do_accept();
 }
 
@@ -31,13 +33,15 @@ void tcp_server::do_accept()
 	{
 		if (!ec)
 		{
-			if (connections_ < 1) {
+			if (connections_ == 0)
+			{
 				std::cout << "Create new connection [" << socket_.remote_endpoint().address().to_string() << ":" << socket_.remote_endpoint().port() << "]" << std::endl;
-				connections_ += 1;
+				connections_ = 1;
 				do_accept();
 				std::make_shared<session>(std::move(socket_), this, node_)->start();
 			}
-			else {
+			else
+			{
 				std::cout << "Drop connection [" << socket_.remote_endpoint().address().to_string() << ":" << socket_.remote_endpoint().port() << "]" << std::endl;
 				socket_.close();
 				do_accept();

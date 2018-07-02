@@ -10,6 +10,15 @@ session::session(tcp::socket socket, tcp_server* server, LinkUpNode* node)
 {
 	server_ = server;
 	node_ = node;
+	address_ = socket_.remote_endpoint().address();
+	port_ = socket_.remote_endpoint().port();
+
+	dataIn_ = (uint8_t*)calloc(max_length, sizeof(uint8_t));
+	dataOut1_ = (uint8_t*)calloc(max_length, sizeof(uint8_t));
+	dataOut2_ = (uint8_t*)calloc(max_length, sizeof(uint8_t));
+
+	node->reset();
+	length1_ = node_->getRaw(dataOut1_, max_length);
 }
 
 void session::read()
@@ -20,16 +29,21 @@ void session::read()
 	{
 		if (ec == 0)
 		{
-			//cout << "in: " << length << endl;
 			node_->progress(dataIn_, length, 10000, true);
 			read_done = true;
 		}
 		else {
-			/*std::cout << "Closed connection [" << socket_.remote_endpoint().address().to_string() << ":" << socket_.remote_endpoint().port() << "]" << std::endl;
-			server_->removeSession(this);*/
+			server_->removeSession(this);
 			return;
 		}
 	});
+}
+
+session::~session() 
+{
+	free(dataIn_);
+	free(dataOut1_);
+	free(dataOut2_);
 }
 
 
@@ -48,7 +62,10 @@ void session::start()
 		mtx.lock();
 
 		length2_ = length1_;
-		memcpy(dataOut2_, dataOut1_, length1_);
+
+		uint8_t* pTemp = dataOut2_;
+		dataOut2_ = (uint8_t*)dataOut1_;
+		dataOut1_ = pTemp;
 
 		if (length2_ == 0)
 		{
@@ -56,14 +73,14 @@ void session::start()
 		}
 
 		boost::asio::async_write(socket_, boost::asio::buffer(dataOut2_, length2_),
-			[this, self](boost::system::error_code ec, std::size_t /*length*/)
+			[this, self](boost::system::error_code ec, std::size_t length)
 		{
 			if (ec == 0)
 			{
 				start();
 			}
-			else {
-				//std::cout << "Closed connection [" << socket_.remote_endpoint().address().to_string() << ":" << socket_.remote_endpoint().port() << "]" << std::endl;
+			else
+			{
 				server_->removeSession(this);
 				return;
 			}

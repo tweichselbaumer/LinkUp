@@ -115,6 +115,7 @@ namespace LinkUp.Raw
                 _TcpClient.Close();
             }
             _Task.Wait();
+            base.Dispose();
 #endif
         }
 

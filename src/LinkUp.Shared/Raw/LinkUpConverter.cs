@@ -38,6 +38,7 @@ namespace LinkUp.Raw
                 if (_Buffer == null || _Buffer.Length == 0)
                 {
                     _Buffer = data;
+                    _BufferSize = data.Length;
                 }
                 else
                 {

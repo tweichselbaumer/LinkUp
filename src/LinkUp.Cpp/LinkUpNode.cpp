@@ -21,7 +21,13 @@ void LinkUpNode::unlock()
 #endif
 }
 
-void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool fast)
+void LinkUpNode::reset() {
+	timestamps.nPingTimeout = 0;
+	timestamps.nInitTryTimeout = 0;
+	progress(NULL, 0, 0, true);
+}
+
+void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool bFast)
 {
 	lock();
 	uint32_t nTime = getSystemTime();
@@ -90,7 +96,7 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool f
 			pLabel->progress(&connector);
 		}
 
-		if (!fast)
+		if (!bFast)
 		{
 			LinkedListIterator eventIterator(pEventList);
 

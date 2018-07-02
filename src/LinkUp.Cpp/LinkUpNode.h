@@ -59,6 +59,7 @@ public:
 	uint16_t getRaw(uint8_t* pData, uint16_t nMax);
 	LinkUpNode(const char* pName);
 	void addLabel(LinkUpLabel* pLabel);
+	void reset();
 };
 
 #endif
