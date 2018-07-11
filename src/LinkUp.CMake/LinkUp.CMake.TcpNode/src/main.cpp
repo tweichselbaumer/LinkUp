@@ -6,7 +6,7 @@
 #include <boost/asio.hpp>
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
-#include "socket/tcp_server.h"
+#include "socket/TcpServer.h"
 
 #include "AvlTree.h"
 #include "Platform.h"
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 			new boost::asio::io_service::work(io_service)
 		);
 
-		tcp_server server(io_service, 3000, pLinkUpNode, 1);
+		TcpServer server(io_service, 3000, pLinkUpNode, 1);
 
 		std::cout << "Press [return] to exit." << std::endl;
 
