@@ -1,21 +1,25 @@
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef _SESSION_H
+#define _SESSION_H
 
 #include <boost/asio.hpp>
+#include "TcpServer.h"
+#include <cstdlib>
+#include <iostream>
 
 using boost::asio::ip::tcp;
 using namespace std;
 
 class tcp_server;
 
-class session
-	: public std::enable_shared_from_this<session>
+class Session
+	: public std::enable_shared_from_this<Session>
 {
 public:
-	session(tcp::socket socket, tcp_server* server, LinkUpNode* node);
+	Session(tcp::socket socket, TcpServer* server, LinkUpNode* node);
 	void start();
 	void read();
-	~session();
+	void write();
+	~Session();
 	boost::asio::ip::address address_;
 	uint16_t port_;
 private:
@@ -31,12 +35,8 @@ private:
 
 	boost::mutex mtx;
 
-	bool read_done = true;
-
-	
-
 	tcp::socket socket_;
-	tcp_server* server_;
+	TcpServer* server_;
 	LinkUpNode * node_;
 };
 #endif

@@ -1,5 +1,5 @@
-#include "tcp_server.h"
-#include "session.h"
+#include "TcpServer.h"
+#include "Session.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -8,7 +8,7 @@ using boost::asio::ip::tcp;
 using namespace std;
 
 
-tcp_server::tcp_server(boost::asio::io_service& io_service, short port, LinkUpNode* node, uint8_t maxConnections)
+TcpServer::TcpServer(boost::asio::io_service& io_service, short port, LinkUpNode* node, uint8_t maxConnections)
 	: acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
 	socket_(io_service)
 {
@@ -18,7 +18,7 @@ tcp_server::tcp_server(boost::asio::io_service& io_service, short port, LinkUpNo
 	do_accept();
 }
 
-void tcp_server::removeSession(session* pSession)
+void TcpServer::removeSession(Session* pSession)
 {
 	if (connections_ != 0)
 		std::cout << "Closed connection [" << pSession->address_.to_string() << ":" << pSession->port_ << "]" << std::endl;
@@ -26,7 +26,7 @@ void tcp_server::removeSession(session* pSession)
 	do_accept();
 }
 
-void tcp_server::do_accept()
+void TcpServer::do_accept()
 {
 	acceptor_.async_accept(socket_,
 		[this](boost::system::error_code ec)
@@ -38,7 +38,7 @@ void tcp_server::do_accept()
 				std::cout << "Create new connection [" << socket_.remote_endpoint().address().to_string() << ":" << socket_.remote_endpoint().port() << "]" << std::endl;
 				connections_ = 1;
 				do_accept();
-				std::make_shared<session>(std::move(socket_), this, node_)->start();
+				std::make_shared<Session>(std::move(socket_), this, node_)->start();
 			}
 			else
 			{

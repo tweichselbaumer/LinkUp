@@ -1,11 +1,6 @@
-#include "tcp_server.h"
-#include "session.h"
+#include "Session.h"
 
-#include <cstdlib>
-#include <iostream>
-
-
-session::session(tcp::socket socket, tcp_server* server, LinkUpNode* node)
+Session::Session(tcp::socket socket, TcpServer* server, LinkUpNode* node)
 	: socket_(std::move(socket))
 {
 	server_ = server;
@@ -21,7 +16,7 @@ session::session(tcp::socket socket, tcp_server* server, LinkUpNode* node)
 	length1_ = node_->getRaw(dataOut1_, max_length);
 }
 
-void session::read()
+void Session::read()
 {
 	auto self(shared_from_this());
 	socket_.async_read_some(boost::asio::buffer(dataIn_, max_length),
@@ -29,8 +24,12 @@ void session::read()
 	{
 		if (ec == 0)
 		{
-			node_->progress(dataIn_, length, 10000, true);
-			read_done = true;
+			node_->progress(dataIn_, length, 0, true);
+			if (length == 0)
+			{
+				boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+			}
+			read();
 		}
 		else {
 			server_->removeSession(this);
@@ -39,26 +38,26 @@ void session::read()
 	});
 }
 
-session::~session() 
+Session::~Session()
 {
 	free(dataIn_);
 	free(dataOut1_);
 	free(dataOut2_);
 }
 
+void Session::start()
+{
+	this->write();
+	this->read();
+}
 
-void session::start()
+void Session::write()
 {
 	auto self(shared_from_this());
 	boost::system::error_code error;
 
 	try
 	{
-		if (read_done) {
-			read_done = false;
-			read();
-		}
-
 		mtx.lock();
 
 		length2_ = length1_;
