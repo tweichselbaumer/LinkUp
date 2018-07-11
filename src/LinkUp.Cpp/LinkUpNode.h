@@ -20,7 +20,7 @@ class LinkUpNode
 private:
 	enum {
 		initialization_timeout = 1000 * 1000 * 10,
-		ping_timeout = 1000 * 1000 * 5
+		ping_timeout = 1000 * 1000 * 10
 	};
 	bool isInitialized = false;
 	uint16_t nIdentifier = 0;

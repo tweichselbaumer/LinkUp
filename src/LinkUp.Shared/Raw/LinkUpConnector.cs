@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LinkUp.Raw
 {
@@ -19,7 +21,9 @@ namespace LinkUp.Raw
 
     public abstract class LinkUpConnector : IDisposable
     {
+        private BlockingCollection<LinkUpPacket> _BlockingCollection = new BlockingCollection<LinkUpPacket>();
         private LinkUpConverter _Converter = new LinkUpConverter();
+        private Task _Task;
         private bool _IsDisposed;
         private string _Name;
         private LinkUpBytesPerSecondCounter _ReceiveCounter = new LinkUpBytesPerSecondCounter();
@@ -27,6 +31,7 @@ namespace LinkUp.Raw
         private long _TotalReceivedBytes;
         private long _TotalSentBytes;
         private int _TotalSentPackets;
+        private bool _IsRunning;
 
 #if NET45 || NETCOREAPP2_0
         private System.Timers.Timer _Timer;
@@ -34,6 +39,8 @@ namespace LinkUp.Raw
 
         public LinkUpConnector()
         {
+            _IsRunning = true;
+            _Task = Task.Factory.StartNew(OnDataReceivedWorker, TaskCreationOptions.LongRunning);
 #if NET45 || NETCOREAPP2_0
             _Timer = new System.Timers.Timer(1000);
             _Timer.Elapsed += _Timer_Elapsed;
@@ -132,6 +139,8 @@ namespace LinkUp.Raw
 
         public virtual void Dispose()
         {
+            _IsRunning = false;
+            _Task.Wait();
 #if NET45 || NETCOREAPP2_0
             _Timer.Dispose();
 #endif
@@ -145,6 +154,15 @@ namespace LinkUp.Raw
             _TotalSentPackets++;
             _TotalSentBytes += data.Length;
             _SentCounter.AddBytes(data.Length);
+        }
+
+        private void OnDataReceivedWorker()
+        {
+            while (_IsRunning)
+            {
+                LinkUpPacket packet = _BlockingCollection.Take();
+                ReveivedPacket?.Invoke(this, packet);
+            }
         }
 
         protected void OnConnected()
@@ -166,14 +184,7 @@ namespace LinkUp.Raw
             List<LinkUpPacket> list = _Converter.ConvertFromReceived(data);
             foreach (LinkUpPacket packet in list)
             {
-                if (ReveivedPacket != null)
-                {
-                    var receivers = ReveivedPacket.GetInvocationList();
-                    foreach (ReveicedPacketEventHandler receiver in receivers)
-                    {
-                        receiver.BeginInvoke(this, packet, null, null);
-                    }
-                }
+                _BlockingCollection.Add(packet);
             }
         }
 

@@ -1,5 +1,5 @@
-#ifndef _Avl_TREE_h
-#define _Avl_TREE_h
+#ifndef _AVL_TREE_h
+#define _AVL_TREE_h
 
 #include "Platform.h"
 

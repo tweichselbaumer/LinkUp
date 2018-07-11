@@ -67,7 +67,7 @@ namespace LinkUp.Node
                 _Connector.SendPacket(new LinkUpPingRequest().ToPacket());
                 _LostPings++;
             }
-            if (_LostPings > 10)
+            if (_LostPings > 20)
             {
                 if (_IsInitialized)
                     //_Master.RemoveLabels(_Name);

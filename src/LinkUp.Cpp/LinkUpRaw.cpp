@@ -566,6 +566,7 @@ void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 						free(pProgressingIn->packet.pData);
 					free(pProgressingIn);
 				}
+				stateIn = LinkUpState::ReceivePreamble;
 			}
 			break;
 		default:

@@ -82,7 +82,7 @@ namespace GyroWpf
                         try
                         {
                             BinaryWriter writer = new BinaryWriter(writeStream);
-                            foreach (LinkUpPacket p in Data.OrderBy(d => BitConverter.ToUInt32(d.Data, 4)))
+                            foreach (LinkUpPacket p in Data/*.OrderBy(d => BitConverter.ToUInt32(d.Data, 4))*/)
                             {
                                 writer.Write(p.Data);
                             }

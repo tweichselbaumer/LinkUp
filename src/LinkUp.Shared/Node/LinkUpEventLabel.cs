@@ -68,11 +68,12 @@ namespace LinkUp.Node
         {
             if (Fired != null)
             {
-                var receivers = Fired.GetInvocationList();
-                foreach (FireEventLabelEventHandler receiver in receivers)
-                {
-                    receiver.BeginInvoke(this, data, null, null);
-                }
+                //var receivers = Fired.GetInvocationList();
+                //foreach (FireEventLabelEventHandler receiver in receivers)
+                //{
+                //    receiver.BeginInvoke(this, data, null, null);
+                //}
+                Fired(this, data);
             }
         }
 
