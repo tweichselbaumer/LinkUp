@@ -247,9 +247,12 @@ namespace LinkUp.Node
                     }
                 }
             }
-            lock (_MasterConnector)
+            if (_MasterConnector != null)
             {
-                MasterConnector?.Dispose();
+                lock (_MasterConnector)
+                {
+                    MasterConnector?.Dispose();
+                }
             }
         }
 

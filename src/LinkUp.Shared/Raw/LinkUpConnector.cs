@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinkUp.Raw
@@ -32,6 +33,8 @@ namespace LinkUp.Raw
         private long _TotalSentBytes;
         private int _TotalSentPackets;
         private bool _IsRunning;
+
+        private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
 
 #if NET45 || NETCOREAPP2_0
         private System.Timers.Timer _Timer;
@@ -140,10 +143,12 @@ namespace LinkUp.Raw
         public virtual void Dispose()
         {
             _IsRunning = false;
+            _CancellationTokenSource.Cancel();
             _Task.Wait();
 #if NET45 || NETCOREAPP2_0
             _Timer.Dispose();
 #endif
+            _CancellationTokenSource.Dispose();
         }
 
         public void SendPacket(LinkUpPacket packet)
@@ -160,8 +165,12 @@ namespace LinkUp.Raw
         {
             while (_IsRunning)
             {
-                LinkUpPacket packet = _BlockingCollection.Take();
-                ReveivedPacket?.Invoke(this, packet);
+                try
+                {
+                    LinkUpPacket packet = _BlockingCollection.Take(_CancellationTokenSource.Token);
+                    ReveivedPacket?.Invoke(this, packet);
+                }
+                catch (Exception) { }
             }
         }
 

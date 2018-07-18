@@ -2,6 +2,7 @@
 using LinkUp.Raw;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 #if NET45 || NETCOREAPP2_0
 
@@ -135,7 +136,10 @@ namespace LinkUp.Node
                         nameResponse.Identifier = 0;
                         nameResponse.LabelType = LinkUpLabelType.Node;
                         //_Master.RemoveLabels(_Name);
-                        _Connector.SendPacket(nameResponse.ToPacket());
+                        Task.Run(() =>
+                        {
+                            _Connector.SendPacket(nameResponse.ToPacket());
+                        });
                     }
                     if (nameRequest.LabelType != LinkUpLabelType.Node)
                     {
@@ -152,11 +156,17 @@ namespace LinkUp.Node
                         nameResponse.Identifier = label.ChildIdentifier;
                         nameResponse.LabelType = nameRequest.LabelType;
 
-                        _Connector.SendPacket(nameResponse.ToPacket());
+                        Task.Run(() =>
+                        {
+                            _Connector.SendPacket(nameResponse.ToPacket());
+                        });
 
                         if (label.LabelType == LinkUpLabelType.Event)
                         {
-                            (label as LinkUpEventLabel).Resubscribe();
+                            Task.Run(() =>
+                            {
+                                (label as LinkUpEventLabel).Resubscribe();
+                            });
                         }
                     }
                 }
