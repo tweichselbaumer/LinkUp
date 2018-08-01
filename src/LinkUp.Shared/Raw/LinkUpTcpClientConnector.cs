@@ -67,8 +67,12 @@ namespace LinkUp.Raw
                     }
                     catch (Exception)
                     {
-                        if (_TcpClient != null)
-                            _TcpClient.Close();
+                        try
+                        {
+                            if (_TcpClient != null)
+                                _TcpClient.Close();
+                        }
+                        catch (Exception) { }
                         _TcpClient = null;
                         OnDisconnected();
                     }
@@ -97,8 +101,12 @@ namespace LinkUp.Raw
             }
             catch (Exception)
             {
-                if (_TcpClient != null)
-                    _TcpClient.Close();
+                try
+                {
+                    if (_TcpClient != null)
+                        _TcpClient.Close();
+                }
+                catch (Exception) { }
                 _TcpClient = null;
                 OnDisconnected();
             }
@@ -114,6 +122,7 @@ namespace LinkUp.Raw
             {
                 _TcpClient.Close();
             }
+            _TcpClient = null;
             _Task.Wait();
             base.Dispose();
 #endif
@@ -122,27 +131,42 @@ namespace LinkUp.Raw
         protected override void SendData(byte[] data)
         {
 #if NET45 || NETCOREAPP2_0
-
-            if (_TcpClient == null)
+            try
             {
-                Thread.Sleep(200);
-            }
-            if (_TcpClient != null)
-            {
-                if (_TcpClient.Connected)
+                if (_TcpClient == null)
                 {
-                    _TcpClient.GetStream().Write(data, 0, data.Length);
-                    //_TcpClient.GetStream().Flush();
+                    Thread.Sleep(200);
+                }
+                if (_TcpClient != null)
+                {
+                    if (_TcpClient.Connected)
+                    {
+                        _TcpClient.GetStream().Write(data, 0, data.Length);
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        if (_TcpClient != null)
+                            _TcpClient.Close();
+                    }
+                    catch (Exception) { }
+                    _TcpClient = null;
+                    OnDisconnected();
                 }
             }
-            else
+            catch (Exception)
             {
-                if (_TcpClient != null)
-                    _TcpClient.Close();
+                try
+                {
+                    if (_TcpClient != null)
+                        _TcpClient.Close();
+                }
+                catch (Exception) { }
                 _TcpClient = null;
                 OnDisconnected();
             }
-
 #endif
         }
     }

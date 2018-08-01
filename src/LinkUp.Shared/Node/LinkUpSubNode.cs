@@ -156,10 +156,7 @@ namespace LinkUp.Node
                         nameResponse.Identifier = label.ChildIdentifier;
                         nameResponse.LabelType = nameRequest.LabelType;
 
-                        Task.Run(() =>
-                        {
-                            _Connector.SendPacket(nameResponse.ToPacket());
-                        });
+                        _Connector.SendPacket(nameResponse.ToPacket());
 
                         if (label.LabelType == LinkUpLabelType.Event)
                         {

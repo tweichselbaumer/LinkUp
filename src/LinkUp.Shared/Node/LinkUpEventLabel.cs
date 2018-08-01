@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace LinkUp.Node
 {
@@ -12,6 +14,12 @@ namespace LinkUp.Node
         private bool _IsSubscribed;
         private AutoResetEvent _SubscribeAutoResetEvent = new AutoResetEvent(false);
         private AutoResetEvent _UnsubscribeAutoResetEvent = new AutoResetEvent(false);
+
+        private BlockingCollection<byte[]> _BlockingCollection = new BlockingCollection<byte[]>();
+
+        private bool _IsRunning;
+        private Task _Task;
+        private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
 
         public event FireEventLabelEventHandler Fired;
 
@@ -31,13 +39,36 @@ namespace LinkUp.Node
             }
         }
 
+        public LinkUpEventLabel()
+        {
+            _IsRunning = true;
+            _Task = Task.Factory.StartNew(OnDataReceivedWorker, TaskCreationOptions.LongRunning);
+        }
+
         public static LinkUpEventLabel CreateNew(byte[] options)
         {
             return new LinkUpEventLabel();
         }
 
+        private void OnDataReceivedWorker()
+        {
+            while (_IsRunning)
+            {
+                try
+                {
+                    byte[] data = _BlockingCollection.Take(_CancellationTokenSource.Token);
+                    Fired?.Invoke(this, data);
+                }
+                catch (Exception) { }
+            }
+        }
+
         public override void Dispose()
         {
+            _IsRunning = false;
+            _CancellationTokenSource.Cancel();
+            _Task.Wait();
+            _CancellationTokenSource.Dispose();
         }
 
         public void Subscribe()
@@ -66,15 +97,7 @@ namespace LinkUp.Node
 
         internal void DoEvent(byte[] data)
         {
-            if (Fired != null)
-            {
-                //var receivers = Fired.GetInvocationList();
-                //foreach (FireEventLabelEventHandler receiver in receivers)
-                //{
-                //    receiver.BeginInvoke(this, data, null, null);
-                //}
-                Fired(this, data);
-            }
+            _BlockingCollection.Add(data);
         }
 
         internal void Resubscribe()
