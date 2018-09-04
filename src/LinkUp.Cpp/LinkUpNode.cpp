@@ -25,6 +25,7 @@ void LinkUpNode::reset() {
 	timestamps.nPingTimeout = 0;
 	timestamps.nInitTryTimeout = 0;
 	progress(NULL, 0, 0, true);
+	progress(NULL, 0, 0, true);
 }
 
 void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool bFast)
@@ -42,62 +43,62 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool b
 		receivedPacket(packet, nTime);
 	}
 
-	if (nTime > timestamps.nPingTimeout && isInitialized) {
-		isInitialized = false;
-		AvlTreeIterator iterator(pAvlTree);
-		AvlNode* pNode;
-		while ((pNode = iterator.next()) != NULL)
-		{
-			if (pNode->pData != NULL)
+	if (!bFast)
+	{
+		if (nTime > timestamps.nPingTimeout && isInitialized) {
+			isInitialized = false;
+			AvlTreeIterator iterator(pAvlTree);
+			AvlNode* pNode;
+			while ((pNode = iterator.next()) != NULL)
 			{
-				LinkUpLabel* pLabel = ((LinkUpLabel*)pNode->pData);
-				pLabel->isInitialized = false;
-				pLabel->timestamps.nInitTryTimeout = 0;
-				pList->insert(pLabel);
-				pAvlTree->remove(pLabel->nIdentifier);
-				if (pLabel->nType == LinkUpLabelType::Event)
+				if (pNode->pData != NULL)
 				{
-					((LinkUpEventLabel*)pLabel)->unsubscribed(NULL);
-					pEventList->remove(pLabel);
+					LinkUpLabel* pLabel = ((LinkUpLabel*)pNode->pData);
+					pLabel->isInitialized = false;
+					pLabel->timestamps.nInitTryTimeout = 0;
+					pList->insert(pLabel);
+					pAvlTree->remove(pLabel->nIdentifier);
+					if (pLabel->nType == LinkUpLabelType::Event)
+					{
+						((LinkUpEventLabel*)pLabel)->unsubscribed(NULL);
+						pEventList->remove(pLabel);
+					}
 				}
+			}
+
+			uint8_t* pBuffer = new uint8_t[1024];
+			while (getRaw(pBuffer, 1024) > 0)
+			{
 			}
 		}
 
-		uint8_t* pBuffer = new uint8_t[1024];
-		while (getRaw(pBuffer, 1024) > 0)
-		{
+		if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
+			timestamps.nInitTryTimeout = nTime + initialization_timeout;
+			timestamps.nPingTimeout = nTime + ping_timeout;
+			LinkUpPacket packet;
+			packet.nLength = strlen(pName) + (uint16_t)sizeof(LinkUpLogic) + (uint16_t)sizeof(LinkUpNameRequest);
+			packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
+
+			LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
+			LinkUpNameRequest* nameRequest = (LinkUpNameRequest*)logic->pInnerHeader;
+
+			logic->nLogicType = LinkUpLogicType::NameRequest;
+			nameRequest->nLabelType = LinkUpLabelType::Node;
+			nameRequest->nNameLength = strlen(pName);
+			memcpy(nameRequest->pName, pName, nameRequest->nNameLength);
+
+			connector.send(packet);
 		}
-	}
-
-	if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
-		timestamps.nInitTryTimeout = nTime + initialization_timeout;
-		timestamps.nPingTimeout = nTime + ping_timeout;
-		LinkUpPacket packet;
-		packet.nLength = strlen(pName) + (uint16_t)sizeof(LinkUpLogic) + (uint16_t)sizeof(LinkUpNameRequest);
-		packet.pData = (uint8_t*)calloc(packet.nLength, sizeof(uint8_t));
-
-		LinkUpLogic* logic = (LinkUpLogic*)packet.pData;
-		LinkUpNameRequest* nameRequest = (LinkUpNameRequest*)logic->pInnerHeader;
-
-		logic->nLogicType = LinkUpLogicType::NameRequest;
-		nameRequest->nLabelType = LinkUpLabelType::Node;
-		nameRequest->nNameLength = strlen(pName);
-		memcpy(nameRequest->pName, pName, nameRequest->nNameLength);
-
-		connector.send(packet);
-	}
-	else if (isInitialized)
-	{
-		LinkedListIterator iterator(pList);
-		LinkUpLabel* pLabel;
-
-		while ((pLabel = (LinkUpLabel*)iterator.next()) != NULL)
+		else if (isInitialized)
 		{
-			pLabel->progress(&connector);
-		}
+			LinkedListIterator iterator(pList);
+			LinkUpLabel* pLabel;
 
-		if (!bFast)
-		{
+			while ((pLabel = (LinkUpLabel*)iterator.next()) != NULL)
+			{
+				pLabel->progress(&connector);
+			}
+
 			LinkedListIterator eventIterator(pEventList);
 
 			while ((pLabel = (LinkUpLabel*)eventIterator.next()) != NULL)
@@ -187,7 +188,8 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 
 		while ((pLabel = (LinkUpLabel*)iterator.next()) != NULL)
 		{
-			if (pLabel->receivedNameResponse(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier)) {
+			if (pLabel->receivedNameResponse(pResponseName, pNameResponse->nLabelType, pNameResponse->nIdentifier))
+			{
 				pAvlTree->insert(pNameResponse->nIdentifier, pLabel);
 				pList->remove(pLabel);
 			}

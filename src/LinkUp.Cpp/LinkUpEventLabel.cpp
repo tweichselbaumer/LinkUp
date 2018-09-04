@@ -62,6 +62,9 @@ void LinkUpEventLabel::progressAdv(LinkUpRaw* pConnector)
 }
 
 void LinkUpEventLabel::subscribed(LinkUpRaw* pConnector) {
+#ifdef LINKUP_DEBUG
+	cout << "Subscribe EVENT: " << pName << endl;
+#endif
 	lock();
 	isSubscribed = true;
 	unlock();
@@ -80,6 +83,9 @@ void LinkUpEventLabel::subscribed(LinkUpRaw* pConnector) {
 }
 
 void LinkUpEventLabel::unsubscribed(LinkUpRaw* pConnector) {
+#ifdef LINKUP_DEBUG
+	cout << "Unsubscribe EVENT: " << pName << endl;
+#endif
 	lock();
 	isSubscribed = false;
 	LinkedListIterator iterator(pList);

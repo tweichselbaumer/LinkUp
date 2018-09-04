@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 		}*/
 
 		pEvent = new  LinkUpEventLabel("label_event", pLinkUpNode);
-		new LinkUpFunctionLabel("label_function", pLinkUpNode, &myFunc);
+		(new LinkUpFunctionLabel("label_function", pLinkUpNode))->setFunction(&myFunc);
 
 		boost::shared_ptr< boost::asio::io_service::work > work(
 			new boost::asio::io_service::work(io_service)

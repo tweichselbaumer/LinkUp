@@ -25,6 +25,16 @@ void Session::read()
 		if (ec == 0)
 		{
 			node_->progress(dataIn_, length, 0, true);
+			if (length > 0) {
+				for (int j = 0; j < length; j++) {
+					cout.setf(ios::hex | ios::uppercase, ios::basefield);
+					std::cout << (int)dataIn_[j] << " ";
+					dataIn_[j] = 0;
+					cout.unsetf(ios::hex);
+				}
+				std::cout << std::endl;
+				std::cout << std::endl;
+			}
 			if (length == 0)
 			{
 				boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
@@ -76,7 +86,7 @@ void Session::write()
 		{
 			if (ec == 0)
 			{
-				start();
+				write();
 			}
 			else
 			{

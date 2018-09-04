@@ -19,13 +19,18 @@ void LinkUpLabel::progress(LinkUpRaw* pConnector) {
 		logic->nLogicType = LinkUpLogicType::NameRequest;
 		nameRequest->nLabelType = nType;
 		nameRequest->nNameLength = strlen(pName);
-		
+
 		memcpy(nameRequest->pName, pName, nameRequest->nNameLength);
 
 		if (nOptionSize > 0) {
 			memcpy(nameRequest->pName + nameRequest->nNameLength, pOptions, nOptionSize);
 			free(pOptions);
 		}
+
+#ifdef LINKUP_DEBUG
+		cout << "Send NAMEREQUEST: " << pName << endl;
+#endif
+
 		pConnector->send(packet);
 	}
 	progressAdv(pConnector);
@@ -45,6 +50,9 @@ bool LinkUpLabel::receivedNameResponse(const char* pName, LinkUpLabelType type, 
 	{
 		isInitialized = true;
 		this->nIdentifier = nIdentifier;
+#ifdef LINKUP_DEBUG
+		cout << "Received NAMEREQUEST: " << pName << endl;
+#endif
 		return true;
 	}
 	else

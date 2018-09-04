@@ -162,7 +162,11 @@ namespace LinkUp.Node
                         {
                             Task.Run(() =>
                             {
-                                (label as LinkUpEventLabel).Resubscribe();
+                                try
+                                {
+                                    (label as LinkUpEventLabel).Resubscribe();
+                                }
+                                catch (Exception ex) { }
                             });
                         }
                     }

@@ -64,8 +64,12 @@ void LinkUpFunctionLabel::receivedFunctionCallRequest(uint8_t* pData, uint32_t n
 	unlock();
 }
 
-LinkUpFunctionLabel::LinkUpFunctionLabel(const char* pName, LinkUpNode* pParent, LinkUpFunctionCalled pFunction)
+void LinkUpFunctionLabel::setFunction(LinkUpFunctionCalled pFunction)
+{
+	this->pFunction = pFunction;
+}
+
+LinkUpFunctionLabel::LinkUpFunctionLabel(const char* pName, LinkUpNode* pParent)
 {
 	init(pName, LinkUpLabelType::Function, pParent);
-	this->pFunction = pFunction;
 }

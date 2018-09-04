@@ -26,8 +26,9 @@ private:
 protected:
 	void progressAdv(LinkUpRaw* pConnector);
 public:
+	void setFunction(LinkUpFunctionCalled pFunction);
 	void receivedFunctionCallRequest(uint8_t* pData, uint32_t nSize, LinkUpRaw* pConnector);
-	LinkUpFunctionLabel(const char* pName, LinkUpNode* pParent, LinkUpFunctionCalled pFunction);
+	LinkUpFunctionLabel(const char* pName, LinkUpNode* pParent);
 };
 
 #endif
