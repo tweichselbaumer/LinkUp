@@ -13,6 +13,13 @@
 #include "LinkUpEventLabel.h"
 #include "LinkUpFunctionLabel.h"
 
+enum LinkUpProgressType : uint8_t
+{
+	Input = 1,
+	Normal = 2,
+	Advanced = 4,
+};
+
 class LinkUpLabel;
 
 class LinkUpNode
@@ -55,7 +62,7 @@ private:
 	boost::mutex mtx;
 #endif
 public:
-	void progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool fast);
+	void progress(uint8_t* pData, uint16_t nCount, LinkUpProgressType nProgressType);
 	uint16_t getRaw(uint8_t* pData, uint16_t nMax);
 	LinkUpNode(const char* pName);
 	void addLabel(LinkUpLabel* pLabel);

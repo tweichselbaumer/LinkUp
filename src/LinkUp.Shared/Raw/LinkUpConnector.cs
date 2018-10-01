@@ -22,6 +22,7 @@ namespace LinkUp.Raw
 
     public abstract class LinkUpConnector : IDisposable
     {
+        private bool _DebugDump;
         private BlockingCollection<LinkUpPacket> _BlockingCollection = new BlockingCollection<LinkUpPacket>();
         private LinkUpConverter _Converter = new LinkUpConverter();
         private Task _Task;
@@ -33,6 +34,7 @@ namespace LinkUp.Raw
         private long _TotalSentBytes;
         private int _TotalSentPackets;
         private bool _IsRunning;
+        private LinkUpConnectivityState _ConnectivityState = LinkUpConnectivityState.Disconnected;
 
         private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
 
@@ -140,8 +142,30 @@ namespace LinkUp.Raw
             }
         }
 
+        public LinkUpConnectivityState ConnectivityState
+        {
+            get
+            {
+                return _ConnectivityState;
+            }
+        }
+
+        public bool DebugDump
+        {
+            get
+            {
+                return _DebugDump;
+            }
+
+            set
+            {
+                _DebugDump = value;
+            }
+        }
+
         public virtual void Dispose()
         {
+            _ConnectivityState = LinkUpConnectivityState.Disconnected;
             _IsRunning = false;
             _CancellationTokenSource.Cancel();
             _Task.Wait();
@@ -176,6 +200,7 @@ namespace LinkUp.Raw
 
         protected void OnConnected()
         {
+            _ConnectivityState = LinkUpConnectivityState.Connected;
             if (ConnectivityChanged != null)
             {
                 var receivers = ConnectivityChanged.GetInvocationList();
@@ -199,6 +224,7 @@ namespace LinkUp.Raw
 
         protected void OnDisconnected()
         {
+            _ConnectivityState = LinkUpConnectivityState.Disconnected;
             if (ConnectivityChanged != null)
             {
                 var receivers = ConnectivityChanged.GetInvocationList();

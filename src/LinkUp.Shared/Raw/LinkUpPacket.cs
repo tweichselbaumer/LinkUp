@@ -84,7 +84,10 @@ namespace LinkUp.Raw
             result.Add(Constant.Preamble);
             result.AddRange(AddEscaping(BitConverter.GetBytes(Length).ToList()));
             result.AddRange(AddEscaping(Data.ToList()));
-            result.AddRange(AddEscaping(BitConverter.GetBytes(Crc).ToList()));
+            if (Length < 1024)
+                result.AddRange(AddEscaping(BitConverter.GetBytes(Crc).ToList()));
+            else
+                result.AddRange(AddEscaping(BitConverter.GetBytes((UInt16)0).ToList()));
             result.Add(Constant.EndOfPacket);
 
             return result;

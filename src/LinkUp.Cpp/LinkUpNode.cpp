@@ -24,28 +24,46 @@ void LinkUpNode::unlock()
 void LinkUpNode::reset() {
 	timestamps.nPingTimeout = 0;
 	timestamps.nInitTryTimeout = 0;
-	progress(NULL, 0, 0, true);
-	progress(NULL, 0, 0, true);
+	progress(NULL, 0, LinkUpProgressType::Normal);
+	progress(NULL, 0, LinkUpProgressType::Normal);
 }
 
-void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool bFast)
+void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, LinkUpProgressType nProgressType)
 {
-	lock();
-	uint32_t nTime = getSystemTime();
 
-	connector.progress(pData, nCount);
-
-	uint16_t i = 0;
-
-	while (connector.hasNext() && nMax > i) {
-		i++;
-		LinkUpPacket packet = connector.next();
-		receivedPacket(packet, nTime);
+	if (nProgressType & LinkUpProgressType::Input)
+	{
+#ifdef LINKUP_DEBUG_DETAIL
+		if (nCount > 0)
+			std::cout << nCount << std::endl;
+#endif //LINKUP_DEBUG_DETAIL
+		connector.progress(pData, nCount);
 	}
 
-	if (!bFast)
+	if (nProgressType & LinkUpProgressType::Normal)
 	{
-		if (nTime > timestamps.nPingTimeout && isInitialized) {
+
+
+		uint32_t nTime = getSystemTime();
+
+		int i = 0;
+
+		while (connector.hasNext()) 
+		{
+			LinkUpPacket packet = connector.next();
+			receivedPacket(packet, nTime);
+			i++;
+		}
+
+#ifdef LINKUP_DEBUG
+		/*if (i > 0)
+			cout << "Received " << i << " packets." << endl;*/
+#endif
+
+
+		if (nTime > timestamps.nPingTimeout && isInitialized)
+		{
+			lock();
 			isInitialized = false;
 			AvlTreeIterator iterator(pAvlTree);
 			AvlNode* pNode;
@@ -65,14 +83,15 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool b
 					}
 				}
 			}
-
+			unlock();
 			uint8_t* pBuffer = new uint8_t[1024];
 			while (getRaw(pBuffer, 1024) > 0)
 			{
 			}
 		}
 
-		if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL) {
+		if (!isInitialized && nTime > timestamps.nInitTryTimeout && pName != NULL)
+		{
 			timestamps.nInitTryTimeout = nTime + initialization_timeout;
 			timestamps.nPingTimeout = nTime + ping_timeout;
 			LinkUpPacket packet;
@@ -89,25 +108,27 @@ void LinkUpNode::progress(uint8_t* pData, uint16_t nCount, uint16_t nMax, bool b
 
 			connector.send(packet);
 		}
-		else if (isInitialized)
+	}
+	if (isInitialized && nProgressType & LinkUpProgressType::Normal)
+	{
+		lock();
+		LinkedListIterator iterator(pList);
+		unlock();
+		LinkUpLabel* pLabel;
+
+		while ((pLabel = (LinkUpLabel*)iterator.next()) != NULL)
 		{
-			LinkedListIterator iterator(pList);
-			LinkUpLabel* pLabel;
+			pLabel->progress(&connector);
+		}
 
-			while ((pLabel = (LinkUpLabel*)iterator.next()) != NULL)
-			{
-				pLabel->progress(&connector);
-			}
+		LinkedListIterator eventIterator(pEventList);
 
-			LinkedListIterator eventIterator(pEventList);
-
-			while ((pLabel = (LinkUpLabel*)eventIterator.next()) != NULL)
-			{
-				pLabel->progress(&connector);
-			}
+		while ((pLabel = (LinkUpLabel*)eventIterator.next()) != NULL)
+		{
+			pLabel->progress(&connector);
 		}
 	}
-	unlock();
+
 }
 
 LinkUpNode::LinkUpNode(const char* pName)
@@ -183,6 +204,7 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 	}
 	else
 	{
+		lock();
 		LinkedListIterator iterator(pList);
 		LinkUpLabel* pLabel;
 
@@ -194,12 +216,14 @@ void LinkUpNode::receivedNameResponse(LinkUpPacket packet, LinkUpNameResponse* p
 				pList->remove(pLabel);
 			}
 		}
+		unlock();
 	}
 	free(pResponseName);
 }
 
 void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyGetRequest* pPropertyGetRequest)
 {
+	lock();
 	if (pAvlTree != NULL && pPropertyGetRequest != NULL) {
 		AvlNode* pNode = pAvlTree->find(pPropertyGetRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
@@ -212,6 +236,7 @@ void LinkUpNode::receivedPropertyGetRequest(LinkUpPacket packet, LinkUpPropertyG
 			//TODO: error??
 		}
 	}
+	unlock();
 }
 
 void LinkUpNode::receivedEventFireResponse(LinkUpPacket packet, LinkUpEventFireResponse* pEventFireResponse)
@@ -221,6 +246,7 @@ void LinkUpNode::receivedEventFireResponse(LinkUpPacket packet, LinkUpEventFireR
 
 void LinkUpNode::receivedEventSubscribeRequest(LinkUpPacket packet, LinkUpEventSubscribeRequest* pEventSubscribeRequest)
 {
+	lock();
 	if (pAvlTree != NULL && pEventSubscribeRequest != NULL) {
 		AvlNode* pNode = pAvlTree->find(pEventSubscribeRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
@@ -231,10 +257,12 @@ void LinkUpNode::receivedEventSubscribeRequest(LinkUpPacket packet, LinkUpEventS
 			}
 		}
 	}
+	unlock();
 }
 
 void LinkUpNode::receivedEventUnsubscribeRequest(LinkUpPacket packet, LinkUpEventUnsubscribeRequest* pEventUnsubscribeRequest)
 {
+	lock();
 	if (pAvlTree != NULL && pEventUnsubscribeRequest != NULL) {
 		AvlNode* pNode = pAvlTree->find(pEventUnsubscribeRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
@@ -245,6 +273,7 @@ void LinkUpNode::receivedEventUnsubscribeRequest(LinkUpPacket packet, LinkUpEven
 			}
 		}
 	}
+	unlock();
 }
 
 void LinkUpNode::receivedPropertyGetResponse(LinkUpPacket packet, LinkUpPropertyGetResponse* pPropertyGetResponse)
@@ -254,6 +283,7 @@ void LinkUpNode::receivedPropertyGetResponse(LinkUpPacket packet, LinkUpProperty
 
 void LinkUpNode::receivedFunctionCallRequest(LinkUpPacket packet, LinkUpFunctionCallRequest* pFunctionCallRequest)
 {
+	lock();
 	if (pAvlTree != NULL && pFunctionCallRequest != NULL) {
 		AvlNode* pNode = pAvlTree->find(pFunctionCallRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
@@ -263,10 +293,12 @@ void LinkUpNode::receivedFunctionCallRequest(LinkUpPacket packet, LinkUpFunction
 			}
 		}
 	}
+	unlock();
 }
 
 void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertySetRequest* pPropertySetRequest)
 {
+	lock();
 	if (pAvlTree != NULL && pPropertySetRequest != NULL) {
 		AvlNode* pNode = pAvlTree->find(pPropertySetRequest->nIdentifier);
 		if (pNode != NULL && pNode->pData != NULL) {
@@ -279,6 +311,7 @@ void LinkUpNode::receivedPropertySetRequest(LinkUpPacket packet, LinkUpPropertyS
 			//TODO: error??
 		}
 	}
+	unlock();
 }
 
 void LinkUpNode::receivedPropertySetResponse(LinkUpPacket packet, LinkUpPropertySetResponse* pPropertySetResponse) {

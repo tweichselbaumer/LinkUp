@@ -9,7 +9,7 @@
 
 LinkUpPacket LinkUpRaw::next()
 {
-	lock_queue();
+	lock_input();
 	LinkUpPacketList *pPacketList;
 	LinkUpPacket packet;
 	pPacketList = pHeadIn;
@@ -18,42 +18,46 @@ LinkUpPacket LinkUpRaw::next()
 		packet = pPacketList->packet;
 		free(pPacketList);
 	}
-	unlock_queue();
+	unlock_input();
 	return packet;
 }
 
-void LinkUpRaw::lock_queue()
+void LinkUpRaw::lock_input()
 {
 #ifdef LINKUP_BOOST_THREADSAFE
-	mtx_queue.lock();
+	mtx_input.lock();
 #endif
 }
 
-void LinkUpRaw::unlock_queue()
+void LinkUpRaw::unlock_input()
 {
 #ifdef LINKUP_BOOST_THREADSAFE
-	mtx_queue.unlock();
+	mtx_input.unlock();
 #endif
 }
 
-void LinkUpRaw::lock_progressing()
+void LinkUpRaw::lock_output()
 {
 #ifdef LINKUP_BOOST_THREADSAFE
-	mtx_progressing.lock();
+	mtx_output.lock();
 #endif
 }
 
-void LinkUpRaw::unlock_progressing()
+void LinkUpRaw::unlock_output()
 {
 #ifdef LINKUP_BOOST_THREADSAFE
-	mtx_progressing.unlock();
+	mtx_output.unlock();
 #endif
 }
 
 
 bool LinkUpRaw::hasNext()
 {
-	return pHeadIn != NULL;
+	bool result = false;
+	lock_input();
+	result = pHeadIn != NULL;
+	unlock_input();
+	return result;
 }
 
 bool LinkUpRaw::checkForError(uint8_t nByte)
@@ -111,7 +115,7 @@ void LinkUpRaw::send(LinkUpPacket packet, bool bWithCrc)
 		}
 
 
-		lock_queue();
+		lock_output();
 		if (pHeadOut != NULL)
 		{
 			pTailOut->next = pPacketList;
@@ -121,7 +125,7 @@ void LinkUpRaw::send(LinkUpPacket packet, bool bWithCrc)
 		{
 			pHeadOut = pTailOut = pPacketList;
 		}
-		unlock_queue();
+		unlock_output();
 	}
 }
 
@@ -129,7 +133,6 @@ uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint32_t nMax)
 {
 	uint32_t nBytesSend = 0;
 	uint8_t nNextByte = 0;
-	lock_progressing();
 	do
 	{
 		switch (stateOut)
@@ -145,13 +148,13 @@ uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint32_t nMax)
 			}
 			if (pHeadOut != NULL)
 			{
-				lock_queue();
+				lock_output();
 				nTotalSendPackets++;
 				pProgressingOut = pHeadOut;
 				pHeadOut = pProgressingOut->next;
 				stateOut = LinkUpState::SendPreamble;
 				nBytesToSend = pProgressingOut->packet.nLength;
-				unlock_queue();
+				unlock_output();
 			}
 			break;
 		case LinkUpState::SendPreamble:
@@ -334,7 +337,6 @@ uint16_t LinkUpRaw::getRaw(uint8_t* pData, uint32_t nMax)
 		nTotalSendBytes += nBytesSend;
 		//std::cout << "p rec " << nTotalReceivedPackets << " p f: " << nTotalFailedPackets << " p sen: " << nTotalSendPackets << " brec: " << nTotalReceivedBytes << " bsen: " << nTotalSendBytes << std::endl;
 	}
-	unlock_progressing();
 	return nBytesSend;
 }
 
@@ -344,6 +346,18 @@ void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 	uint8_t nNextByte;
 
 	nTotalReceivedBytes += nCount;
+
+#ifdef LINKUP_DEBUG_DETAIL
+	if (!logFile.is_open())
+		logFile.open("dump2.txt");
+	if (nCount > 0) {
+		for (int j = 0; j < nCount; j++) {
+			logFile.setf(std::ios::hex, std::ios::basefield);
+			logFile << (int)pData[j] << " ";
+			logFile.unsetf(std::ios::hex);
+}
+	}
+#endif //LINKUP_DEBUG_DETAIL
 
 	while (i < nCount)
 	{
@@ -522,8 +536,7 @@ void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 					skipIn = false;
 
 					pProgressingIn->packet.nCrc = pProgressingIn->packet.nCrc | (nNextByte << 8);
-
-					if (pProgressingIn->packet.nCrc == CRC16::calc(pProgressingIn->packet.pData, pProgressingIn->packet.nLength))
+					if (pProgressingIn->packet.nCrc == 0 || pProgressingIn->packet.nCrc == CRC16::calc(pProgressingIn->packet.pData, pProgressingIn->packet.nLength))
 					{
 						stateIn = LinkUpState::ReceiveEnd;
 					}
@@ -546,6 +559,7 @@ void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 			if (pData[i] == LINKUP_RAW_EOP)
 			{
 				nTotalReceivedPackets++;
+				lock_input();
 				if (pHeadIn != NULL && pTailIn != NULL)
 				{
 					pTailIn->next = pProgressingIn;
@@ -555,6 +569,7 @@ void LinkUpRaw::progress(uint8_t *pData, uint32_t nCount)
 				{
 					pHeadIn = pTailIn = pProgressingIn;
 				}
+				unlock_input();
 				stateIn = LinkUpState::ReceivePreamble;
 			}
 			else
