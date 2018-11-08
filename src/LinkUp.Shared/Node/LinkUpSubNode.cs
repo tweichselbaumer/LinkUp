@@ -24,7 +24,6 @@ namespace LinkUp.Node
 #if NET45 || NETCOREAPP2_0
         private Timer _PingTimer;
 #endif
-
         internal LinkUpSubNode(LinkUpConnector connector, LinkUpNode master)
         {
             _Master = master;
@@ -63,9 +62,10 @@ namespace LinkUp.Node
 
         private void _PingTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            if (_Connector.ConnectivityState == LinkUpConnectivityState.Connected)
+                _Connector.SendPacket(new LinkUpPingRequest().ToPacket());
             if (_IsInitialized)
             {
-                _Connector.SendPacket(new LinkUpPingRequest().ToPacket());
                 _LostPings++;
             }
             if (_LostPings > 20)
@@ -86,7 +86,7 @@ namespace LinkUp.Node
             }
         }
 
-        internal LinkUpConnector Connector
+        public LinkUpConnector Connector
         {
             get
             {
