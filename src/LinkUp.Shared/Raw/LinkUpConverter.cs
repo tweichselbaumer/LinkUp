@@ -69,7 +69,7 @@ namespace LinkUp.Raw
 
         public byte[] ConvertToSend(LinkUpPacket packet)
         {
-            return packet.ToRaw().ToArray();
+            return packet.ToRaw();
         }
 
         private List<LinkUpPacket> ParseBuffer()

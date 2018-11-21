@@ -43,7 +43,12 @@ namespace LinkUp.Node.Logic
 
         protected override byte[] ToRaw()
         {
-            return new byte[] { (byte)LinkUpLogicType.FunctionCallRequest }.Concat(BitConverter.GetBytes(Identifier)).Concat(_Data).ToArray();
+            byte[] tmp = new byte[_Data.Length + 1 + 2];
+            tmp[0] = (byte)LinkUpLogicType.FunctionCallRequest;
+            Array.Copy(BitConverter.GetBytes(Identifier), 0, tmp, 1, 2);
+            Array.Copy(_Data, 0, tmp, 3, _Data.Length);
+            return tmp;
+            //return new byte[] { (byte)LinkUpLogicType.FunctionCallRequest }.Concat(BitConverter.GetBytes(Identifier)).Concat(_Data).ToArray();
         }
     }
 }
