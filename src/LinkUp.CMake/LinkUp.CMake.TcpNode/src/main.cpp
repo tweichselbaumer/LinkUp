@@ -42,7 +42,7 @@ void doWork2()
 	pData[34] = LINKUP_RAW_EOP;
 
 	while (running) {
-		pEvent->fireEvent((uint8_t*)pData, 1024 * 1024);
+		pEvent->fireEvent((uint8_t*)pData, 1024 * 1024*4);
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000 / 50));
 	}
 }
