@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LinkUp.Raw
 {
@@ -19,7 +22,10 @@ namespace LinkUp.Raw
 
     public abstract class LinkUpConnector : IDisposable
     {
+        private bool _DebugDump;
+        private BlockingCollection<LinkUpPacket> _BlockingCollection = new BlockingCollection<LinkUpPacket>();
         private LinkUpConverter _Converter = new LinkUpConverter();
+        private Task _Task;
         private bool _IsDisposed;
         private string _Name;
         private LinkUpBytesPerSecondCounter _ReceiveCounter = new LinkUpBytesPerSecondCounter();
@@ -27,6 +33,10 @@ namespace LinkUp.Raw
         private long _TotalReceivedBytes;
         private long _TotalSentBytes;
         private int _TotalSentPackets;
+        private bool _IsRunning;
+        private LinkUpConnectivityState _ConnectivityState = LinkUpConnectivityState.Disconnected;
+
+        private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
 
 #if NET45 || NETCOREAPP2_0
         private System.Timers.Timer _Timer;
@@ -34,6 +44,8 @@ namespace LinkUp.Raw
 
         public LinkUpConnector()
         {
+            _IsRunning = true;
+            _Task = Task.Factory.StartNew(OnDataReceivedWorker, TaskCreationOptions.LongRunning);
 #if NET45 || NETCOREAPP2_0
             _Timer = new System.Timers.Timer(1000);
             _Timer.Elapsed += _Timer_Elapsed;
@@ -130,7 +142,38 @@ namespace LinkUp.Raw
             }
         }
 
-        public abstract void Dispose();
+        public LinkUpConnectivityState ConnectivityState
+        {
+            get
+            {
+                return _ConnectivityState;
+            }
+        }
+
+        public bool DebugDump
+        {
+            get
+            {
+                return _DebugDump;
+            }
+
+            set
+            {
+                _DebugDump = value;
+            }
+        }
+
+        public virtual void Dispose()
+        {
+            _ConnectivityState = LinkUpConnectivityState.Disconnected;
+            _IsRunning = false;
+            _CancellationTokenSource.Cancel();
+            _Task.Wait();
+#if NET45 || NETCOREAPP2_0
+            _Timer.Dispose();
+#endif
+            _CancellationTokenSource.Dispose();
+        }
 
         public void SendPacket(LinkUpPacket packet)
         {
@@ -142,8 +185,22 @@ namespace LinkUp.Raw
             _SentCounter.AddBytes(data.Length);
         }
 
+        private void OnDataReceivedWorker()
+        {
+            while (_IsRunning)
+            {
+                try
+                {
+                    LinkUpPacket packet = _BlockingCollection.Take(_CancellationTokenSource.Token);
+                    ReveivedPacket?.Invoke(this, packet);
+                }
+                catch (Exception) { }
+            }
+        }
+
         protected void OnConnected()
         {
+            _ConnectivityState = LinkUpConnectivityState.Connected;
             if (ConnectivityChanged != null)
             {
                 var receivers = ConnectivityChanged.GetInvocationList();
@@ -161,19 +218,13 @@ namespace LinkUp.Raw
             List<LinkUpPacket> list = _Converter.ConvertFromReceived(data);
             foreach (LinkUpPacket packet in list)
             {
-                if (ReveivedPacket != null)
-                {
-                    var receivers = ReveivedPacket.GetInvocationList();
-                    foreach (ReveicedPacketEventHandler receiver in receivers)
-                    {
-                        receiver.BeginInvoke(this, packet, null, null);
-                    }
-                }
+                _BlockingCollection.Add(packet);
             }
         }
 
         protected void OnDisconnected()
         {
+            _ConnectivityState = LinkUpConnectivityState.Disconnected;
             if (ConnectivityChanged != null)
             {
                 var receivers = ConnectivityChanged.GetInvocationList();
@@ -190,7 +241,7 @@ namespace LinkUp.Raw
 
         private void _Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            MetricUpdate?.Invoke(this, SentBytesPerSecond,ReceivedBytesPerSecond);
+            MetricUpdate?.Invoke(this, SentBytesPerSecond, ReceivedBytesPerSecond);
         }
 
 #endif

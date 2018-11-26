@@ -6,9 +6,9 @@
 #include <boost/asio.hpp>
 #include <boost/timer/timer.hpp>
 #include <boost/thread.hpp>
-#include "socket/tcp_server.h"
+#include "socket/TcpServer.h"
 
-#include "AVLTree.h"
+#include "AvlTree.h"
 #include "Platform.h"
 
 using boost::asio::ip::tcp;
@@ -42,7 +42,7 @@ void doWork2()
 	pData[34] = LINKUP_RAW_EOP;
 
 	while (running) {
-		pEvent->fireEvent((uint8_t*)pData, 1024 * 1024*4);
+		pEvent->fireEvent((uint8_t*)pData, 512);
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000 / 50));
 	}
 }
@@ -84,13 +84,13 @@ int main(int argc, char* argv[])
 		}*/
 
 		pEvent = new  LinkUpEventLabel("label_event", pLinkUpNode);
-		new LinkUpFunctionLabel("label_function", pLinkUpNode, &myFunc);
+		(new LinkUpFunctionLabel("label_function", pLinkUpNode))->setFunction(&myFunc);
 
 		boost::shared_ptr< boost::asio::io_service::work > work(
 			new boost::asio::io_service::work(io_service)
 		);
 
-		tcp_server server(io_service, 3000, pLinkUpNode, 1);
+		TcpServer server(io_service, 3000, pLinkUpNode, 1);
 
 		std::cout << "Press [return] to exit." << std::endl;
 

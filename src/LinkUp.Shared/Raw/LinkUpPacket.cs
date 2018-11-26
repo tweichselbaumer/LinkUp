@@ -54,7 +54,7 @@ namespace LinkUp.Raw
             {
                 int escaped = 0;
 
-                length = BitConverter.ToInt32(RemoveEscaping(data, startIndex + 1, 5, ref escaped), 0);
+                length = BitConverter.ToInt32(RemoveEscaping(data, startIndex + 1, 4, ref escaped), 0);
 
                 result.Data = RemoveEscaping(data, startIndex + 5 + escaped, length, ref escaped);
 
@@ -69,7 +69,7 @@ namespace LinkUp.Raw
                     result._IsValid = true;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 result._IsValid = false;
             }
@@ -77,17 +77,49 @@ namespace LinkUp.Raw
             return result;
         }
 
-        internal List<byte> ToRaw()
+        internal byte[] ToRaw()
+        {
+            byte[] lenghtData = AddEscaping(BitConverter.GetBytes(Length));
+            byte[] dataData = AddEscaping(Data);
+            byte[] crcData = null;
+
+            if (Length < 1024)
+                crcData = AddEscaping(BitConverter.GetBytes(Crc));
+            else
+                crcData = AddEscaping(BitConverter.GetBytes((UInt16)0));
+
+            int lenghtSize = lenghtData.Length;
+            int dataSize = dataData.Length;
+            int crcSize = crcData.Length;
+
+            int size = 1 + lenghtSize + dataSize + crcSize + 1;
+
+            byte[] result = new byte[size];
+            result[0] = Constant.Preamble;
+
+            Array.Copy(lenghtData, 0, result, 1, lenghtSize);
+            Array.Copy(dataData, 0, result, 1 + lenghtSize, dataSize);
+            Array.Copy(crcData, 0, result, 1 + lenghtSize + dataSize, crcSize);
+
+            result[size - 1] = Constant.EndOfPacket;
+
+            return result;
+        }
+
+        internal byte[] ToRaw2()
         {
             List<byte> result = new List<byte>();
 
             result.Add(Constant.Preamble);
-            result.AddRange(AddEscaping(BitConverter.GetBytes(Length).ToList()));
-            result.AddRange(AddEscaping(Data.ToList()));
-            result.AddRange(AddEscaping(BitConverter.GetBytes(Crc).ToList()));
+            result.AddRange(AddEscaping2(BitConverter.GetBytes(Length).ToList()));
+            result.AddRange(AddEscaping2(Data.ToList()));
+            if (Length < 1024)
+                result.AddRange(AddEscaping2(BitConverter.GetBytes(Crc).ToList()));
+            else
+                result.AddRange(AddEscaping2(BitConverter.GetBytes((UInt16)0).ToList()));
             result.Add(Constant.EndOfPacket);
 
-            return result;
+            return result.ToArray();
         }
 
         private static ushort Crc16(byte[] bytes)
@@ -122,6 +154,8 @@ namespace LinkUp.Raw
         {
             int indexOfSkipPattern = Array.IndexOf(data, Constant.SkipPattern, startIndex);
 
+            int localEscaped = 0;
+
             if (indexOfSkipPattern == -1 || indexOfSkipPattern > size + startIndex)
             {
                 byte[] result = new byte[size];
@@ -133,9 +167,9 @@ namespace LinkUp.Raw
                 byte[] result = new byte[size];
                 int j = 0;
                 int i = startIndex;
-                while (indexOfSkipPattern != -1 && indexOfSkipPattern < size + startIndex + escaped)
+                while (indexOfSkipPattern != -1 && indexOfSkipPattern < size + startIndex + localEscaped)
                 {
-                    if (indexOfSkipPattern - i > 0)
+                    if (indexOfSkipPattern - i >= 0)
                     {
                         Array.Copy(data, i, result, j, indexOfSkipPattern - i);
                         j += indexOfSkipPattern - i;
@@ -143,7 +177,7 @@ namespace LinkUp.Raw
 
                     i = indexOfSkipPattern + 1;
                     result[j] = (byte)(data[i] ^ Constant.XorValue);
-                    escaped++;
+                    localEscaped++;
                     i++;
                     j++;
 
@@ -154,6 +188,8 @@ namespace LinkUp.Raw
                 {
                     Array.Copy(data, i, result, j, size - j);
                 }
+
+                escaped += localEscaped;
 
                 return result;
             }
@@ -189,7 +225,32 @@ namespace LinkUp.Raw
             return result;
         }
 
-        private List<byte> AddEscaping(List<byte> data)
+        private byte[] AddEscaping(byte[] data)
+        {
+            int count = data.Length;
+            byte[] result = new byte[count * 2];
+
+            int j = 0;
+
+            for (int i = 0; i < count; i++)
+            {
+                byte value = data[i];
+                if (value == Constant.Preamble || value == Constant.EndOfPacket || value == Constant.SkipPattern)
+                {
+                    result[j++] = Constant.SkipPattern;
+                    result[j++] = (byte)(value ^ Constant.XorValue);
+                }
+                else
+                {
+                    result[j++] = value;
+                }
+            }
+            byte[] tmp = new byte[j];
+            Array.Copy(result, tmp, j);
+            return tmp;
+        }
+
+        private List<byte> AddEscaping2(List<byte> data)
         {
             List<byte> result = new List<byte>();
 

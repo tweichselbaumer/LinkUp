@@ -1,7 +1,7 @@
 #include "Platform.h"
 
 uint32_t getSystemTime() {
-#ifdef _WINDOWS | __linux
+#if defined(_WINDOWS) || defined(__linux)
 	return (uint32_t)1000 * 1000 / CLOCKS_PER_SEC * clock();
 #else
 	return micros();

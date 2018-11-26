@@ -1,5 +1,5 @@
-#ifndef TCP_SERVER_H
-#define TCP_SERVER_H
+#ifndef _TCP_SERVER_H
+#define _TCP_SERVER_H
 
 #include <boost/asio.hpp>
 #include <LinkUpRaw.h>
@@ -8,9 +8,9 @@
 using boost::asio::ip::tcp;
 using namespace std;
 
-class session;
+class Session;
 
-class tcp_server
+class TcpServer
 {
 private:
 	tcp::acceptor acceptor_;
@@ -20,8 +20,8 @@ private:
 	LinkUpNode * node_;
 	void do_accept();
 public:
-	tcp_server(boost::asio::io_service & io_service, short port, LinkUpNode * node, uint8_t maxConnections);
-	void removeSession(session* session);
+	TcpServer(boost::asio::io_service & io_service, short port, LinkUpNode * node, uint8_t maxConnections);
+	void removeSession(Session* session);
 };
 
 #endif

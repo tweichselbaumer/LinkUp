@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Windows;
+using System.Linq;
 
 namespace GyroWpf
 {
@@ -26,8 +27,8 @@ namespace GyroWpf
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(List<LinkUpPacket>), typeof(MainWindow), new PropertyMetadata(new List<LinkUpPacket>()));
 
-        private const int DATA_BAUD = 2000000;
-        private const int DEBUG_BAUD = 250000;
+        private const int DATA_BAUD = 921600;
+        private const int DEBUG_BAUD = 921600;
 
         private bool addData = false;
         private LinkUpSerialPortConnector connector;
@@ -81,7 +82,7 @@ namespace GyroWpf
                         try
                         {
                             BinaryWriter writer = new BinaryWriter(writeStream);
-                            foreach (LinkUpPacket p in Data)
+                            foreach (LinkUpPacket p in Data/*.OrderBy(d => BitConverter.ToUInt32(d.Data, 4))*/)
                             {
                                 writer.Write(p.Data);
                             }

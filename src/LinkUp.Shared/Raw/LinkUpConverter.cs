@@ -38,6 +38,7 @@ namespace LinkUp.Raw
                 if (_Buffer == null || _Buffer.Length == 0)
                 {
                     _Buffer = data;
+                    _BufferSize = data.Length;
                 }
                 else
                 {
@@ -68,7 +69,7 @@ namespace LinkUp.Raw
 
         public byte[] ConvertToSend(LinkUpPacket packet)
         {
-            return packet.ToRaw().ToArray();
+            return packet.ToRaw();
         }
 
         private List<LinkUpPacket> ParseBuffer()

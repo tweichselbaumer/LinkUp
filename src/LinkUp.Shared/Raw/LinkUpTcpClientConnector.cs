@@ -9,6 +9,9 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.IO;
 
 namespace LinkUp.Raw
 {
@@ -16,16 +19,18 @@ namespace LinkUp.Raw
     {
 #if NET45 || NETCOREAPP2_0
         private TcpClient _TcpClient;
-        private Task _Task;
+        private Task _TaskIn;
+        private Task _TaskOut;
         private bool _IsRunning = true;
         private const int maxRead = 1024 * 100;
         private byte[] data = new byte[maxRead];
 
-        private BlockingCollection<byte[]> _Queue = new BlockingCollection<byte[]>();
+        private BlockingCollection<byte[]> _QueueIn = new BlockingCollection<byte[]>();
+        private BlockingCollection<byte[]> _QueueOut = new BlockingCollection<byte[]>();
 
         public LinkUpTcpClientConnector(IPAddress destinationAddress, int destinationPort)
         {
-            _Task = Task.Factory.StartNew(() =>
+            _TaskIn = Task.Factory.StartNew(() =>
             {
                 byte[] buffer = new byte[maxRead * 50];
                 while (_IsRunning)
@@ -37,7 +42,7 @@ namespace LinkUp.Raw
                         int size = 0;
                         int count = 0;
 
-                        while (_Queue.TryTake(out data))
+                        while (_QueueIn.TryTake(out data))
                         {
                             Array.Copy(data, 0, buffer, size, data.Length);
                             size += data.Length;
@@ -67,11 +72,89 @@ namespace LinkUp.Raw
                     }
                     catch (Exception)
                     {
-                        if (_TcpClient != null)
-                            _TcpClient.Close();
+                        try
+                        {
+                            if (_TcpClient != null)
+                                _TcpClient.Close();
+                        }
+                        catch (Exception) { }
                         _TcpClient = null;
                         OnDisconnected();
                     }
+                }
+            }, TaskCreationOptions.LongRunning);
+
+
+            _TaskOut = Task.Factory.StartNew(() =>
+            {
+                if (File.Exists("dump.txt"))
+                {
+                    File.Delete("dump.txt");
+                }
+                byte[] buffer = new byte[maxRead * 50];
+
+                while (_IsRunning)
+                {
+                    byte[] data;
+
+                    int size = 0;
+                    int count = 0;
+
+                    while (_QueueOut.TryTake(out data))
+                    {
+                        Array.Copy(data, 0, buffer, size, data.Length);
+                        size += data.Length;
+                        count++;
+                        if (count >= 50)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (size > 0)
+                    {
+                        try
+                        {
+                            if (_TcpClient == null)
+                            {
+                                Thread.Sleep(200);
+                            }
+                            if (_TcpClient != null)
+                            {
+                                if (_TcpClient.Connected)
+                                {
+                                    _TcpClient.GetStream().Write(buffer, 0, size);
+                                    if (DebugDump)
+                                    {
+                                        File.AppendAllText("dump.txt", string.Join(" ", buffer.Take(size).Select(b => string.Format("{0:X2} ", b))) + " ");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    if (_TcpClient != null)
+                                        _TcpClient.Close();
+                                }
+                                catch (Exception) { }
+                                _TcpClient = null;
+                                OnDisconnected();
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            try
+                            {
+                                if (_TcpClient != null)
+                                    _TcpClient.Close();
+                            }
+                            catch (Exception) { }
+                            _TcpClient = null;
+                            OnDisconnected();
+                        }
+                    }
+                    Thread.Sleep(1);
                 }
             }, TaskCreationOptions.LongRunning);
         }
@@ -92,13 +175,17 @@ namespace LinkUp.Raw
 
                 byte[] data = new byte[bytesAvailable];
                 Array.Copy(buffer, data, bytesAvailable);
-                _Queue.Add(data);
+                _QueueIn.Add(data);
                 BeginRead();
             }
             catch (Exception)
             {
-                if (_TcpClient != null)
-                    _TcpClient.Close();
+                try
+                {
+                    if (_TcpClient != null)
+                        _TcpClient.Close();
+                }
+                catch (Exception) { }
                 _TcpClient = null;
                 OnDisconnected();
             }
@@ -114,34 +201,17 @@ namespace LinkUp.Raw
             {
                 _TcpClient.Close();
             }
-            _Task.Wait();
+            _TcpClient = null;
+            _TaskIn.Wait();
+            _TaskOut.Wait();
+            base.Dispose();
 #endif
         }
 
         protected override void SendData(byte[] data)
         {
 #if NET45 || NETCOREAPP2_0
-
-            if (_TcpClient == null)
-            {
-                Thread.Sleep(200);
-            }
-            if (_TcpClient != null)
-            {
-                if (_TcpClient.Connected)
-                {
-                    _TcpClient.GetStream().Write(data, 0, data.Length);
-                    //_TcpClient.GetStream().Flush();
-                }
-            }
-            else
-            {
-                if (_TcpClient != null)
-                    _TcpClient.Close();
-                _TcpClient = null;
-                OnDisconnected();
-            }
-
+            _QueueOut.Add(data);
 #endif
         }
     }

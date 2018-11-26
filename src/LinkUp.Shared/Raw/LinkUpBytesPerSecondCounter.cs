@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LinkUp.Raw
 {
-    internal class LinkUpBytesPerSecondCounter
+    internal class LinkUpBytesPerSecondCounter : IDisposable
     {
-        private List<long> _List = new List<long>();
+        private Queue<long> _Queue = new Queue<long>();
         private long current;
 
 #if NET45 || NETCOREAPP2_0
@@ -14,7 +15,10 @@ namespace LinkUp.Raw
 
         internal LinkUpBytesPerSecondCounter()
         {
-            _List.AddRange(new long[5].ToList());
+            for (int i = 0; i < 5; i++)
+            {
+                _Queue.Enqueue(0);
+            }
 
 #if NET45 || NETCOREAPP2_0
             _Timer = new System.Timers.Timer(1000);
@@ -23,35 +27,48 @@ namespace LinkUp.Raw
 #endif
         }
 
-#if NET45 || NETCOREAPP2_0
-
-        private void _Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            lock (_List)
-            {
-                _List.Add(current);
-                current = 0;
-                _List.RemoveAt(0);
-            }
-        }
-#endif
-
         internal double BytesPerSecond
         {
             get
             {
                 double result;
-                lock (_List)
+                lock (_Queue)
                 {
-                    result = (_List.Sum() + current) / (_List.Count + 1);
+                    result = _Queue.Sum() / _Queue.Count;
                 }
                 return result;
             }
         }
 
+        public void Dispose()
+        {
+#if NET45 || NETCOREAPP2_0
+
+            if (_Timer != null)
+            {
+                _Timer.Dispose();
+            }
+#endif
+        }
+
         internal void AddBytes(long bytes)
         {
-            current += bytes;
+            lock (_Queue)
+            {
+                current += bytes;
+            }
         }
+
+#if NET45 || NETCOREAPP2_0
+        private void _Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            lock (_Queue)
+            {
+                _Queue.Enqueue(current);
+                current = 0;
+                _Queue.Dequeue();
+            }
+        }
+#endif
     }
 }

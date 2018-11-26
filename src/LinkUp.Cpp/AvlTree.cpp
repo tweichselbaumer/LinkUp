@@ -1,4 +1,4 @@
-#include "AVLTree.h"
+#include "AvlTree.h"
 
 
 using namespace std;
@@ -95,6 +95,8 @@ AvlNode* AvlTree::find(uint16_t nId, AvlNode* pNode) {
 		return find(nId, pNode->pLeft);
 	else if (nId > pNode->nId)
 		return find(nId, pNode->pRight);
+	else
+		return NULL;
 }
 
 AvlNode* AvlTree::remove(uint16_t nId, AvlNode* pNode) {
@@ -153,7 +155,7 @@ AvlNode* AvlTree::remove(uint16_t nId, AvlNode* pNode) {
 }
 
 int32_t AvlTree::height(AvlNode* pNode) {
-	return (pNode == NULL ? -1 : max(height(pNode->pLeft), height(pNode->pRight)) + 1);
+	return (pNode == NULL ? -1 : linkup_max(height(pNode->pLeft), height(pNode->pRight)) + 1);
 }
 
 uint32_t AvlTree::getBalance(AvlNode* pNode) {
@@ -171,7 +173,7 @@ AvlTree::AvlTree()
 void AvlTree::insert(uint16_t nId, void* pData)
 {
 	pRoot = insert(nId, pData, pRoot);
-	//AvlTree::printDot();
+
 }
 
 void AvlTree::remove(uint16_t nId)
@@ -221,7 +223,7 @@ AvlNode* AvlTreeIterator::next() {
 	}
 	return pNode;
 }
-
+#ifdef _WINDOWS
 void AvlTree::printDot() {
 	ofstream file;
 	char str[1024];
@@ -256,3 +258,4 @@ void AvlTree::printDot(AvlNode* pNode, std::ofstream& file)
 		}
 	}
 }
+#endif

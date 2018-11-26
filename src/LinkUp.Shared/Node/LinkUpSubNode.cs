@@ -2,6 +2,7 @@
 using LinkUp.Raw;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 #if NET45 || NETCOREAPP2_0
 
@@ -23,7 +24,6 @@ namespace LinkUp.Node
 #if NET45 || NETCOREAPP2_0
         private Timer _PingTimer;
 #endif
-
         internal LinkUpSubNode(LinkUpConnector connector, LinkUpNode master)
         {
             _Master = master;
@@ -62,12 +62,13 @@ namespace LinkUp.Node
 
         private void _PingTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            if (_Connector.ConnectivityState == LinkUpConnectivityState.Connected)
+                _Connector.SendPacket(new LinkUpPingRequest().ToPacket());
             if (_IsInitialized)
             {
-                _Connector.SendPacket(new LinkUpPingRequest().ToPacket());
                 _LostPings++;
             }
-            if (_LostPings > 10)
+            if (_LostPings > 20)
             {
                 if (_IsInitialized)
                     //_Master.RemoveLabels(_Name);
@@ -85,7 +86,7 @@ namespace LinkUp.Node
             }
         }
 
-        internal LinkUpConnector Connector
+        public LinkUpConnector Connector
         {
             get
             {
@@ -135,7 +136,10 @@ namespace LinkUp.Node
                         nameResponse.Identifier = 0;
                         nameResponse.LabelType = LinkUpLabelType.Node;
                         //_Master.RemoveLabels(_Name);
-                        _Connector.SendPacket(nameResponse.ToPacket());
+                        Task.Run(() =>
+                        {
+                            _Connector.SendPacket(nameResponse.ToPacket());
+                        });
                     }
                     if (nameRequest.LabelType != LinkUpLabelType.Node)
                     {
@@ -156,7 +160,14 @@ namespace LinkUp.Node
 
                         if (label.LabelType == LinkUpLabelType.Event)
                         {
-                            (label as LinkUpEventLabel).Resubscribe();
+                            Task.Run(() =>
+                            {
+                                try
+                                {
+                                    (label as LinkUpEventLabel).Resubscribe();
+                                }
+                                catch (Exception ex) { }
+                            });
                         }
                     }
                 }

@@ -48,14 +48,14 @@ enum LinkUpPropertyType : uint8_t
 };
 
 PACK(
-	struct LinkUpLogic
+	LinkUpLogic
 {
 	LinkUpLogicType nLogicType;
 	uint8_t pInnerHeader[];
 });
 
 PACK(
-	struct LinkUpNameRequest
+	LinkUpNameRequest
 {
 	LinkUpLabelType nLabelType;
 	uint16_t nNameLength;
@@ -63,7 +63,7 @@ PACK(
 });
 
 PACK(
-	struct LinkUpNameResponse
+	LinkUpNameResponse
 {
 	LinkUpLabelType nLabelType;
 	uint16_t nIdentifier;
@@ -72,77 +72,77 @@ PACK(
 });
 
 PACK(
-	struct LinkUpPropertyGetRequest
+	LinkUpPropertyGetRequest
 {
 	uint16_t nIdentifier;
 });
 
 PACK(
-	struct LinkUpPropertyGetResponse
-{
-	uint16_t nIdentifier;
-	uint8_t pData[];
-});
-
-PACK(
-	struct LinkUpPropertySetRequest
+	LinkUpPropertyGetResponse
 {
 	uint16_t nIdentifier;
 	uint8_t pData[];
 });
 
 PACK(
-	struct LinkUpPropertySetResponse
-{
-	uint16_t nIdentifier;
-});
-
-PACK(
-	struct LinkUpEventFireRequest
+	LinkUpPropertySetRequest
 {
 	uint16_t nIdentifier;
 	uint8_t pData[];
 });
 
 PACK(
-	struct LinkUpEventFireResponse
+	LinkUpPropertySetResponse
 {
 	uint16_t nIdentifier;
 });
 
 PACK(
-	struct LinkUpEventSubscribeRequest
-{
-	uint16_t nIdentifier;
-});
-
-PACK(
-	struct LinkUpEventSubscribeResponse
-{
-	uint16_t nIdentifier;
-});
-
-PACK(
-	struct LinkUpEventUnsubscribeRequest
-{
-	uint16_t nIdentifier;
-});
-
-PACK(
-	struct LinkUpEventUnsubscribeResponse
-{
-	uint16_t nIdentifier;
-});
-
-PACK(
-	struct LinkUpFunctionCallRequest
+	LinkUpEventFireRequest
 {
 	uint16_t nIdentifier;
 	uint8_t pData[];
 });
 
 PACK(
-	struct LinkUpFunctionCallResponse
+	LinkUpEventFireResponse
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	LinkUpEventSubscribeRequest
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	LinkUpEventSubscribeResponse
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	LinkUpEventUnsubscribeRequest
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	LinkUpEventUnsubscribeResponse
+{
+	uint16_t nIdentifier;
+});
+
+PACK(
+	LinkUpFunctionCallRequest
+{
+	uint16_t nIdentifier;
+	uint8_t pData[];
+});
+
+PACK(
+	LinkUpFunctionCallResponse
 {
 	uint16_t nIdentifier;
 	uint8_t pData[];

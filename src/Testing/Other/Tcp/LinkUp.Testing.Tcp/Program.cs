@@ -54,6 +54,7 @@ namespace LinkUp.Testing.Tcp
         private static void Main(string[] args)
         {
             using (LinkUpTcpClientConnector connector = new LinkUpTcpClientConnector(IPAddress.Parse("127.0.0.1"), 3000))
+            //using (LinkUpTcpClientConnector connector = new LinkUpTcpClientConnector(IPAddress.Parse("127.0.0.1"), 3000))
             {
                 connector.ReveivedPacket += ClientToServer_ReveivedPacket;
                 connector.SentPacket += ClientToServer_SentPacket;
