@@ -42,7 +42,7 @@ namespace LinkUp.Raw
                         int size = 0;
                         int count = 0;
 
-                        while (_QueueIn.TryTake(out data))
+                        while (_QueueIn.TryTake(out data, 10))
                         {
                             Array.Copy(data, 0, buffer, size, data.Length);
                             size += data.Length;
@@ -100,7 +100,7 @@ namespace LinkUp.Raw
                     int size = 0;
                     int count = 0;
 
-                    while (_QueueOut.TryTake(out data))
+                    while (_QueueOut.TryTake(out data, 10))
                     {
                         Array.Copy(data, 0, buffer, size, data.Length);
                         size += data.Length;
