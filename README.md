@@ -29,9 +29,9 @@ Name | Size (Byte) | Offset (Byte)
 ---- | ---- | ----
 Preamble | 1 | 0
 Length | 4 | 1
-Data | n (max 2^32) | m + 5
-CRC16 | 2 | m + n + 5
-EOP | 1 | m + n + 7
+Data | n (max 2^32) | 5
+CRC16 | 2 | n + 5
+EOP | 1 |n + 7
 
 ## Get Started
 ### C\# - LinkUpRaw (single process)
