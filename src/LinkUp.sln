@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LinkUp.Cpp", "LinkUp.Cpp", "{4E0ECFF1-9728-4DDB-B175-8C7DBC15A54F}"
 EndProject
@@ -118,21 +118,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkUp.Testing.Tcp", "Testing\Other\Tcp\LinkUp.Testing.Tcp\LinkUp.Testing.Tcp.csproj", "{F743A63C-083F-4CBF-8002-E404465B328B}"
 EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		LinkUp.Shared\LinkUp.Shared.projitems*{289814d8-dca6-42da-be76-f2f7a2c355a5}*SharedItemsImports = 4
-		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{3f6f77d9-8f6e-4044-ba76-9ff0bc06dfb9}*SharedItemsImports = 4
-		LinkUp.Shared\LinkUp.Shared.projitems*{45736f30-b280-4dba-be6e-0f1b76ea6e5e}*SharedItemsImports = 4
-		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
-		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{4645a031-29aa-4222-84a5-793d26e2fbc1}*SharedItemsImports = 4
-		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{4ee931f8-0759-4626-9950-edd4d01afb87}*SharedItemsImports = 4
-		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{9db6ea0a-d09c-40dc-a18e-4853562fd217}*SharedItemsImports = 4
-		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
-		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{cbc4a46f-f8b9-4731-a9a9-3b3510ca383e}*SharedItemsImports = 4
-		LinkUp.Shared\LinkUp.Shared.projitems*{f907c3a5-b8ef-4dff-8b18-1cdbc9a7f6ce}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
@@ -610,6 +595,22 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68B5C56E-8885-410E-8FE7-97DD65BCE5B1}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		LinkUp.Shared\LinkUp.Shared.projitems*{16c5f4dc-e500-4ef4-9ff4-45728f334199}*SharedItemsImports = 5
+		LinkUp.Shared\LinkUp.Shared.projitems*{289814d8-dca6-42da-be76-f2f7a2c355a5}*SharedItemsImports = 4
+		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{3f6f77d9-8f6e-4044-ba76-9ff0bc06dfb9}*SharedItemsImports = 4
+		LinkUp.Shared\LinkUp.Shared.projitems*{45736f30-b280-4dba-be6e-0f1b76ea6e5e}*SharedItemsImports = 4
+		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{4645a031-29aa-4222-84a5-793d26e2fbc1}*SharedItemsImports = 4
+		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{4ee931f8-0759-4626-9950-edd4d01afb87}*SharedItemsImports = 4
+		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{9db6ea0a-d09c-40dc-a18e-4853562fd217}*SharedItemsImports = 4
+		LinkUp.Arduino\LinkUp.Arduino.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		LinkUp.Cpp\LinkUp.Cpp.vcxitems*{cbc4a46f-f8b9-4731-a9a9-3b3510ca383e}*SharedItemsImports = 4
+		LinkUp.Shared\LinkUp.Shared.projitems*{f907c3a5-b8ef-4dff-8b18-1cdbc9a7f6ce}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
