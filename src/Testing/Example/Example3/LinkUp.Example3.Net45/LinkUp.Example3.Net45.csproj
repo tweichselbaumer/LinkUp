@@ -51,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\LinkUp.Net45\LinkUp.Net45.csproj">
+    <ProjectReference Include="..\..\..\..\LinkUp.Net45\LinkUp.Net48.csproj">
       <Project>{45736f30-b280-4dba-be6e-0f1b76ea6e5e}</Project>
-      <Name>LinkUp.Net45</Name>
+      <Name>LinkUp.Net48</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
