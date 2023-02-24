@@ -26,8 +26,6 @@
 using LinkUp.Node.Logic;
 using LinkUp.Raw;
 
-using System.Timers;
-
 namespace LinkUp.Node
 {
    public class LinkUpSubNode : IDisposable
@@ -39,7 +37,7 @@ namespace LinkUp.Node
       private LinkUpNode _Master;
       private string _Name;
       private ushort _NextIdentifier = 1;
-      private Timer _PingTimer;
+      private System.Timers.Timer _PingTimer;
 
       internal LinkUpSubNode(LinkUpConnector connector, LinkUpNode master)
       {
@@ -47,7 +45,7 @@ namespace LinkUp.Node
          _Connector = connector;
          _Connector.ReveivedPacket += _Connector_ReveivedPacket;
 
-         _PingTimer = new Timer(500);
+         _PingTimer = new System.Timers.Timer(500);
          _PingTimer.Elapsed += _PingTimer_Elapsed;
          _PingTimer.Start();
       }
@@ -153,7 +151,7 @@ namespace LinkUp.Node
                         {
                            (label as LinkUpEventLabel).Resubscribe();
                         }
-                        catch (Exception ex) { }
+                        catch (Exception) { }
                      });
                   }
                }
@@ -240,7 +238,7 @@ namespace LinkUp.Node
          }
       }
 
-      private void _PingTimer_Elapsed(object sender, ElapsedEventArgs e)
+      private void _PingTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
       {
          if (_Connector.ConnectivityState == LinkUpConnectivityState.Connected)
             _Connector.SendPacket(new LinkUpPingRequest().ToPacket());
