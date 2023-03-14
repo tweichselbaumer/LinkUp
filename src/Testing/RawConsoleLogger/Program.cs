@@ -35,7 +35,7 @@ namespace RawConsoleLogger
       private static void Connector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
       {
          Logger logger = LogManager.GetCurrentClassLogger();
-         logger.Debug("Received Raw Packet - Size: {0} Content: {0}", packet.Length, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
+         //logger.Debug("Received Raw Packet - Size: {0} Content: {0}", packet.Length, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
       }
 
       private static void Main(string[] args)
@@ -55,8 +55,32 @@ namespace RawConsoleLogger
 
          config.AddRule(LogLevel.Trace, LogLevel.Fatal, consoleTarget, "*");
 
-         LinkUpSerialPortConnector connector = new LinkUpSerialPortConnector("COM4", 115200);
+         LinkUpSerialPortConnector connector = new LinkUpSerialPortConnector("COM6", 500000 /*460800*/);
          connector.ReveivedPacket += Connector_ReveivedPacket;
+
+         System.Timers.Timer timer;
+         timer = new System.Timers.Timer(1000);
+         timer.Elapsed += (object? sender, System.Timers.ElapsedEventArgs e) =>
+         {
+            logger.Info("Send {0:0.00}kb/s - Receive {1:0.00}kb/s", connector.SentBytesPerSecond / 1024.0, connector.ReceivedBytesPerSecond / 1024.0);
+         };
+         timer.Start();
+
+         Task.Run(() =>
+         {
+            while (true)
+            {
+               Random rnd = new Random();
+               byte[] data = new byte[512];
+               rnd.NextBytes(data);
+
+               for (int i = 0; i < 2; i++)
+               {
+                  connector.SendPacket(new LinkUpPacket() { Data = data });
+               }
+               Thread.Sleep(1);
+            }
+         });
 
          Console.ReadKey();
       }

@@ -23,6 +23,7 @@
  *
  ********************************************************************************/
 
+using LinkUp.Cs.Raw;
 using System.Collections.Concurrent;
 
 namespace LinkUp.Raw
@@ -41,7 +42,7 @@ namespace LinkUp.Raw
       Disconnected
    }
 
-   public abstract class LinkUpConnector : IDisposable
+   public abstract class LinkUpConnector : IDisposable, IDatagramProtocol
    {
       private BlockingCollection<LinkUpPacket> _BlockingCollection = new BlockingCollection<LinkUpPacket>();
       private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
@@ -67,11 +68,15 @@ namespace LinkUp.Raw
          _Timer = new System.Timers.Timer(1000);
          _Timer.Elapsed += _Timer_Elapsed;
          _Timer.Start();
+
+         ReveivedPacket += LinkUpConnector_ReveivedPacket;
       }
 
       public event ConnectivityChangedEventHandler ConnectivityChanged;
 
       public event MetricUpdateEventHandler MetricUpdate;
+
+      public event ReveicedDatagramEventHandler ReveivedDatagram;
 
       public event ReveicedPacketEventHandler ReveivedPacket;
 
@@ -191,6 +196,12 @@ namespace LinkUp.Raw
          _CancellationTokenSource.Dispose();
       }
 
+      public bool Send(Datagram datagram)
+      {
+         SendPacket(datagram.ConvertToLinkUpPacket());
+         return true;
+      }
+
       public void SendPacket(LinkUpPacket packet)
       {
          byte[] data = _Converter.ConvertToSend(packet);
@@ -243,6 +254,11 @@ namespace LinkUp.Raw
       private void _Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
       {
          MetricUpdate?.Invoke(this, SentBytesPerSecond, ReceivedBytesPerSecond);
+      }
+
+      private void LinkUpConnector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
+      {
+         ReveivedDatagram?.Invoke(this, Datagram.ConvertFromLinkUpPacket(packet));
       }
 
       private void OnDataReceivedWorker()
