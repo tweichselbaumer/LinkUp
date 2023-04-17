@@ -23,12 +23,12 @@
  *
  ********************************************************************************/
 
-using LinkUp.Cs.Raw;
+using LinkUp.Cs.Datagram;
 using System.Collections.Concurrent;
 
 namespace LinkUp.Raw
 {
-   public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityState connectivity);
+    public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityState connectivity);
 
    public delegate void MetricUpdateEventHandler(LinkUpConnector connector, double bytesSentPerSecond, double bytesReceivedPerSecond);
 

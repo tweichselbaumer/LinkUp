@@ -23,6 +23,7 @@
  *
  ********************************************************************************/
 
+using LinkUp.Cs.Datagram;
 using LinkUp.Raw;
 using NLog;
 using NLog.Config;
@@ -32,6 +33,10 @@ namespace RawConsoleLogger
 {
    internal class Program
    {
+      private static void ArqProtcol_ReveivedDatagram(IDatagramProtocol sender, Datagram datagram)
+      {
+      }
+
       private static void Connector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
       {
          Logger logger = LogManager.GetCurrentClassLogger();
@@ -55,14 +60,17 @@ namespace RawConsoleLogger
 
          config.AddRule(LogLevel.Trace, LogLevel.Fatal, consoleTarget, "*");
 
-         LinkUpSerialPortConnector connector = new LinkUpSerialPortConnector("COM6", 500000 /*460800*/);
-         connector.ReveivedPacket += Connector_ReveivedPacket;
+         LinkUpSerialPortConnector connector = new LinkUpSerialPortConnector("COM10", 500000 /*460800*/);
+         //connector.ReveivedPacket += Connector_ReveivedPacket;
+
+         ARQProtocol arqProtcol = new ARQProtocol(connector);
+         arqProtcol.ReveivedDatagram += ArqProtcol_ReveivedDatagram;
 
          System.Timers.Timer timer;
          timer = new System.Timers.Timer(1000);
          timer.Elapsed += (object? sender, System.Timers.ElapsedEventArgs e) =>
          {
-            logger.Info("Send {0:0.00}kb/s - Receive {1:0.00}kb/s", connector.SentBytesPerSecond / 1024.0, connector.ReceivedBytesPerSecond / 1024.0);
+            //logger.Info("Send {0:0.00}kb/s - Receive {1:0.00}kb/s", connector.SentBytesPerSecond / 1024.0, connector.ReceivedBytesPerSecond / 1024.0);
          };
          timer.Start();
 
@@ -76,9 +84,9 @@ namespace RawConsoleLogger
 
                for (int i = 0; i < 2; i++)
                {
-                  connector.SendPacket(new LinkUpPacket() { Data = data });
+                  arqProtcol.Send(new Datagram(data));
                }
-               Thread.Sleep(1);
+               Thread.Sleep(5000);
             }
          });
 

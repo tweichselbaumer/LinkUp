@@ -23,7 +23,7 @@
  *
  ********************************************************************************/
 
-namespace LinkUp.Cs.Raw
+namespace LinkUp.Cs.Datagram
 {
    public delegate void ReveicedDatagramEventHandler(IDatagramProtocol sender, Datagram datagram);
 

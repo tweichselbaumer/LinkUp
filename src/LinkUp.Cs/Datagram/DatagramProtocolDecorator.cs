@@ -23,20 +23,32 @@
  *
  ********************************************************************************/
 
-using LinkUp.Raw;
-
-namespace LinkUp.Cs.Raw
+namespace LinkUp.Cs.Datagram
 {
-   public class Datagram
+   public abstract class DatagramProtocolDecorator : IDatagramProtocol
    {
-      public static Datagram ConvertFromLinkUpPacket(LinkUpPacket packet)
+      public DatagramProtocolDecorator(IDatagramProtocol nextLayer)
       {
-         return new Datagram();
+         NextLayer = nextLayer;
+         NextLayer.ReveivedDatagram += NextLayer_ReveivedDatagram;
       }
 
-      public LinkUpPacket ConvertToLinkUpPacket()
+      public event ReveicedDatagramEventHandler ReveivedDatagram;
+
+      protected IDatagramProtocol NextLayer { get; private set; }
+
+      private void NextLayer_ReveivedDatagram(IDatagramProtocol sender, Datagram datagram)
       {
-         return new LinkUpPacket();
+         ProgressReceived(datagram);
       }
+
+      protected void OnReceived(Datagram datagram)
+      {
+         ReveivedDatagram?.Invoke(this, datagram);
+      }
+
+      public abstract void ProgressReceived(Datagram datagram);
+
+      public abstract bool Send(Datagram datagram);
    }
 }
