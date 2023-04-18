@@ -70,7 +70,7 @@ namespace RawConsoleLogger
          timer = new System.Timers.Timer(1000);
          timer.Elapsed += (object? sender, System.Timers.ElapsedEventArgs e) =>
          {
-            //logger.Info("Send {0:0.00}kb/s - Receive {1:0.00}kb/s", connector.SentBytesPerSecond / 1024.0, connector.ReceivedBytesPerSecond / 1024.0);
+            logger.Info("Send {0:0.00}kb/s - Receive {1:0.00}kb/s", connector.SentBytesPerSecond / 1024.0, connector.ReceivedBytesPerSecond / 1024.0);
          };
          timer.Start();
 
@@ -82,11 +82,9 @@ namespace RawConsoleLogger
                byte[] data = new byte[512];
                rnd.NextBytes(data);
 
-               for (int i = 0; i < 2; i++)
-               {
-                  arqProtcol.Send(new Datagram(data));
-               }
-               Thread.Sleep(5000);
+               arqProtcol.Send(new Datagram(data));
+
+               Thread.Sleep(10);
             }
          });
 

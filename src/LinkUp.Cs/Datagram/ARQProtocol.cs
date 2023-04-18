@@ -66,7 +66,7 @@ namespace LinkUp.Cs.Datagram
          {
             Datagram? datagram = null;
 
-            if (_ReceiveQueue.TryTake(out datagram, 100))
+            if (_ReceiveQueue.TryTake(out datagram, 10))
             {
                Header header = Header.FromBytes(datagram.ReadFront(Header.Size));
                datagram.DeleteFront(Header.Size);
@@ -103,13 +103,13 @@ namespace LinkUp.Cs.Datagram
                            _ReceiveWindowBuffer[dataHeader.SessionId - _ReceiveSessionId] = container;
                         }
 
-                        if (_ReceiveWindowBuffer[0] != null && _ReceiveWindowBuffer[0].Datagram != null)
+                        while (_ReceiveWindowBuffer[0] != null && _ReceiveWindowBuffer[0].Datagram != null)
                         {
                            OnReceived(_ReceiveWindowBuffer[0].Datagram);
 
-                           for (int i = (int)(c_WindowsSize - 1); i > 0; i--)
+                           for (int i = 0; i < c_WindowsSize - 1; i++)
                            {
-                              _ReceiveWindowBuffer[i - 1] = _ReceiveWindowBuffer[i];
+                              _ReceiveWindowBuffer[i] = _ReceiveWindowBuffer[i + 1];
                            }
 
                            _ReceiveWindowBuffer[c_WindowsSize - 1] = null;
@@ -161,11 +161,11 @@ namespace LinkUp.Cs.Datagram
             {
                Datagram? datagram = null;
 
-               if (_SendQueue.TryTake(out datagram, 100))
+               if (_SendQueue.TryTake(out datagram, 10))
                {
                   SendDatagramContainer container = new SendDatagramContainer();
                   container.IsAcknowlaged = false;
-                  container.LastSendTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                  container.LastSendTime = 0;
                   container.Resends = 0;
                   container.SessionId = _SendSessionId;
                   container.Datagram = datagram;
@@ -189,7 +189,7 @@ namespace LinkUp.Cs.Datagram
 
             {
                Int64 sessionId = 0;
-               if (_ReceiveAck.TryTake(out sessionId, 100))
+               if (_ReceiveAck.TryTake(out sessionId, 10))
                {
                   if (sessionId == -1)
                   {
@@ -216,7 +216,7 @@ namespace LinkUp.Cs.Datagram
 
             {
                Int64 sessionId = 0;
-               if (_SendAck.TryTake(out sessionId, 100))
+               if (_SendAck.TryTake(out sessionId, 10))
                {
                   Datagram datagram = new Datagram();
                   Header header = new Header();
@@ -259,9 +259,11 @@ namespace LinkUp.Cs.Datagram
 
             if (_SendWindowBuffer.Count > 0)
             {
-               if (_SendWindowBuffer.First().IsAcknowlaged || _SendWindowBuffer.First().Resends >= c_MaxResends)
+               bool sendError = _SendWindowBuffer.First().Resends >= c_MaxResends &&
+                 (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) - _SendWindowBuffer.First().LastSendTime > c_ResendTimeout;
+               if (_SendWindowBuffer.First().IsAcknowlaged || sendError)
                {
-                  if (_SendWindowBuffer.First().Resends >= c_MaxResends)
+                  if (sendError)
                   {
                      logger.Warn("Unable to send Packet with session id: {0}", _SendWindowBuffer.First().SessionId);
                   }
