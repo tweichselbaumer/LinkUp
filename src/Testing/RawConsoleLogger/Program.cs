@@ -76,15 +76,13 @@ namespace RawConsoleLogger
 
          Task.Run(() =>
          {
+            int i = 0;
             while (true)
             {
                Random rnd = new Random();
-               byte[] data = new byte[512];
-               rnd.NextBytes(data);
-
+               byte[] data = new byte[1024];
+               data[0] = (byte)i++;
                arqProtcol.Send(new Datagram(data));
-
-               Thread.Sleep(10);
             }
          });
 

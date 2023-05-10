@@ -57,34 +57,6 @@ namespace LinkUp.Raw
          });
       }
 
-      public override void Dispose()
-      {
-         _IsRunning = false;
-         _Task.Wait();
-         if (_SerialPort != null)
-         {
-            _SerialPort.Dispose();
-         }
-
-         IsDisposed = true;
-      }
-
-      protected override void SendData(byte[] data)
-      {
-         if (_SerialPort == null || !_SerialPort.IsOpen)
-         {
-            Thread.Sleep(200);
-         }
-         if (_SerialPort != null && _SerialPort.IsOpen)
-         {
-            _SerialPort.Write(data, 0, data.Length);
-         }
-         else
-         {
-            throw new Exception("Not connected.");
-         }
-      }
-
       private void _SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
       {
          if (_SerialPort != null && _SerialPort.IsOpen)
@@ -97,6 +69,35 @@ namespace LinkUp.Raw
                OnDataReceived(buffer);
             }
          }
+      }
+
+      protected override void SendData(byte[] data)
+      {
+         if (_SerialPort == null || !_SerialPort.IsOpen)
+         {
+            Thread.Sleep(200);
+         }
+         if (_SerialPort != null && _SerialPort.IsOpen)
+         {
+            _SerialPort.Write(data, 0, data.Length);
+            Thread.Sleep(10);
+         }
+         else
+         {
+            throw new Exception("Not connected.");
+         }
+      }
+
+      public override void Dispose()
+      {
+         _IsRunning = false;
+         _Task.Wait();
+         if (_SerialPort != null)
+         {
+            _SerialPort.Dispose();
+         }
+
+         IsDisposed = true;
       }
    }
 }

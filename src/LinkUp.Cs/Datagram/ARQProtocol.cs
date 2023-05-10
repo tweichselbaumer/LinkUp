@@ -31,7 +31,7 @@ namespace LinkUp.Cs.Datagram
    public class ARQProtocol : DatagramProtocolDecorator
    {
       private const byte c_MaxResends = 3;
-      private const UInt32 c_ResendTimeout = 5000;
+      private const UInt32 c_ResendTimeout = 500;
       private const UInt32 c_WindowsSize = 5;
 
       private BlockingCollection<Int64> _ReceiveAck = new BlockingCollection<Int64>();
@@ -40,7 +40,7 @@ namespace LinkUp.Cs.Datagram
       private Task _ReceiveTask;
       private ReceiveDatagramContainer?[] _ReceiveWindowBuffer = new ReceiveDatagramContainer?[c_WindowsSize];
       private BlockingCollection<Int64> _SendAck = new BlockingCollection<Int64>();
-      private BlockingCollection<Datagram> _SendQueue = new BlockingCollection<Datagram>();
+      private BlockingCollection<Datagram> _SendQueue = new BlockingCollection<Datagram>((int)c_WindowsSize * 2);
       private UInt32 _SendSessionId = 0;
       private Task _SendTask;
       private LinkedList<SendDatagramContainer> _SendWindowBuffer = new LinkedList<SendDatagramContainer>();
@@ -84,14 +84,23 @@ namespace LinkUp.Cs.Datagram
                         {
                            logger.Warn("Received Packet with session id {0} ({1} - {2})", dataHeader.SessionId, _ReceiveSessionId, _ReceiveSessionId + c_WindowsSize);
 
-                           for (int i = 0; i < c_WindowsSize; i++)
+                           if (_ReceiveSessionId - c_WindowsSize > dataHeader.SessionId || dataHeader.SessionId >= _ReceiveSessionId + c_WindowsSize)
                            {
-                              _ReceiveWindowBuffer[i] = null;
+                              logger.Warn("Lost messages");
+
+                              for (int i = 0; i < c_WindowsSize; i++)
+                              {
+                                 _ReceiveWindowBuffer[i] = null;
+                              }
+
+                              _ReceiveSessionId = 0;
+
+                              _SendAck.Add(-1);
                            }
-
-                           _ReceiveSessionId = 0;
-
-                           _SendAck.Add(-1);
+                           else
+                           {
+                              _SendAck.Add(dataHeader.SessionId);
+                           }
                         }
                         else
                         {
@@ -208,6 +217,10 @@ namespace LinkUp.Cs.Datagram
                         {
                            container.IsAcknowlaged = true;
                            break;
+                        }
+                        else if (container.SessionId < sessionId && container.Resends == 1)
+                        {
+                           container.LastSendTime = 0;
                         }
                      }
                   }
