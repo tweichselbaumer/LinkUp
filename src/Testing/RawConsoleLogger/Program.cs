@@ -35,6 +35,8 @@ namespace RawConsoleLogger
    {
       private static void ArqProtcol_ReveivedDatagram(IDatagramProtocol sender, Datagram datagram)
       {
+         Logger logger = LogManager.GetCurrentClassLogger();
+         //logger.Debug("Received Raw Packet - Size: {0} Content: {0}", packet.Length, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
       }
 
       private static void Connector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
