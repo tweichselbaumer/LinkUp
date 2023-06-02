@@ -23,10 +23,10 @@
  *
  ********************************************************************************/
 
-using LinkUp.Node.Logic;
-using LinkUp.Raw;
+using LinkUp.Cs.Node.Logic;
+using LinkUp.Cs.Raw;
 
-namespace LinkUp.Node
+namespace LinkUp.Cs.Node
 {
    public class LinkUpSubNode : IDisposable
    {

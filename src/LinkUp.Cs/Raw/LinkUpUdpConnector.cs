@@ -26,7 +26,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace LinkUp.Raw
+namespace LinkUp.Cs.Raw
 {
    public class LinkUpUdpConnector : LinkUpConnector
    {

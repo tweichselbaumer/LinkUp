@@ -25,7 +25,7 @@
 
 using System.IO.Ports;
 
-namespace LinkUp.Raw
+namespace LinkUp.Cs.Raw
 {
    public class LinkUpSerialPortConnector : LinkUpConnector
    {

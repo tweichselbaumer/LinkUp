@@ -1,14 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPublishable>True</IsPublishable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageId>LinkUp</PackageId>
+		<Title>LinkUp</Title>
+		<AssemblyVersion>2.0.0</AssemblyVersion>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<Authors>Thomas Weichselbaumer</Authors>
+		<Version>$(AssemblyVersion)</Version>
+		<Product>LinkUp</Product>
+		<IncludeSymbols>False</IncludeSymbols>
+		<RepositoryUrl>https://github.com/tweichselbaumer/LinkUp</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://github.com/tweichselbaumer/LinkUp</PackageProjectUrl>
+		<PackageIcon>LinkUp-logo-icon.png</PackageIcon>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NLog" Version="5.1.2" />
-    <PackageReference Include="System.IO.Ports" Version="7.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+	  <None Include="..\..\Graphics\Raw\LinkUp-logo-icon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="NLog" Version="5.1.2" />
+		<PackageReference Include="System.IO.Ports" Version="7.0.0" />
+	</ItemGroup>
 
 </Project>

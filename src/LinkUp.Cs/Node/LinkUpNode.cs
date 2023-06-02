@@ -23,11 +23,11 @@
  *
  ********************************************************************************/
 
-using LinkUp.Node.Logic;
-using LinkUp.Raw;
+using LinkUp.Cs.Node.Logic;
+using LinkUp.Cs.Raw;
 using System.Text.RegularExpressions;
 
-namespace LinkUp.Node
+namespace LinkUp.Cs.Node
 {
    public class LinkUpNode : IDisposable
    {

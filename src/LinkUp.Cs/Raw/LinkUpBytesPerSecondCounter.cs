@@ -23,7 +23,7 @@
  *
  ********************************************************************************/
 
-namespace LinkUp.Raw
+namespace LinkUp.Cs.Raw
 {
    internal class LinkUpBytesPerSecondCounter : IDisposable
    {

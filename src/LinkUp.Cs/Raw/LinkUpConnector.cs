@@ -26,9 +26,9 @@
 using LinkUp.Cs.Datagram;
 using System.Collections.Concurrent;
 
-namespace LinkUp.Raw
+namespace LinkUp.Cs.Raw
 {
-    public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityState connectivity);
+   public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityState connectivity);
 
    public delegate void MetricUpdateEventHandler(LinkUpConnector connector, double bytesSentPerSecond, double bytesReceivedPerSecond);
 
@@ -184,32 +184,27 @@ namespace LinkUp.Raw
          }
       }
 
-      public virtual void Dispose()
+      private void _Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
       {
-         _ConnectivityState = LinkUpConnectivityState.Disconnected;
-         _IsRunning = false;
-         _CancellationTokenSource.Cancel();
-         _Task.Wait();
-
-         _Timer.Dispose();
-
-         _CancellationTokenSource.Dispose();
+         MetricUpdate?.Invoke(this, SentBytesPerSecond, ReceivedBytesPerSecond);
       }
 
-      public bool Send(Datagram datagram)
+      private void LinkUpConnector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
       {
-         SendPacket(datagram.ConvertToLinkUpPacket());
-         return true;
+         ReveivedDatagram?.Invoke(this, Datagram.Datagram.ConvertFromLinkUpPacket(packet));
       }
 
-      public void SendPacket(LinkUpPacket packet)
+      private void OnDataReceivedWorker()
       {
-         byte[] data = _Converter.ConvertToSend(packet);
-         SendData(data);
-         SentPacket?.Invoke(this, packet);
-         _TotalSentPackets++;
-         _TotalSentBytes += data.Length;
-         _SentCounter.AddBytes(data.Length);
+         while (_IsRunning)
+         {
+            try
+            {
+               LinkUpPacket packet = _BlockingCollection.Take(_CancellationTokenSource.Token);
+               ReveivedPacket?.Invoke(this, packet);
+            }
+            catch (Exception) { }
+         }
       }
 
       protected void OnConnected()
@@ -251,27 +246,32 @@ namespace LinkUp.Raw
 
       protected abstract void SendData(byte[] data);
 
-      private void _Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+      public virtual void Dispose()
       {
-         MetricUpdate?.Invoke(this, SentBytesPerSecond, ReceivedBytesPerSecond);
+         _ConnectivityState = LinkUpConnectivityState.Disconnected;
+         _IsRunning = false;
+         _CancellationTokenSource.Cancel();
+         _Task.Wait();
+
+         _Timer.Dispose();
+
+         _CancellationTokenSource.Dispose();
       }
 
-      private void LinkUpConnector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
+      public bool Send(Datagram.Datagram datagram)
       {
-         ReveivedDatagram?.Invoke(this, Datagram.ConvertFromLinkUpPacket(packet));
+         SendPacket(datagram.ConvertToLinkUpPacket());
+         return true;
       }
 
-      private void OnDataReceivedWorker()
+      public void SendPacket(LinkUpPacket packet)
       {
-         while (_IsRunning)
-         {
-            try
-            {
-               LinkUpPacket packet = _BlockingCollection.Take(_CancellationTokenSource.Token);
-               ReveivedPacket?.Invoke(this, packet);
-            }
-            catch (Exception) { }
-         }
+         byte[] data = _Converter.ConvertToSend(packet);
+         SendData(data);
+         SentPacket?.Invoke(this, packet);
+         _TotalSentPackets++;
+         _TotalSentBytes += data.Length;
+         _SentCounter.AddBytes(data.Length);
       }
    }
 }

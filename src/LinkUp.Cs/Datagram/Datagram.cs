@@ -23,7 +23,7 @@
  *
  ********************************************************************************/
 
-using LinkUp.Raw;
+using LinkUp.Cs.Raw;
 
 namespace LinkUp.Cs.Datagram
 {

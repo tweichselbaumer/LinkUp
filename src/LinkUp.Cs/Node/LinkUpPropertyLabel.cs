@@ -23,7 +23,7 @@
  *
  ********************************************************************************/
 
-namespace LinkUp.Node
+namespace LinkUp.Cs.Node
 {
    public class LinkUpPropertyLabel<T> : LinkUpPropertyLabelBase
       where T : IConvertible, new()

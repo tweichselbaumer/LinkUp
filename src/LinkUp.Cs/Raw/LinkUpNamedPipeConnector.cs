@@ -25,7 +25,7 @@
 
 using System.IO.Pipes;
 
-namespace LinkUp.Raw
+namespace LinkUp.Cs.Raw
 {
    public class LinkUpNamedPipeConnector : LinkUpConnector
    {

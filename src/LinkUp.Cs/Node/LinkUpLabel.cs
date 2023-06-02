@@ -1,120 +1,120 @@
 ﻿using System;
 
-namespace LinkUp.Node
+namespace LinkUp.Cs.Node
 {
-    public abstract class LinkUpLabel : IDisposable
-    {
-        private ushort _ChildIdentifier = 0;
-        private bool _IsInitialized = false;
-        private DateTime _LastUpdate;
-        private string _Name;
-        private LinkUpSubNode _Owner;
-        private ushort _ParentIdentifier = 0;
+   public abstract class LinkUpLabel : IDisposable
+   {
+      private ushort _ChildIdentifier = 0;
+      private bool _IsInitialized = false;
+      private DateTime _LastUpdate;
+      private string _Name;
+      private LinkUpSubNode _Owner;
+      private ushort _ParentIdentifier = 0;
 
-        public string Name
-        {
-            get
-            {
-                return _Name;
-            }
+      public string Name
+      {
+         get
+         {
+            return _Name;
+         }
 
-            set
-            {
-                _Name = value;
-            }
-        }
+         set
+         {
+            _Name = value;
+         }
+      }
 
-        internal ushort ChildIdentifier
-        {
-            get
-            {
-                return _ChildIdentifier;
-            }
+      internal ushort ChildIdentifier
+      {
+         get
+         {
+            return _ChildIdentifier;
+         }
 
-            set
-            {
-                _ChildIdentifier = value;
-            }
-        }
+         set
+         {
+            _ChildIdentifier = value;
+         }
+      }
 
-        internal bool IsInitialized
-        {
-            get
-            {
-                return _IsInitialized;
-            }
+      internal bool IsInitialized
+      {
+         get
+         {
+            return _IsInitialized;
+         }
 
-            set
-            {
-                _IsInitialized = value;
-            }
-        }
+         set
+         {
+            _IsInitialized = value;
+         }
+      }
 
-        abstract internal LinkUpLabelType LabelType
-        {
-            get;
-        }
+      abstract internal LinkUpLabelType LabelType
+      {
+         get;
+      }
 
-        internal DateTime LastUpdate
-        {
-            get
-            {
-                return _LastUpdate;
-            }
+      internal DateTime LastUpdate
+      {
+         get
+         {
+            return _LastUpdate;
+         }
 
-            set
-            {
-                _LastUpdate = value;
-            }
-        }
+         set
+         {
+            _LastUpdate = value;
+         }
+      }
 
-        internal LinkUpSubNode Owner
-        {
-            get
-            {
-                return _Owner;
-            }
+      internal LinkUpSubNode Owner
+      {
+         get
+         {
+            return _Owner;
+         }
 
-            set
-            {
-                _Owner = value;
-            }
-        }
+         set
+         {
+            _Owner = value;
+         }
+      }
 
-        internal ushort ParentIdentifier
-        {
-            get
-            {
-                return _ParentIdentifier;
-            }
+      internal ushort ParentIdentifier
+      {
+         get
+         {
+            return _ParentIdentifier;
+         }
 
-            set
-            {
-                _ParentIdentifier = value;
-            }
-        }
+         set
+         {
+            _ParentIdentifier = value;
+         }
+      }
 
-        public abstract void Dispose();
+      public abstract void Dispose();
 
-        internal static LinkUpLabel CreateNew(LinkUpLabelType type, byte[] options)
-        {
-            switch (type)
-            {
-                case LinkUpLabelType.Node:
-                    return null;
+      internal static LinkUpLabel CreateNew(LinkUpLabelType type, byte[] options)
+      {
+         switch (type)
+         {
+            case LinkUpLabelType.Node:
+               return null;
 
-                case LinkUpLabelType.Function:
-                    return LinkUpFunctionLabel.CreateNew(options);
+            case LinkUpLabelType.Function:
+               return LinkUpFunctionLabel.CreateNew(options);
 
-                case LinkUpLabelType.Event:
-                    return LinkUpEventLabel.CreateNew(options);
+            case LinkUpLabelType.Event:
+               return LinkUpEventLabel.CreateNew(options);
 
-                case LinkUpLabelType.Property:
-                    return LinkUpPropertyLabelBase.CreateNew(options);
+            case LinkUpLabelType.Property:
+               return LinkUpPropertyLabelBase.CreateNew(options);
 
-                default:
-                    return null;
-            }
-        }
-    }
+            default:
+               return null;
+         }
+      }
+   }
 }

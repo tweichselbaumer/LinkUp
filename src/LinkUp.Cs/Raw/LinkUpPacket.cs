@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LinkUp.Raw
+namespace LinkUp.Cs.Raw
 {
    public class LinkUpPacket
    {
       private byte[] _Data;
       private bool _IsValid;
 
-      public UInt16 Crc
+      public ushort Crc
       {
          get
          {
@@ -86,7 +86,7 @@ namespace LinkUp.Raw
          if (Length < 1024)
             crcData = AddEscaping(BitConverter.GetBytes(Crc));
          else
-            crcData = AddEscaping(BitConverter.GetBytes((UInt16)0));
+            crcData = AddEscaping(BitConverter.GetBytes((ushort)0));
 
          int lenghtSize = lenghtData.Length;
          int dataSize = dataData.Length;
@@ -116,7 +116,7 @@ namespace LinkUp.Raw
          if (Length < 1024)
             result.AddRange(AddEscaping2(BitConverter.GetBytes(Crc).ToList()));
          else
-            result.AddRange(AddEscaping2(BitConverter.GetBytes((UInt16)0).ToList()));
+            result.AddRange(AddEscaping2(BitConverter.GetBytes((ushort)0).ToList()));
          result.Add(Constant.EndOfPacket);
 
          return result.ToArray();
@@ -136,7 +136,7 @@ namespace LinkUp.Raw
             for (int j = 0; j < 8; ++j)
             {
                if (((temp ^ a) & 0x8000) != 0)
-                  temp = (ushort)((temp << 1) ^ poly);
+                  temp = (ushort)(temp << 1 ^ poly);
                else
                   temp <<= 1;
                a <<= 1;
@@ -145,7 +145,7 @@ namespace LinkUp.Raw
          }
          for (int i = 0; i < bytes.Length; ++i)
          {
-            crc = (ushort)((crc << 8) ^ table[((crc >> 8) ^ (0xff & bytes[i]))]);
+            crc = (ushort)(crc << 8 ^ table[crc >> 8 ^ 0xff & bytes[i]]);
          }
          return crc;
       }
