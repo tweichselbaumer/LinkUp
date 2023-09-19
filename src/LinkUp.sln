@@ -3,17 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LinkUp.Cpp", "LinkUp.Cpp", "{4E0ECFF1-9728-4DDB-B175-8C7DBC15A54F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{24E3D30C-E95A-4D76-98AF-39CCC560F73D}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LinkUp.Cpp", "LinkUp.Cpp\LinkUp.Cpp.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LinkUp.Cs", "LinkUp.Cs", "{39CFB89F-F84C-4ED4-80D2-22942D2476D1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkUp.Cs", "LinkUp.Cs\LinkUp.Cs.csproj", "{72A7A563-4DC8-45D6-8360-0ECEF4747821}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RawConsoleLogger", "Testing\RawConsoleLogger\RawConsoleLogger.csproj", "{24E72E35-BDD5-4B93-B598-7CB895228A82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RawConsoleLogger", "Testing\RawConsoleLogger\RawConsoleLogger.csproj", "{24E72E35-BDD5-4B93-B598-7CB895228A82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,7 +60,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7} = {4E0ECFF1-9728-4DDB-B175-8C7DBC15A54F}
 		{72A7A563-4DC8-45D6-8360-0ECEF4747821} = {39CFB89F-F84C-4ED4-80D2-22942D2476D1}
 		{24E72E35-BDD5-4B93-B598-7CB895228A82} = {24E3D30C-E95A-4D76-98AF-39CCC560F73D}
 	EndGlobalSection

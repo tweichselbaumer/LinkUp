@@ -23,63 +23,67 @@
  *
  ********************************************************************************/
 
+using System.Net;
+using System.Net.Sockets;
+
 namespace LinkUp.Cs.Raw
 {
-   internal class LinkUpBytesPerSecondCounter : IDisposable
+   public class UdpConnector : Connector
    {
-      private Queue<long> _Queue = new Queue<long>();
-      private System.Timers.Timer _Timer;
-      private long current;
+      private bool _IsRunning = true;
+      private Task _Task;
+      private UdpClient _UdpClient;
 
-      internal LinkUpBytesPerSecondCounter()
+      public UdpConnector(IPAddress sourceAddress, IPAddress destinationAddress, int sourcePort, int destinationPort)
       {
-         for (int i = 0; i < 5; i++)
+         _Task = Task.Run(() =>
          {
-            _Queue.Enqueue(0);
-         }
-
-         _Timer = new System.Timers.Timer(1000);
-         _Timer.Elapsed += _Timer_Elapsed;
-         _Timer.Start();
-      }
-
-      internal double BytesPerSecond
-      {
-         get
-         {
-            double result;
-            lock (_Queue)
+            while (_IsRunning)
             {
-               result = _Queue.Sum() / _Queue.Count;
+               try
+               {
+                  if (_UdpClient == null)
+                  {
+                     _UdpClient = new UdpClient(new IPEndPoint(sourceAddress, sourcePort));
+                     _UdpClient.Connect(new IPEndPoint(destinationAddress, destinationPort));
+                  }
+                  IPEndPoint endPoint = new IPEndPoint(destinationAddress, destinationPort);
+                  byte[] data = _UdpClient.Receive(ref endPoint);
+                  OnDataReceived(data);
+               }
+               catch (Exception)
+               {
+                  _UdpClient.Close();
+                  _UdpClient = null;
+               }
             }
-            return result;
+         });
+      }
+
+      protected override void SendData(byte[] data)
+      {
+         if (_UdpClient == null)
+         {
+            Thread.Sleep(200);
+         }
+         if (_UdpClient != null)
+         {
+            _UdpClient.Send(data, data.Length);
+         }
+         else
+         {
+            throw new Exception("Not connected.");
          }
       }
 
-      public void Dispose()
+      public override void Dispose()
       {
-         if (_Timer != null)
+         _IsRunning = false;
+         if (_UdpClient != null)
          {
-            _Timer.Dispose();
+            _UdpClient.Close();
          }
-      }
-
-      internal void AddBytes(long bytes)
-      {
-         lock (_Queue)
-         {
-            current += bytes;
-         }
-      }
-
-      private void _Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-      {
-         lock (_Queue)
-         {
-            _Queue.Enqueue(current);
-            current = 0;
-            _Queue.Dequeue();
-         }
+         _Task.Wait();
       }
    }
 }

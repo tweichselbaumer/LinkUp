@@ -41,14 +41,14 @@ namespace LinkUp.Cs.Datagram
       {
       }
 
-      public static Datagram ConvertFromLinkUpPacket(LinkUpPacket packet)
+      public static Datagram ConvertFromLinkUpPacket(Packet packet)
       {
          return new Datagram(packet.Data);
       }
 
-      public LinkUpPacket ConvertToLinkUpPacket()
+      public Packet ConvertToLinkUpPacket()
       {
-         return new LinkUpPacket() { Data = (byte[])_data.Clone() };
+         return new Packet() { Data = (byte[])_data.Clone() };
       }
 
       public void Delete(int size, int offset)

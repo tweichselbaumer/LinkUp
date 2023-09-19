@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace LinkUp.Cs.Raw
 {
-   public class LinkUpMemoryConnector : LinkUpConnector
+   public class MemoryConnector : Connector
    {
       private const int TIMEOUT = 100;
       private BlockingCollection<byte[]> _InStream;
@@ -11,7 +11,7 @@ namespace LinkUp.Cs.Raw
       private BlockingCollection<byte[]> _OutStream;
       private Task _Task;
 
-      public LinkUpMemoryConnector(BlockingCollection<byte[]> inStream, BlockingCollection<byte[]> outStream)
+      public MemoryConnector(BlockingCollection<byte[]> inStream, BlockingCollection<byte[]> outStream)
       {
          _InStream = inStream;
          _OutStream = outStream;

@@ -27,13 +27,13 @@ using System.IO.Ports;
 
 namespace LinkUp.Cs.Raw
 {
-   public class LinkUpSerialPortConnector : LinkUpConnector
+   public class SerialPortConnector : Connector
    {
       private bool _IsRunning = true;
       private SerialPort _SerialPort;
       private Task _Task;
 
-      public LinkUpSerialPortConnector(string portName, int baudRate)
+      public SerialPortConnector(string portName, int baudRate)
       {
          _Task = Task.Run(() =>
          {

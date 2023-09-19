@@ -1,13 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿/********************************************************************************
+ * MIT License
+ *
+ * Copyright (c) 2023 Thomas Weichselbaumer
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ ********************************************************************************/
 
 namespace LinkUp.Cs.Raw
 {
-   public class LinkUpPacket
+   public class Packet
    {
       private byte[] _Data;
       private bool _IsValid;
+
+      internal bool IsValid
+      {
+         get
+         {
+            return _IsValid;
+         }
+      }
 
       public ushort Crc
       {
@@ -36,90 +65,6 @@ namespace LinkUp.Cs.Raw
          {
             return _Data == null ? 0 : _Data.Length;
          }
-      }
-
-      internal bool IsValid
-      {
-         get
-         {
-            return _IsValid;
-         }
-      }
-
-      internal static LinkUpPacket ParseFromRaw(byte[] data, int startIndex, int size)
-      {
-         LinkUpPacket result = new LinkUpPacket();
-         int length = 0;
-         try
-         {
-            int escaped = 0;
-
-            length = BitConverter.ToInt32(RemoveEscaping(data, startIndex + 1, 4, ref escaped), 0);
-
-            result.Data = RemoveEscaping(data, startIndex + 5 + escaped, length, ref escaped);
-
-            ushort crc = BitConverter.ToUInt16(RemoveEscaping(data, startIndex + 5 + length + escaped, 2, ref escaped), 0);
-
-            if (!(crc == result.Crc) || data[startIndex] != Constant.Preamble || data[startIndex + size - 1] != Constant.EndOfPacket || length != size - (4 + 2 + 1 + 1 + escaped))
-            {
-               result._IsValid = false;
-            }
-            else
-            {
-               result._IsValid = true;
-            }
-         }
-         catch (Exception ex)
-         {
-            result._IsValid = false;
-         }
-
-         return result;
-      }
-
-      internal byte[] ToRaw()
-      {
-         byte[] lenghtData = AddEscaping(BitConverter.GetBytes(Length));
-         byte[] dataData = AddEscaping(Data);
-         byte[] crcData = null;
-
-         if (Length < 1024)
-            crcData = AddEscaping(BitConverter.GetBytes(Crc));
-         else
-            crcData = AddEscaping(BitConverter.GetBytes((ushort)0));
-
-         int lenghtSize = lenghtData.Length;
-         int dataSize = dataData.Length;
-         int crcSize = crcData.Length;
-
-         int size = 1 + lenghtSize + dataSize + crcSize + 1;
-
-         byte[] result = new byte[size];
-         result[0] = Constant.Preamble;
-
-         Array.Copy(lenghtData, 0, result, 1, lenghtSize);
-         Array.Copy(dataData, 0, result, 1 + lenghtSize, dataSize);
-         Array.Copy(crcData, 0, result, 1 + lenghtSize + dataSize, crcSize);
-
-         result[size - 1] = Constant.EndOfPacket;
-
-         return result;
-      }
-
-      internal byte[] ToRaw2()
-      {
-         List<byte> result = new List<byte>();
-
-         result.Add(Constant.Preamble);
-         result.AddRange(AddEscaping2(BitConverter.GetBytes(Length).ToList()));
-         result.AddRange(AddEscaping2(Data.ToList()));
-         if (Length < 1024)
-            result.AddRange(AddEscaping2(BitConverter.GetBytes(Crc).ToList()));
-         else
-            result.AddRange(AddEscaping2(BitConverter.GetBytes((ushort)0).ToList()));
-         result.Add(Constant.EndOfPacket);
-
-         return result.ToArray();
       }
 
       private static ushort Crc16(byte[] bytes)
@@ -267,6 +212,82 @@ namespace LinkUp.Cs.Raw
             }
          }
          return result;
+      }
+
+      internal static Packet ParseFromRaw(byte[] data, int startIndex, int size)
+      {
+         Packet result = new Packet();
+         int length = 0;
+         try
+         {
+            int escaped = 0;
+
+            length = BitConverter.ToInt32(RemoveEscaping(data, startIndex + 1, 4, ref escaped), 0);
+
+            result.Data = RemoveEscaping(data, startIndex + 5 + escaped, length, ref escaped);
+
+            ushort crc = BitConverter.ToUInt16(RemoveEscaping(data, startIndex + 5 + length + escaped, 2, ref escaped), 0);
+
+            if (!(crc == result.Crc) || data[startIndex] != Constant.Preamble || data[startIndex + size - 1] != Constant.EndOfPacket || length != size - (4 + 2 + 1 + 1 + escaped))
+            {
+               result._IsValid = false;
+            }
+            else
+            {
+               result._IsValid = true;
+            }
+         }
+         catch (Exception ex)
+         {
+            result._IsValid = false;
+         }
+
+         return result;
+      }
+
+      internal byte[] ToRaw()
+      {
+         byte[] lenghtData = AddEscaping(BitConverter.GetBytes(Length));
+         byte[] dataData = AddEscaping(Data);
+         byte[] crcData = null;
+
+         if (Length < 1024)
+            crcData = AddEscaping(BitConverter.GetBytes(Crc));
+         else
+            crcData = AddEscaping(BitConverter.GetBytes((ushort)0));
+
+         int lenghtSize = lenghtData.Length;
+         int dataSize = dataData.Length;
+         int crcSize = crcData.Length;
+
+         int size = 1 + lenghtSize + dataSize + crcSize + 1;
+
+         byte[] result = new byte[size];
+         result[0] = Constant.Preamble;
+
+         Array.Copy(lenghtData, 0, result, 1, lenghtSize);
+         Array.Copy(dataData, 0, result, 1 + lenghtSize, dataSize);
+         Array.Copy(crcData, 0, result, 1 + lenghtSize + dataSize, crcSize);
+
+         result[size - 1] = Constant.EndOfPacket;
+
+         return result;
+      }
+
+      internal byte[] ToRaw2()
+      {
+         List<byte> result = new List<byte>();
+
+         result.Add(Constant.Preamble);
+         result.AddRange(AddEscaping2(BitConverter.GetBytes(Length).ToList()));
+         result.AddRange(AddEscaping2(Data.ToList()));
+         if (Length < 1024)
+            result.AddRange(AddEscaping2(BitConverter.GetBytes(Crc).ToList()));
+         else
+            result.AddRange(AddEscaping2(BitConverter.GetBytes((ushort)0).ToList()));
+         result.Add(Constant.EndOfPacket);
+
+         return result.ToArray();
       }
    }
 }

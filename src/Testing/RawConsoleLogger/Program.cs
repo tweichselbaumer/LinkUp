@@ -39,7 +39,7 @@ namespace RawConsoleLogger
          //logger.Debug("Received Raw Packet - Size: {0} Content: {0}", packet.Length, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
       }
 
-      private static void Connector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
+      private static void Connector_ReveivedPacket(Connector connector, Packet packet)
       {
          Logger logger = LogManager.GetCurrentClassLogger();
          //logger.Debug("Received Raw Packet - Size: {0} Content: {0}", packet.Length, string.Join(" ", packet.Data.Select(b => string.Format("{0:X2} ", b))));
@@ -62,7 +62,7 @@ namespace RawConsoleLogger
 
          config.AddRule(LogLevel.Trace, LogLevel.Fatal, consoleTarget, "*");
 
-         LinkUpSerialPortConnector connector = new LinkUpSerialPortConnector("COM10", 500000 /*460800*/);
+         SerialPortConnector connector = new SerialPortConnector("COM10", 3000000 /*460800*/);
          //connector.ReveivedPacket += Connector_ReveivedPacket;
 
          ARQProtocol arqProtcol = new ARQProtocol(connector);
@@ -84,7 +84,7 @@ namespace RawConsoleLogger
                Random rnd = new Random();
                byte[] data = new byte[1024];
                data[0] = (byte)i++;
-               arqProtcol.Send(new Datagram(data));
+               // arqProtcol.Send(new Datagram(data));
             }
          });
 

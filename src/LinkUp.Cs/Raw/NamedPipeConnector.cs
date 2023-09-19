@@ -27,7 +27,7 @@ using System.IO.Pipes;
 
 namespace LinkUp.Cs.Raw
 {
-   public class LinkUpNamedPipeConnector : LinkUpConnector
+   public class NamedPipeConnector : Connector
    {
       private const int BUFFER_SIZE = 1024;
 
@@ -43,7 +43,7 @@ namespace LinkUp.Cs.Raw
 
       private Task _Task;
 
-      public LinkUpNamedPipeConnector(string name, Mode mode)
+      public NamedPipeConnector(string name, Mode mode)
       {
          _Name = name;
          _Mode = mode;
@@ -138,17 +138,17 @@ namespace LinkUp.Cs.Raw
          Client
       }
 
+      protected override void SendData(byte[] data)
+      {
+         _Stream.Write(data, 0, data.Length);
+         _Stream.Flush();
+      }
+
       public override void Dispose()
       {
          _IsRunning = false;
          _Task.Wait();
          IsDisposed = true;
-      }
-
-      protected override void SendData(byte[] data)
-      {
-         _Stream.Write(data, 0, data.Length);
-         _Stream.Flush();
       }
    }
 }

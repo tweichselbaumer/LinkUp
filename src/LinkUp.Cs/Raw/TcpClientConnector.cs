@@ -29,7 +29,7 @@ using System.Net.Sockets;
 
 namespace LinkUp.Cs.Raw
 {
-   public class LinkUpTcpClientConnector : LinkUpConnector
+   public class TcpClientConnector : Connector
    {
       private const int maxRead = 1024 * 100;
       private bool _IsRunning = true;
@@ -40,7 +40,7 @@ namespace LinkUp.Cs.Raw
       private TcpClient _TcpClient;
       private byte[] data = new byte[maxRead];
 
-      public LinkUpTcpClientConnector(IPAddress destinationAddress, int destinationPort)
+      public TcpClientConnector(IPAddress destinationAddress, int destinationPort)
       {
          _TaskIn = Task.Factory.StartNew(() =>
          {
@@ -170,6 +170,11 @@ namespace LinkUp.Cs.Raw
          }, TaskCreationOptions.LongRunning);
       }
 
+      protected override void SendData(byte[] data)
+      {
+         _QueueOut.Add(data);
+      }
+
       public void BeginRead()
       {
          var ns = _TcpClient.GetStream();
@@ -213,11 +218,6 @@ namespace LinkUp.Cs.Raw
             _TcpClient = null;
             OnDisconnected();
          }
-      }
-
-      protected override void SendData(byte[] data)
-      {
-         _QueueOut.Add(data);
       }
    }
 }

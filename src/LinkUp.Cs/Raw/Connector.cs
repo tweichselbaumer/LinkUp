@@ -28,13 +28,13 @@ using System.Collections.Concurrent;
 
 namespace LinkUp.Cs.Raw
 {
-   public delegate void ConnectivityChangedEventHandler(LinkUpConnector connector, LinkUpConnectivityState connectivity);
+   public delegate void ConnectivityChangedEventHandler(Connector connector, LinkUpConnectivityState connectivity);
 
-   public delegate void MetricUpdateEventHandler(LinkUpConnector connector, double bytesSentPerSecond, double bytesReceivedPerSecond);
+   public delegate void MetricUpdateEventHandler(Connector connector, double bytesSentPerSecond, double bytesReceivedPerSecond);
 
-   public delegate void ReveicedPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
+   public delegate void ReveicedPacketEventHandler(Connector connector, Packet packet);
 
-   public delegate void SentPacketEventHandler(LinkUpConnector connector, LinkUpPacket packet);
+   public delegate void SentPacketEventHandler(Connector connector, Packet packet);
 
    public enum LinkUpConnectivityState
    {
@@ -42,25 +42,25 @@ namespace LinkUp.Cs.Raw
       Disconnected
    }
 
-   public abstract class LinkUpConnector : IDisposable, IDatagramProtocol
+   public abstract class Connector : IDisposable, IDatagramProtocol
    {
-      private BlockingCollection<LinkUpPacket> _BlockingCollection = new BlockingCollection<LinkUpPacket>();
+      private BlockingCollection<Packet> _BlockingCollection = new BlockingCollection<Packet>();
       private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
       private LinkUpConnectivityState _ConnectivityState = LinkUpConnectivityState.Disconnected;
-      private LinkUpConverter _Converter = new LinkUpConverter();
+      private Converter _Converter = new Converter();
       private bool _DebugDump;
       private bool _IsDisposed;
       private bool _IsRunning;
       private string _Name;
-      private LinkUpBytesPerSecondCounter _ReceiveCounter = new LinkUpBytesPerSecondCounter();
-      private LinkUpBytesPerSecondCounter _SentCounter = new LinkUpBytesPerSecondCounter();
+      private BytesPerSecondCounter _ReceiveCounter = new BytesPerSecondCounter();
+      private BytesPerSecondCounter _SentCounter = new BytesPerSecondCounter();
       private Task _Task;
       private System.Timers.Timer _Timer;
       private long _TotalReceivedBytes;
       private long _TotalSentBytes;
       private int _TotalSentPackets;
 
-      public LinkUpConnector()
+      public Connector()
       {
          _IsRunning = true;
          _Task = Task.Factory.StartNew(OnDataReceivedWorker, TaskCreationOptions.LongRunning);
@@ -189,7 +189,7 @@ namespace LinkUp.Cs.Raw
          MetricUpdate?.Invoke(this, SentBytesPerSecond, ReceivedBytesPerSecond);
       }
 
-      private void LinkUpConnector_ReveivedPacket(LinkUpConnector connector, LinkUpPacket packet)
+      private void LinkUpConnector_ReveivedPacket(Connector connector, Packet packet)
       {
          ReveivedDatagram?.Invoke(this, Datagram.Datagram.ConvertFromLinkUpPacket(packet));
       }
@@ -200,7 +200,7 @@ namespace LinkUp.Cs.Raw
          {
             try
             {
-               LinkUpPacket packet = _BlockingCollection.Take(_CancellationTokenSource.Token);
+               Packet packet = _BlockingCollection.Take(_CancellationTokenSource.Token);
                ReveivedPacket?.Invoke(this, packet);
             }
             catch (Exception) { }
@@ -224,8 +224,8 @@ namespace LinkUp.Cs.Raw
       {
          _TotalReceivedBytes += data.Length;
          _ReceiveCounter.AddBytes(data.Length);
-         List<LinkUpPacket> list = _Converter.ConvertFromReceived(data);
-         foreach (LinkUpPacket packet in list)
+         List<Packet> list = _Converter.ConvertFromReceived(data);
+         foreach (Packet packet in list)
          {
             _BlockingCollection.Add(packet);
          }
@@ -264,7 +264,7 @@ namespace LinkUp.Cs.Raw
          return true;
       }
 
-      public void SendPacket(LinkUpPacket packet)
+      public void SendPacket(Packet packet)
       {
          byte[] data = _Converter.ConvertToSend(packet);
          SendData(data);
